@@ -19,7 +19,6 @@
 -- Add some translation specific fields to a project.
 
 alter table im_projects add	customer_project_nr	varchar(50);
-alter table im_projects add	customer_contact_id	references users;
 alter table im_projects add	source_language_id	references im_categories;
 alter table im_projects add	subject_area_id		references im_categories;
 alter table im_projects add	expected_quality_id	references im_categories;
