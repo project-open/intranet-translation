@@ -113,6 +113,8 @@ where
 
 set task_colspan 8
 set task_html "
+<form method=POST action=task-assignments-2>
+[export_form_vars project_id return_url]
 	<table border=0>
 	  <tr>
 	    <td colspan=$task_colspan class=rowtitle align=center>
@@ -165,7 +167,7 @@ db_foreach select_tasks $task_sql {
     set proof 0
     set other 0
     switch $task_type_id {
-	97 { # Trans Only
+	93 { # Trans Only
 	    set trans 1
 	    incr n_trans
 	}
@@ -192,6 +194,10 @@ db_foreach select_tasks $task_sql {
 	    set edit 1
 	    incr n_trans
 	    incr n_edit
+	}
+	95 { # Proof Only
+	    set proof 1 
+	    incr n_proof
 	}
 	default { 
 	    set other 1
@@ -273,7 +279,10 @@ db_foreach select_tasks $task_sql {
 }
 
 append task_html "
-</table>"
+</table>
+<input type=submit value=Submit>
+</form>
+"
 
 # -------------------------------------------------------------------
 # Autoassign HTML Component
@@ -316,6 +325,4 @@ set bind_vars [ns_set create]
 ns_set put $bind_vars project_id $project_id
 set parent_menu_id [db_string parent_menu "select menu_id from im_menus where label='project'" -default 0]
 set project_menu [im_sub_navbar $parent_menu_id $bind_vars]
-
-
 
