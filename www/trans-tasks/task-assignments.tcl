@@ -100,6 +100,7 @@ select
 	im_category_from_id(t.task_uom_id) as task_uom,
 	im_category_from_id(t.task_type_id) as task_type,
 	im_category_from_id(t.task_status_id) as task_status,
+	im_category_from_id(t.target_language_id) as target_language,
 	im_email_from_user_id (t.trans_id) as trans_email,
 	im_name_from_user_id (t.trans_id) as trans_name,
 	im_email_from_user_id (t.edit_id) as edit_email,
@@ -127,6 +128,7 @@ set task_html "
 	  </tr>
 	  <tr>
 	    <td class=rowtitle align=center>Task Name</td>
+	    <td class=rowtitle align=center>Target Lang</td>
 	    <td class=rowtitle align=center>Task Type</td>
 	    <td class=rowtitle align=center>Size</td>
 	    <td class=rowtitle align=center>UoM</td>
@@ -216,6 +218,7 @@ db_foreach select_tasks $task_sql {
 	<tr $bgcolor([expr $ctr % 2])>
 	<input type=hidden name=task_status_id.$task_id value=$task_status_id>
 	<td>$task_name</td>
+	<td>$target_language</td>
 	<td>$task_type</td>
 	<td>$task_units</td>
 	<td>$task_uom</td>

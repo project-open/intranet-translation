@@ -142,29 +142,40 @@ create table im_target_languages (
 insert into im_views (view_id, view_name, visible_for) values (90, 'trans_task_list', 'view_trans_tasks');
 
 
--- Tranlation TasksListPage columns
+-- Translation TasksListPage columns
 --
 delete from im_view_columns where column_id >= 9000 and column_id <= 9099;
 --
-insert into im_view_columns values (9001,90,NULL,'Task Name','$task_name_splitted','','',10,'');
-insert into im_view_columns values (9003,90,NULL,'Target Lang','$target_language','','',10,'');
-insert into im_view_columns values (9005,90,NULL,'100 %','$match100','','',10,
-'im_permission $user_id view_trans_task_matrix');
-insert into im_view_columns values (9007,90,NULL,'95 %','$match95','','',10,
-'im_permission $user_id view_trans_task_matrix');
-insert into im_view_columns values (9009,90,NULL,'85 %','$match85','','',10,
-'im_permission $user_id view_trans_task_matrix');
-insert into im_view_columns values (9011,90,NULL,'0 %','$match0','','',10,
-'im_permission $user_id view_trans_task_matrix');
-insert into im_view_columns values (9013,90,NULL,'Units','$task_units $uom_name','','',10,'');
-insert into im_view_columns values (9015,90,NULL,'Bill. Units','$billable_items_input','','',10,'');
-insert into im_view_columns values (9017,90,NULL,'Task','$type_name','','',10,'');
-insert into im_view_columns values (9019,90,NULL,'Status','$status_select','','',10,'');
-insert into im_view_columns values (9021,90,NULL,'[im_gif delete "Delete the Task"]','$del_checkbox','','',10,'');
-insert into im_view_columns values (9023,90,NULL,'Assigned','$assignments','','',10,'');
-insert into im_view_columns values (9025,90,NULL,'Message','$message','','',10,'');
-insert into im_view_columns values (9027,90,NULL,'[im_gif save "Download files"]','$download_link','','',10,'');
-insert into im_view_columns values (9029,90,NULL,'[im_gif open "Upload files"]','$upload_link','','',10,'');
+insert into im_view_columns values (9001,90,NULL,'Task Name','$task_name_splitted',
+'','',10,'');
+insert into im_view_columns values (9003,90,NULL,'Target Lang','$target_language',
+'','',10,'');
+insert into im_view_columns values (9005,90,NULL,'100 %','$match100',
+'','',10,'im_permission $user_id view_trans_task_matrix');
+insert into im_view_columns values (9007,90,NULL,'95 %','$match95',
+'','',10,'im_permission $user_id view_trans_task_matrix');
+insert into im_view_columns values (9009,90,NULL,'85 %','$match85',
+'','',10,'im_permission $user_id view_trans_task_matrix');
+insert into im_view_columns values (9011,90,NULL,'0 %','$match0',
+'','',10,'im_permission $user_id view_trans_task_matrix');
+insert into im_view_columns values (9013,90,NULL,'Units','$task_units $uom_name',
+'','',10,'');
+insert into im_view_columns values (9015,90,NULL,'Bill. Units','$billable_items_input',
+'','',10,'expr $project_write');
+insert into im_view_columns values (9017,90,NULL,'Task','$type_name',
+'','',10,'expr $project_write');
+insert into im_view_columns values (9019,90,NULL,'Status','$status_select',
+'','',10,'expr $project_write');
+insert into im_view_columns values (9021,90,NULL,'[im_gif delete "Delete the Task"]','$del_checkbox',
+'','',10,'expr $project_write');
+insert into im_view_columns values (9023,90,NULL,'Assigned','$assignments',
+'','',10,'expr $project_write');
+insert into im_view_columns values (9025,90,NULL,'Message','$message',
+'','',10,'');
+insert into im_view_columns values (9027,90,NULL,'[im_gif save "Download files"]','$download_link',
+'','',10,'');
+insert into im_view_columns values (9029,90,NULL,'[im_gif open "Upload files"]','$upload_link',
+'','',10,'');
 --
 commit;
 
@@ -192,7 +203,28 @@ begin
         location =>     'left',
         sort_order =>   10,
         component_tcl =>
-        'im_trans_project_details \
+        'im_trans_project_details_component \
+                $user_id \
+                $project_id \
+                $return_url'
+    );
+end;
+/
+
+
+-- Show the translation tasks for freelancers on the first page
+--
+declare
+    v_plugin            integer;
+begin
+    v_plugin := im_component_plugin.new (
+        plugin_name =>  'Project Freelance Tasks',
+        package_name => 'intranet-translation',
+        page_url =>     '/intranet/projects/view',
+        location =>     'bottom',
+        sort_order =>   10,
+        component_tcl =>
+        'im_task_freelance_component \
                 $user_id \
                 $project_id \
                 $return_url'
@@ -219,7 +251,7 @@ begin
 		$return_url'
     );
 
-     -- Show the upload task component in project page
+    -- Show the upload task component in project page
 
     v_plugin := im_component_plugin.new (
 	plugin_name =>	'Project Translation Error Component',
@@ -255,6 +287,15 @@ begin
 	'view_trans_task_status',
 	'View Trans Task Status',
 	'View Trans Task Status');
+
+    -- Should Freelancers see the translation project details?
+    -- Everybody can see subject area, source and target language,
+    -- but the customer project#, delivery date and customer contact
+    -- are normally reserved for employees.
+    acs_privilege.create_privilege(
+	'view_trans_proj_detail',
+	'View Trans Project Details',
+	'View Trans Project Details');
 end;
 /
 

@@ -27,7 +27,7 @@ proc intranet_task_download {} {
     set user_id [ad_maybe_redirect_for_registration]
 
     set url "[ns_conn url]"
-    ns_log Notice "intranet_download: url=$url"
+    ns_log Notice "intranet_task_download: url=$url"
 
     # Using the task_id as only reasonable identifier
     set path_list [split $url {/}]
@@ -35,7 +35,7 @@ proc intranet_task_download {} {
 
     # +0:/ +1:intranet-translation, +2:download-task, +3:<task_id>, +4:...
     set task_id [lindex $path_list 3]
-    ns_log Notice "task_id=$task_id"
+    ns_log Notice "intranet_task_download: task_id=$task_id"
 
     # Make sure $task_id is a number and emit an error otherwise!!!
 
@@ -73,7 +73,7 @@ where
     set upload_list [im_task_component_upload $user_id $user_admin_p $task_status_id $source_language $target_language $trans_id $edit_id $proof_id $other_id]
     set download_folder [lindex $upload_list 0]
     set upload_folder [lindex $upload_list 1]
-    ns_log Notice "download_folder=$download_folder, upload_folder=$upload_folder"
+    ns_log Notice "intranet_task_download: download_folder=$download_folder, upload_folder=$upload_folder"
 
     # Allow to download the file if the user is an admin, a project admin
     # or an employee of the company. Or if the task is assigned to the user.
@@ -92,16 +92,18 @@ where
     set file "$project_path/$download_folder/$file_name"
     set guessed_file_type [ns_guesstype $file]
 
-    ns_log notice "file_name=$file_name"
-    ns_log notice "file=$file"
-    ns_log notice "file_type=$guessed_file_type"
+    ns_log notice "intranet_task_download: file_name=$file_name"
+    ns_log notice "intranet_task_download: file=$file"
+    ns_log notice "intranet_task_download: file_type=$guessed_file_type"
 
     if [file readable $file] {
 
 	# Update the task to advance to the next status
 	im_trans_download_action $task_id $task_status_id $task_type_id $user_id
 
-	ad_returnfile 200 $guessed_file_type $file
+	ns_log Notice "intranet_task_download: rp_serve_concrete_file $file"
+        rp_serve_concrete_file $file
+
     } else {
 	ns_log notice "intranet_task_download: file '$file' not readable"
 	doc_return 500 text/html "Did not find the specified file"
@@ -219,14 +221,15 @@ where
 }
 
 
-ad_proc -public im_trans_project_details { user_id project_id return_url } {
+ad_proc -public im_trans_project_details_component { user_id project_id return_url } {
     Return a formatted HTML widget showing the translation
     specific fields of a translation project.
 } {
 
     set query "
 select
-        p.*
+        p.*,
+	im_name_from_user_id(p.customer_contact_id) as customer_contact_name
 from
         im_projects p
 where
@@ -245,6 +248,9 @@ where
       Project Details
     </td>
   </tr>
+"
+if {[im_permission $user_id view_trans_proj_detail]} {
+    append html "
   <tr> 
     <td>Client Project#</td>
     <td>$customer_project_nr</td>
@@ -253,6 +259,25 @@ where
     <td>Final User</td>
     <td>$final_customer</td>
   </tr>
+  <tr> 
+    <td>Quality Level</td>
+    <td>[im_category_from_id $expected_quality_id]</td>
+  </tr>
+"
+}
+
+set customer_contact_html [im_render_user_id $customer_contact_id $customer_contact_name $user_id $project_id]
+if {"" != $customer_contact_html} {
+    append html "
+  <tr> 
+    <td>Customer Contact</td>
+    <td>$customer_contact_html</td>
+  </tr>
+"
+}
+
+
+append html "
   <tr> 
     <td>Subject Area</td>
     <td>[im_category_from_id $subject_area_id]</td>
@@ -264,10 +289,6 @@ where
   <tr> 
     <td>Target Languages</td>
     <td>[im_target_languages $project_id]</td>
-  </tr>
-  <tr> 
-    <td>Quality Level</td>
-    <td>[im_category_from_id $expected_quality_id]</td>
   </tr>
   <tr> 
     <td></td>
@@ -861,10 +882,31 @@ where
 # Show the list of tasks for one project
 # -------------------------------------------------------------------
 
+
+
+
+ad_proc im_task_freelance_component { user_id project_id return_url } {
+    Same as im_task_component, 
+    except that this component is only shown to non-project
+    administrators.
+} {
+    # Get the permissions for the current _project_
+    im_project_permissions $user_id $project_id project_view project_read project_write project_admin
+
+    if {$project_write} { return "" }
+    return [im_task_component $user_id $project_id $return_url]
+}
+
+
 ad_proc im_task_component { user_id project_id return_url } {
     Return a piece of HTML for the project view page,
     containing the list of tasks of a project.
 } {
+    # Is this a translation project?
+    if {![im_project_has_type $project_id "Translation Project"]} {
+	return ""
+    }
+
     # Get the permissions for the current _project_
     im_project_permissions $user_id $project_id project_view project_read project_write project_admin
 
@@ -1068,7 +1110,11 @@ ad_proc im_task_error_component { user_id project_id return_url } {
     }
 
     set missing_task_list [im_task_missing_file_list $project_id]
+
+    # Show the missing tasks only to people who can write on the
+    # project
     im_project_permissions $user_id $project_id view read write admin
+    if {!$write} { return "" }
 
     # -------------------- SQL -----------------------------------
     set sql "
