@@ -50,8 +50,8 @@
 
 delete from im_view_columns where view_id = 152;
 delete from im_views where view_id = 152;
-insert into im_views (view_id, view_name, view_sql
-) values (152, 'im_trans_project_details', '
+insert into im_views (view_id, view_name, view_type_id, view_sql
+) values (152, 'im_trans_project_details', 1410, '
 SELECT
 	p.*,
 	im_category_from_id(p.source_language_id) as source_language,
@@ -106,14 +106,13 @@ values (15217,152,NULL,'trans_project_hours','$trans_project_hours','','',17,'')
 
 
 ---------------------------------------------------------
--- !!! Maybe old piece of code!!!
 -- Backup Translation Tasks
 --
 
-delete from im_view_columns where view_id = 180;
-delete from im_views where view_id = 180;
-insert into im_views (view_id, view_name, view_sql
-) values (180, 'im_trans_tasks', '
+delete from im_view_columns where view_id = 150;
+delete from im_views where view_id = 150;
+insert into im_views (view_id, view_name, view_type_id, view_sql
+) values (150, 'im_trans_tasks', 1410, '
 SELECT
 	t.*,
 	p.project_name,
@@ -133,48 +132,54 @@ WHERE
 	t.project_id = p.project_id
 ');
 
-delete from im_view_columns where column_id > 18004 and column_id < 18099;
+delete from im_view_columns where column_id > 15004 and column_id < 15099;
 --
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (18001,180,NULL,'project_name','$project_name','','',1,'');
+extra_select, extra_where, sort_order, visible_for) values (15001,150,NULL,'project_name','$project_name','','',1,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (18003,180,NULL,'target_language','$target_language','','',3,'');
+extra_select, extra_where, sort_order, visible_for) values (15003,150,NULL,'target_language','$target_language','','',3,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (18005,180,NULL,'task_name','$task_name','','',5,'');
+extra_select, extra_where, sort_order, visible_for) values (15005,150,NULL,'task_name','$task_name','','',5,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (18007,180,NULL,'task_filename','$task_filename','','',7,'');
+extra_select, extra_where, sort_order, visible_for) values (15007,150,NULL,'task_filename','$task_filename','','',7,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (18009,180,NULL,'task_type','$task_type','','',9,'');
+extra_select, extra_where, sort_order, visible_for) values (15009,150,NULL,'task_type','$task_type','','',9,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (18011,180,NULL,'task_status','$task_status','','',11,'');
+extra_select, extra_where, sort_order, visible_for) values (15011,150,NULL,'task_status','$task_status','','',11,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (18013,180,NULL,'description','$description','','',13,'');
+extra_select, extra_where, sort_order, visible_for) values (15013,150,NULL,'description','$description','','',13,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (18015,180,NULL,'source_language','$source_language','','',15,'');
+extra_select, extra_where, sort_order, visible_for) values (15015,150,NULL,'source_language','$source_language','','',15,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (18017,180,NULL,'task_units','$task_units','','',17,'');
+extra_select, extra_where, sort_order, visible_for) values (15017,150,NULL,'task_units','$task_units','','',17,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (18019,180,NULL,'billable_units','$billable_units','','',19,'');
+extra_select, extra_where, sort_order, visible_for) values (15019,150,NULL,'billable_units','$billable_units','','',19,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (18021,180,NULL,'task_uom','$task_uom','','',21,'');
+extra_select, extra_where, sort_order, visible_for) values (15021,150,NULL,'task_uom','$task_uom','','',21,'');
 --insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
---extra_select, extra_where, sort_order, visible_for) values (18023,180,NULL,'invoice_nr','$invoice_nr','','',23,'');
+--extra_select, extra_where, sort_order, visible_for) values (15023,150,NULL,'invoice_nr','$invoice_nr','','',23,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (18025,180,NULL,'match100','$match100','','',25,'');
+extra_select, extra_where, sort_order, visible_for) values (15024,150,NULL,'match_x','$match_x','','',24,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (18027,180,NULL,'match95','$match95','','',27,'');
+extra_select, extra_where, sort_order, visible_for) values (15025,150,NULL,'match100','$match100','','',25,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (18029,180,NULL,'match85','$match85','','',29,'');
+extra_select, extra_where, sort_order, visible_for) values (15026,150,NULL,'match_rep','$match_rep','','',26,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (18031,180,NULL,'match0','$match0','','',31,'');
+extra_select, extra_where, sort_order, visible_for) values (15027,150,NULL,'match95','$match95','','',27,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (18033,180,NULL,'trans_email','$trans_email','','',33,'');
+extra_select, extra_where, sort_order, visible_for) values (15029,150,NULL,'match85','$match85','','',29,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (18035,180,NULL,'edit_email','$edit_email','','',35,'');
+extra_select, extra_where, sort_order, visible_for) values (15030,150,NULL,'match75','$match75','','',30,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (18037,180,NULL,'proof_email','$proof_email','','',37,'');
+extra_select, extra_where, sort_order, visible_for) values (15031,150,NULL,'match0','$match0','','',31,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (18039,180,NULL,'other_email','$other_email','','',39,'');
+extra_select, extra_where, sort_order, visible_for) values (15033,150,NULL,'trans_email','$trans_email','','',33,'');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (15035,150,NULL,'edit_email','$edit_email','','',35,'');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (15037,150,NULL,'proof_email','$proof_email','','',37,'');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (15039,150,NULL,'other_email','$other_email','','',39,'');
 --
 commit;
 
@@ -186,8 +191,8 @@ commit;
 
 delete from im_view_columns where view_id = 181;
 delete from im_views where view_id = 181;
-insert into im_views (view_id, view_name, view_sql
-) values (181, 'im_target_languages', '
+insert into im_views (view_id, view_name, view_type_id, view_sql
+) values (181, 'im_target_languages', 1410, '
 SELECT
 	t.*,
 	p.project_name,
