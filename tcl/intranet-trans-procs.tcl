@@ -800,6 +800,11 @@ ad_proc im_task_component_upload {user_id user_admin_p task_status_id source_lan
 	350 { # for Proof: 
 	    if {$user_id == $proof_id} {
 		return [list "edit_$target_language" "" "Please download the edited file."]
+	    }
+	    if {$user_id == $edit_id} {
+		# The editor may upload the file again, while the Proofer has not
+		# downloaded the file yet.
+		return [list "" "edit_$target_language" "You are allowed to upload the file again while the Proof Reader has not started editing yet..."]
 	    } else {
 		return [list "" "" "The file is ready to be proofed by another person"]
 	    }
