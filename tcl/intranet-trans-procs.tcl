@@ -744,55 +744,53 @@ where
 # Task Component
 # -------------------------------------------------------------------
 
-ad_proc im_task_component { user_id group_id user_admin_p user_is_employee_p return_url } {
+ad_proc im_task_component { user_id project_id return_url } {
     Return a piece of HTML for the project view page,
     containing the list of tasks of a project.
 } {
+    im_project_permissions $user_id $project_id view read write admin
 
     # -------------------- Header -----------------------------------------------
     set task_table "
 <form action=/intranet-translation/trans-tasks/task-action method=POST>
-[export_form_vars group_id return_url]
-
+[export_form_vars project_id return_url]
 <table border=0>\n"
 
-append task_table "
+    append task_table "
 <tr> 
   <td class=rowtitle>Task Name</td>
   <td class=rowtitle>Target Lang</td>\n"
 
-if {$user_admin_p} { append task_table "
+    if {$admin} { append task_table "
   <td class=rowtitle>100 %</td>
   <td class=rowtitle>95 %</td>
   <td class=rowtitle>85 %</td>
   <td class=rowtitle>0 %</td>\n"
-}
-append task_table "
+    }
+    append task_table "
 <td class=rowtitle>&nbsp;Units&nbsp;</td>"
 
-if {$user_admin_p} { 
-    append task_table "\n<td class=rowtitle>Billable Units </td>\n"
-}
-if {$user_admin_p} { append task_table "
+    if {$admin} { 
+        append task_table "\n<td class=rowtitle>Billable Units </td>\n"
+    }
+    if {$admin} { append task_table "
   <td class=rowtitle>Task</td>
   <td class=rowtitle>Status</td>\n"
-}
-if {$user_admin_p} { append task_table "
-  <td class=rowtitle align=middle>
-    <IMG SRC=/images/delete.gif width=14 height=15 alt='Delete the Task'>
-  </td>\n"
-}
+    }
+    if {$admin} { append task_table "
+  <td class=rowtitle align=middle>[im_gif delete "Delete the Task"]</td>\n"
+    }
 
-if {$user_admin_p} { 
-    append task_table "\n<td class=rowtitle>Assigned</td>"
-}
+    if {$admin} { 
+        append task_table "\n<td class=rowtitle>Assigned</td>"
+    }
 
-append task_table "
+    append task_table "
   <td class=rowtitle>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Message&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
   <td class=rowtitle>[im_gif save "Download files"]</td>\n"
 
-append task_table "\n<td class=rowtitle>[im_gif open "Upload files"]</td>\n"
-append task_table "</tr>"
+    append task_table "\n<td class=rowtitle>[im_gif open "Upload files"]</td>\n"
+    append task_table "</tr>"
 
 
     # -------------------- SQL -----------------------------------
@@ -814,7 +812,7 @@ from
 	categories uom_c,
 	categories type_c
 where
-	project_id=:group_id
+	project_id=:project_id
 	and t.task_status_id <> 372
 	and t.task_uom_id=uom_c.category_id(+)
 	and t.task_type_id=type_c.category_id(+)
@@ -827,7 +825,7 @@ where
 
     db_foreach select_tasks $sql {
 
-	# Determine if $user_id is assigned to some phase
+	# Determine if $user_id is assigned to some phase of this task
 	set user_assigned 0
         if {$trans_id == $user_id} { set user_assigned 1 }
         if {$edit_id == $user_id} { set user_assigned 1 }
@@ -835,9 +833,9 @@ where
         if {$other_id == $user_id} { set user_assigned 1 }
 
 	# Freelancers shouldn't see tasks if they are not assigned to it.
-	if {!($user_is_employee_p || $user_admin_p || $user_assigned)} {
-	    continue
-	}
+        if {!$user_assigned && ![im_permission $user_id view_trans_tasks]} {
+	        continue
+        }
 
 	# Build a string with the user short names for the assignations
         set assignments ""
@@ -865,7 +863,7 @@ where
   <td align=left>$target_language</td>\n"
 
 
-	if {$user_admin_p} { 
+	if {$admin} { 
 	    append task_table_rows "
   <td align=right>$match100</td>
   <td align=right>$match95</td>
@@ -876,24 +874,24 @@ where
 	append task_table_rows "
   <td align=right>$task_units $uom_name</td>\n"
 
-	if {$user_admin_p} { 
+	if {$admin} { 
 	    append task_table_rows "
   <td align=right>
     <input type=text size=3 name=billable_units.$task_id value=$billable_units>
   </td>"
 	}
 
-        if {$user_admin_p} { 
+        if {$admin} { 
 	    append task_table_rows "
   <td>$type_name</td>
 "
         }
-        if {$user_admin_p} { 
+        if {$admin} { 
 	    append task_table_rows "
-<td>[im_category_select "Task Status" task_status.$task_id $task_status_id]</td>\n"
+<td>[im_category_select "Intranet Translation Task Status" task_status.$task_id $task_status_id]</td>\n"
 	}
 
-        if {$user_admin_p} {
+        if {$admin} {
 	    append task_table_rows "
 <td align=middle><input type=checkbox name=delete_task value=$task_id></td>
 <td>$assignments</td>\n"
@@ -904,7 +902,7 @@ where
 	# Check if the user is a freelance who is allowed to
 	# upload a file for this task, depending on the task
 	# status (engine) and the assignment to a specific phase.
-	set upload_list [im_task_component_upload $user_id $user_admin_p $task_status_id $source_language $target_language $trans_id $edit_id $proof_id $other_id]
+	set upload_list [im_task_component_upload $user_id $admin $task_status_id $source_language $target_language $trans_id $edit_id $proof_id $other_id]
 
 	set download_folder [lindex $upload_list 0]
 	set upload_folder [lindex $upload_list 1]
@@ -950,7 +948,7 @@ where
     append task_table "<tr><td colspan=7 align=center>No tasks found</td></tr>"
     }
 
-    if {$user_admin_p} {
+    if {$admin} {
 	append task_table "
 <tr align=right> 
   <td align=left><font size=-1> 
@@ -972,11 +970,11 @@ where
 # Task Error Component
 # -------------------------------------------------------------------
 
-ad_proc im_task_error_component { user_id project_id user_admin_p user_is_employee_p return_url missing_task_list } {
+ad_proc im_task_error_component { user_id project_id return_url } {
     Return a piece of HTML for the project view page,
     containing the list of tasks that are not found in the filesystem.
 } {
-
+    set missing_task_list [im_task_missing_file_list $project_id]
     im_project_permissions $user_id $project_id view read write admin
 
     # -------------------- Header -----------------------------------------------
@@ -996,9 +994,7 @@ append task_table "
   <td class=rowtitle>Task Name</td>
   <td class=rowtitle>Target Lang</td>
   <td class=rowtitle>&nbsp;Units&nbsp;</td>
-  <td class=rowtitle align=middle>
-    <IMG SRC=/images/delete.gif width=14 height=15 alt='Delete the Task'>
-  </td>
+  <td class=rowtitle align=middle>[im_gif delete "Delete the Task"]</td>
   <td class=rowtitle>[im_gif open "Upload files"]</td>
 </tr>
 "
@@ -1084,7 +1080,7 @@ where
 # New Tasks Component
 # -------------------------------------------------------------------
 
-ad_proc im_new_task_component { user_id project_id user_admin_p user_is_employee_p return_url } {
+ad_proc im_new_task_component { user_id project_id return_url } {
     Return a piece of HTML to allow to add new tasks
 } {
 
@@ -1222,7 +1218,7 @@ This file is used to define the tasks of the project, one task for each line of 
       <tr>
         <td>[im_select "task_name_file" $task_list]</td>
         <td><input type=text size=2 value='0' name=task_units_file></td>
-        <td>[im_category_select "Intranet UoM" "task_uom_file" 324]</td>
+        <td>[im_category_select "Intranet Translation UoM" "task_uom_file" 324]</td>
         <td>[im_category_select "Intranet Project Type" task_type_file 86]</td>
         <td><input type=submit value='Add File' name=submit></td>
       </tr>
@@ -1249,7 +1245,7 @@ New files need to be located in the \"source_xx\" folder to appear in the drop-d
     <tr>
       <td><input type=text size=20 value='' name=task_name_manual></td>
       <td><input type=text size=2 value='0' name=task_units_manual></td>
-      <td>[im_category_select "Intranet UoM" "task_uom_manual" 324]</td>
+      <td>[im_category_select "Intranet Translation UoM" "task_uom_manual" 324]</td>
       <td>[im_category_select "Intranet Project Type" task_type_manual 86]</td>
       <td><input type=submit value='Add' name=submit></td>
     </tr>

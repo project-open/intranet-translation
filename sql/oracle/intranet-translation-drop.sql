@@ -1,7 +1,3 @@
-
-
-
-
 -- Copyright (C) 1999-2004 ArsDigita, Frank Bergmann and others
 --
 -- This program is free software. You can redistribute it 
@@ -15,10 +11,17 @@
 -- See the GNU General Public License for more details.
 
 
-
-
 -----------------------------------------------------------
 -- Translation Remove
+
+
+BEGIN
+    im_menu.del_module(module_name => 'intranet-translation');
+    im_component_plugin.del_module(module_name => 'intranet-translation');
+END;
+/
+show errors
+
 
 drop view im_task_status;
 drop table im_target_languages;

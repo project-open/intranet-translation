@@ -99,7 +99,7 @@ create table im_target_languages (
 create or replace view im_task_status as 
 select category_id as task_status_id, category as task_status
 from categories 
-where category_type = 'Task Status';
+where category_type = 'Intranet Translation Task Status';
 
 
 -- insert into categories
@@ -138,14 +138,23 @@ begin
 	'im_task_error_component \
 		$user_id \
 		$project_id \
-		$user_admin_p \
-		$user_is_employee_p \
-		$return_url \
-		$missing_task_list'
+		$return_url'
     );
 end;
 /
 
+
+-- Create Translation specific privileges
+begin
+    acs_privilege.create_privilege('view_trans_tasks','View Trans Tasks','View Trans Tasks');
+end;
+/
+begin
+    im_priv_create('view_trans_tasks', 'Employees');
+    im_priv_create('view_trans_tasks', 'Project Managers');
+    im_priv_create('view_trans_tasks', 'Senior Managers');
+end;
+/
 
 
 insert into categories (PROFILING_WEIGHT,  CATEGORY_DESCRIPTION,  ENABLED_P,  CATEGORY_ID,  CATEGORY,  MAILING_LIST_INFO,  CATEGORY_TYPE) values 

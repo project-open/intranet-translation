@@ -6,10 +6,10 @@ ad_page_contract {
     files.
 
     @param return_url the url to return to
-    @param group_id group id
+    @param project_id
 } {
     return_url:optional
-    group_id:integer
+    project_id:integer
     { delete_task:multiple "" }
     billable_units:array,optional
     task_status:array,optional
@@ -27,7 +27,7 @@ ad_page_contract {
 # Get the list of target languages of the current project.
 # We will need this list if a new task is added, because we
 # will have to add the task for each of the target languages...
-set target_language_ids [im_target_language_ids $group_id im_projects]
+set target_language_ids [im_target_language_ids $project_id im_projects]
 
 if {0 == [llength $target_language_ids]} {
     # No target languages defined -
@@ -38,7 +38,7 @@ if {0 == [llength $target_language_ids]} {
 }
 
 
-ad_proc im_task_insert {group_id task_name task_units task_uom task_type target_language_ids} {
+ad_proc im_task_insert {project_id task_name task_units task_uom task_type target_language_ids} {
     Add a new task into the DB
 } {
 
@@ -46,10 +46,10 @@ ad_proc im_task_insert {group_id task_name task_units task_uom task_type target_
     set query "
 		select p.source_language_id
 		from im_projects p
-		where p.project_id=:group_id"
+		where p.project_id=:project_id"
 
     if { ![db_0or1row projects_info_query $query] } {
-	append page_body "Can't find the project $group_id"
+	append page_body "Can't find the project $project_id"
 	doc_return  200 text/html [im_return_template]
 	return
     }
@@ -70,7 +70,7 @@ INSERT INTO im_tasks
  description, source_language_id, target_language_id, task_units, 
  billable_units, task_uom_id, match100, match95, match85, match0)
 VALUES
-(im_tasks_seq.nextval, :task_name, :group_id, :task_type, :task_status_id, 
+(im_tasks_seq.nextval, :task_name, :project_id, :task_type, :task_status_id, 
 :task_description, :source_language_id, :target_language_id, :task_units, 
  :task_units, :task_uom, :match100, :match95, :match85, :match0)"
 
@@ -107,19 +107,19 @@ switch -glob $submit {
     }
 
     "Trados Import" {
-	ad_returnredirect "task-trados?[export_url_vars group_id return_url]"
+	ad_returnredirect "task-trados?[export_url_vars project_id return_url]"
     }
 
     "Assign" {
-	ad_returnredirect "task-assignments?[export_url_vars group_id return_url]"
+	ad_returnredirect "task-assignments?[export_url_vars project_id return_url]"
     }
 
     "Assign Tasks" {
-	ad_returnredirect "task-assignments?[export_url_vars group_id return_url]"
+	ad_returnredirect "task-assignments?[export_url_vars project_id return_url]"
     }
 
     "View Tasks" {
-	ad_returnredirect "task-list?[export_url_vars group_id return_url]"
+	ad_returnredirect "task-list?[export_url_vars project_id return_url]"
     }
 
     "Save" {
@@ -136,14 +136,14 @@ switch -glob $submit {
 	    set sql "
                 update im_tasks
                 set task_status_id= '$task_status($task_id)'
-                where project_id=:group_id
+                where project_id=:project_id
                 and task_id=:task_id"
 	    db_dml update_task_status $sql
 
 	    set sql "
                 update im_tasks
                 set billable_units = '$billable_units($task_id)'
-                where project_id=:group_id
+                where project_id=:project_id
                 and task_id=:task_id"
 	    db_dml update_billable_units $sql
 	}
@@ -158,7 +158,7 @@ switch -glob $submit {
 	#
 	foreach task_id $delete_task {
 	    ns_log Notice "delete task: $task_id"
-	    ns_log Notice "delete from im_tasks where task_id = $task_id and project_id=$group_id"
+	    ns_log Notice "delete from im_tasks where task_id = $task_id and project_id=$project_id"
 
 	    set delete_task_actions_sql "
 		delete	from im_task_actions
@@ -167,7 +167,7 @@ switch -glob $submit {
 	    set delete_tasks_sql "
 		delete	from im_tasks
 		where	task_id = :task_id
-			and project_id=:group_id"
+			and project_id=:project_id"
 
             db_dml delete_task_actions $delete_task_actions_sql
             db_dml delete_tasks $delete_tasks_sql
@@ -178,13 +178,13 @@ switch -glob $submit {
 
 
     "Add File" {
-	im_task_insert $group_id [ns_urldecode $task_name_file] $task_units_file $task_uom_file $task_type_file $target_language_ids
+	im_task_insert $project_id [ns_urldecode $task_name_file] $task_units_file $task_uom_file $task_type_file $target_language_ids
 	ad_returnredirect $return_url
 	return
     }
 
     "Add" {
-	im_task_insert $group_id [ns_urldecode $task_name_manual] $task_units_manual $task_uom_manual $task_type_manual $target_language_ids
+	im_task_insert $project_id [ns_urldecode $task_name_manual] $task_units_manual $task_uom_manual $task_type_manual $target_language_ids
 	ad_returnredirect $return_url
 	return
     }

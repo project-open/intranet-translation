@@ -6,10 +6,10 @@ ad_page_contract {
     files.
 
     @param return_url the url to return to
-    @param group_id group id
+    @param project_id group id
 } {
     return_url:optional
-    group_id:integer
+    project_id:integer
 
     task_status_id:array
     task_trans:array

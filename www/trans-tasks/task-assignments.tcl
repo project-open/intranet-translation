@@ -3,7 +3,7 @@
 ad_page_contract {
     Assign translators, editors and proof readers to every task
 
-    @param group_id the project_id
+    @param project_id the project_id
     @param orderby the display order
     @param show_all_comments whether to show all comments
 
@@ -11,7 +11,7 @@ ad_page_contract {
     @creation-date 2003/11/17
 
 } {
-    group_id:integer
+    project_id:integer
     return_url
     {orderby "subproject_name"}
 
@@ -30,19 +30,10 @@ ad_page_contract {
 # -------------------------------------------------------------------------
 
 set user_id [ad_maybe_redirect_for_registration]
-set user_is_admin_p [im_is_user_site_wide_or_intranet_admin $user_id]
-set user_is_wheel_p [ad_user_group_member [im_wheel_group_id] $user_id]
-set user_is_group_member_p [ad_user_group_member $group_id $user_id]
-set user_is_group_admin_p [im_can_user_administer_group $group_id $user_id]
-set user_is_employee_p [im_user_is_employee_p $user_id]
-set user_in_project_group_p [db_string user_belongs_to_project "select decode ( ad_group_member_p ( :user_id, $group_id ), 'f', 0, 1 ) from dual" ]
-
-# Admin permissions to global + intranet admins + group administrators
-set user_admin_p [expr $user_is_admin_p || $user_is_group_admin_p]
-set user_admin_p [expr $user_admin_p || $user_is_wheel_p]
+# set user_in_project_group_p [db_string user_belongs_to_project "select decode ( ad_group_member_p ( :user_id, $project_id ), 'f', 0, 1 ) from dual" ]
 
 set page_title "Assignments"
-set context_bar [ad_context_bar [list /intranet/projects/ "Projects"] [list "/intranet/projects/view?group_id=$group_id" "One project"] $page_title]
+set context_bar [ad_context_bar [list /intranet/projects/ "Projects"] [list "/intranet/projects/view?project_id=$project_id" "One project"] $page_title]
 
 set bgcolor(0) " class=roweven"
 set bgcolor(1) " class=rowodd"
@@ -84,7 +75,7 @@ from
 	users u,
 	group_member_map m
 where
-	m.group_id=:group_id
+	m.group_id=:project_id
 	and m.member_id=u.user_id
 "
 
@@ -116,7 +107,7 @@ select
 from
 	im_tasks t
 where
-	t.project_id=:group_id
+	t.project_id=:project_id
         and t.task_status_id <> 372
 "
 
@@ -323,12 +314,12 @@ append autoassignment_html "</tr>\n
 
 set page_body "
 <form action=task-assignments method=POST>
-[export_form_vars group_id return_url]
+[export_form_vars project_id return_url]
 $autoassignment_html<br>
 </form>
 
 <form action=task-assignments-2 method=POST>
-[export_form_vars group_id return_url]
+[export_form_vars project_id return_url]
 $task_html
 <input type=submit value='Save Assigments'>
 </form>
