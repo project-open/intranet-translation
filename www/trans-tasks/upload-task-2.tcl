@@ -142,8 +142,10 @@ for {set i 0} {$i < $subfolder_len} {incr i} {
 # Move the file
 #
 if { [catch {
-    ns_log Notice "/bin/cp $tmp_filename $project_path/$upload_folder/$task_name"
+    ns_log Notice "/bin/mv $tmp_filename $project_path/$upload_folder/$task_name"
     exec /bin/cp $tmp_filename "$project_path/$upload_folder/$task_name"
+    ns_log Notice "/bin/chmod ug+w $project_path/$upload_folder/$task_name"
+    exec /bin/chmod ug+w $project_path/$upload_folder/$task_name
 
 } err_msg] } {
     # Probably some permission errors
