@@ -96,39 +96,39 @@ insert into im_views values (51, 'user_view_freelance', 'view_users', '');
 
 -- Freelance Skill Types
 delete from categories where category_id >= 2000 and category_id < 2100;
-INSERT INTO categories VALUES (2000,'Source Language','SLS Language','Intranet Skill Type',1,'f','');
-INSERT INTO categories VALUES (2002,'Target Language','SLS Language','Intranet Skill Type',1,'f','');
-INSERT INTO categories VALUES (2004,'Sworn Language','SLS Language','Intranet Skill Type',1,'f','');
-INSERT INTO categories VALUES (2006,'TM Tools','Intranet TM Tool','Intranet Skill Type',1,'f','');
-INSERT INTO categories VALUES (2008,'LOC Tools','Intranet LOC Tool','Intranet Skill Type',1,'f','');
-INSERT INTO categories VALUES (2010,'Operating System','Intranet Operating System','Intranet Skill Type',1,'f','');
-INSERT INTO categories VALUES (2014,'Subjects','Intranet subjects','Intranet Skill Type',1,'f','');
+INSERT INTO categories VALUES (2000,'Source Language','SLS Language','Intranet Skill Type','category','f');
+INSERT INTO categories VALUES (2002,'Target Language','SLS Language','Intranet Skill Type','category','f');
+INSERT INTO categories VALUES (2004,'Sworn Language','SLS Language','Intranet Skill Type','category','f');
+INSERT INTO categories VALUES (2006,'TM Tools','Intranet TM Tool','Intranet Skill Type','category','f');
+INSERT INTO categories VALUES (2008,'LOC Tools','Intranet LOC Tool','Intranet Skill Type','category','f');
+INSERT INTO categories VALUES (2010,'Operating System','Intranet Operating System','Intranet Skill Type','category','f');
+INSERT INTO categories VALUES (2014,'Subjects','Intranet subjects','Intranet Skill Type','category','f');
 
 -- Freelance TM Tools
 delete from categories where category_id >= 2100 and category_id < 2200;
-INSERT INTO categories VALUES (2100,'Trados 3.x','','Intranet TM Tool',1,'f','');
-INSERT INTO categories VALUES (2102,'Trados 5.x','','Intranet TM Tool',1,'f','');
-INSERT INTO categories VALUES (2104,'Trados 5.5','','Intranet TM Tool',1,'f','');
-INSERT INTO categories VALUES (2106,'Trados 6.x','','Intranet TM Tool',1,'f','');
-INSERT INTO categories VALUES (2108,'IBM Translation Workbench','','Intranet TM Tool',1,'f','');
+INSERT INTO categories VALUES (2100,'Trados 3.x','','Intranet TM Tool','category','f');
+INSERT INTO categories VALUES (2102,'Trados 5.x','','Intranet TM Tool','category','f');
+INSERT INTO categories VALUES (2104,'Trados 5.5','','Intranet TM Tool','category','f');
+INSERT INTO categories VALUES (2106,'Trados 6.x','','Intranet TM Tool','category','f');
+INSERT INTO categories VALUES (2108,'IBM Translation Workbench','','Intranet TM Tool','category','f');
 
 
 -- Languages experience
 delete from categories where category_id >= 2200 and category_id < 2300;
 INSERT INTO categories VALUES (2200, 'Unconfirmed','',
-'Intranet Experience Level',1,'f','');
+'Intranet Experience Level','category','f');
 INSERT INTO categories VALUES (2201, 'Low','',
-'Intranet Experience Level',1,'f','');
+'Intranet Experience Level','category','f');
 INSERT INTO categories VALUES (2202, 'Medium','',
-'Intranet Experience Level',1,'f','');
+'Intranet Experience Level','category','f');
 INSERT INTO categories VALUES (2203, 'High','',
-'Intranet Experience Level',1,'f','');
+'Intranet Experience Level','category','f');
 
 
 -- Freelance LOC Tools
 delete from categories where category_id >= 2300 and category_id < 2400;
-INSERT INTO categories VALUES (2300,'Pasolo ','','Intranet LOC Tool',1,'f','');
-INSERT INTO categories VALUES (2302,'Catalyst','','Intranet LOC Tool',1,'f','');
+INSERT INTO categories VALUES (2300,'Pasolo ','','Intranet LOC Tool','category','f');
+INSERT INTO categories VALUES (2302,'Catalyst','','Intranet LOC Tool','category','f');
 
 
 
