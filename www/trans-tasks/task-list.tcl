@@ -21,7 +21,6 @@ set page_title "Project Tasks"
 set context_bar [ad_context_bar [list /intranet/projects/ "Projects"] [list "/intranet/projects/view?project_id=$project_id" "One project"] $page_title]
 set customer_view_page "/intranet/customers/view"
 
-
 set task_component [im_task_component $user_id $project_id $return_url]
 set task_new_component [im_new_task_component $user_id $project_id $return_url]
 
