@@ -139,12 +139,12 @@ ad_proc -public im_trans_trados_matrix_component { user_id object_id return_url 
 } {
     array set matrix [im_trans_trados_matrix $object_id]
     set header_html "
-<td class=rowtitle align=center>100</td>
-<td class=rowtitle align=center>95</td>
-<td class=rowtitle align=center>85</td>
-<td class=rowtitle align=center>75</td>
-<td class=rowtitle align=center>50</td>
-<td class=rowtitle align=center>0</td>
+<td class=rowtitle align=center>100%</td>
+<td class=rowtitle align=center>95%</td>
+<td class=rowtitle align=center>85%</td>
+<td class=rowtitle align=center>75%</td>
+<td class=rowtitle align=center>50%</td>
+<td class=rowtitle align=center>0%</td>
 <td class=rowtitle align=center>Type</td>
 "
 
