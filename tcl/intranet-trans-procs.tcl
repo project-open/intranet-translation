@@ -1515,7 +1515,7 @@ ad_proc im_task_error_component { user_id project_id return_url } {
     set source_language [db_string source_language "select im_category_from_id(source_language_id) from im_projects where project_id=:project_id" -default ""]
     if {![file isdirectory "$project_path/source_$source_language"]} {
 	incr err_count
-	append task_table_rows "<tr class=roweven><td colspan=99>'$project_path/source_$source_language' does not exist</td></tr>\n"
+	append task_table_rows "<tr class=roweven><td colspan=99><font color=red>'$project_path/source_$source_language' does not exist</font></td></tr>\n"
     }
 
     # -------------------------------------------------------
