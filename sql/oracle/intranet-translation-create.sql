@@ -168,43 +168,62 @@ insert into im_views (view_id, view_name, visible_for) values (90, 'trans_task_l
 --
 delete from im_view_columns where column_id >= 9000 and column_id <= 9099;
 --
-insert into im_view_columns values (9001,90,NULL,'Task Name','$task_name_splitted',
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (9001,90,NULL,'Task Name','$task_name_splitted',
 '','',10,'');
-insert into im_view_columns values (9003,90,NULL,'Target Lang','$target_language',
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (9003,90,NULL,'Target Lang','$target_language',
 '','',10,'');
-insert into im_view_columns values (9004,90,NULL,'XTr','$match_x',
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (9004,90,NULL,'XTr','$match_x',
 '','',10,'im_permission $user_id view_trans_task_matrix');
-insert into im_view_columns values (9005,90,NULL,'Rep','$match_rep',
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (9005,90,NULL,'Rep','$match_rep',
 '','',10,'im_permission $user_id view_trans_task_matrix');
-insert into im_view_columns values (9006,90,NULL,'100 %','$match100',
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (9006,90,NULL,'100 %','$match100',
 '','',10,'im_permission $user_id view_trans_task_matrix');
-insert into im_view_columns values (9007,90,NULL,'95 %','$match95',
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (9007,90,NULL,'95 %','$match95',
 '','',10,'im_permission $user_id view_trans_task_matrix');
-insert into im_view_columns values (9008,90,NULL,'85 %','$match85',
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (9008,90,NULL,'85 %','$match85',
 '','',10,'im_permission $user_id view_trans_task_matrix');
-insert into im_view_columns values (9009,90,NULL,'75 %','$match75',
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (9009,90,NULL,'75 %','$match75',
 '','',10,'im_permission $user_id view_trans_task_matrix');
-insert into im_view_columns values (9010,90,NULL,'50 %','$match50',
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (9010,90,NULL,'50 %','$match50',
 '','',10,'im_permission $user_id view_trans_task_matrix');
-insert into im_view_columns values (9011,90,NULL,'0 %','$match0',
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (9011,90,NULL,'0 %','$match0',
 '','',10,'im_permission $user_id view_trans_task_matrix');
-insert into im_view_columns values (9013,90,NULL,'Units','$task_units $uom_name',
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (9013,90,NULL,'Units','$task_units $uom_name',
 '','',10,'');
-insert into im_view_columns values (9015,90,NULL,'Bill. Units','$billable_items_input',
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (9015,90,NULL,'Bill. Units','$billable_items_input',
 '','',10,'expr $project_write');
-insert into im_view_columns values (9017,90,NULL,'Task','$type_name',
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (9017,90,NULL,'Task','$type_name',
 '','',10,'expr $project_write');
-insert into im_view_columns values (9019,90,NULL,'Status','$status_select',
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (9019,90,NULL,'Status','$status_select',
 '','',10,'expr $project_write');
-insert into im_view_columns values (9021,90,NULL,'[im_gif delete "Delete the Task"]','$del_checkbox',
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (9021,90,NULL,'[im_gif delete "Delete the Task"]','$del_checkbox',
 '','',10,'expr $project_write');
-insert into im_view_columns values (9023,90,NULL,'Assigned','$assignments',
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (9023,90,NULL,'Assigned','$assignments',
 '','',10,'expr $project_write');
-insert into im_view_columns values (9025,90,NULL,'Message','$message',
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (9025,90,NULL,'Message','$message',
 '','',10,'');
-insert into im_view_columns values (9027,90,NULL,'[im_gif save "Download files"]','$download_link',
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (9027,90,NULL,'[im_gif save "Download files"]','$download_link',
 '','',10,'');
-insert into im_view_columns values (9029,90,NULL,'[im_gif open "Upload files"]','$upload_link',
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (9029,90,NULL,'[im_gif open "Upload files"]','$upload_link',
 '','',10,'');
 --
 commit;

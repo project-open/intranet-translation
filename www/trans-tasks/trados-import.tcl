@@ -174,17 +174,11 @@ if {[string equal $import_method "Asp"]} {
 
     set all_the_same 1
     set ctr 0
+    set fist_filename_comps_len [llength $first_filename_comps]
 
-    while {$all_the_same} {
+    while {$all_the_same && $ctr < $fist_filename_comps_len} {
 	set common_component [lindex $first_filename_comps $ctr]
-	ns_log Notice "common_component=$common_component"
-	if {"" == $common_component} {
-	    # We have reached the end of the reference filename.
-	    # This is probably because our file list only contains
-	    # a single file.
-
-	    break
-	}
+#	ns_log Notice "trados-import: first_filename_comps: prefix=$common_component"
 
 	for {set i 2} {$i < $trados_files_len} {incr i} {
 	    set trados_line [lindex $trados_files $i]
