@@ -153,6 +153,9 @@ from
 	im_categories type_c ON t.task_type_id=type_c.category_id
 where
 	t.project_id=:project_id
+order by
+	t.task_name,
+	t.target_language_id
 
     </querytext>
   </fullquery>

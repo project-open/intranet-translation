@@ -778,6 +778,7 @@ ad_proc im_trans_upload_action {task_id task_status_id task_type_id user_id} {
 # after a successful download of the related file
 ad_proc im_trans_download_action {task_id task_status_id task_type_id user_id} {
 } {
+    set now [db_string now "select sysdate from dual"]
     set new_status_id $task_status_id
     switch $task_status_id {
 	340 { 
@@ -818,6 +819,7 @@ ad_proc im_trans_download_action {task_id task_status_id task_type_id user_id} {
 
     # Always register the user-action
     set download_action_id [db_string upload_action_id "select category_id from im_categories where category_type='Intranet File Action Type' and lower(category)='download'" -default ""]
+    set action_id [db_nextval im_task_actions_seq]
     db_dml register_action "insert into im_task_actions (
 	        action_id,
 	        action_type_id,
@@ -827,11 +829,11 @@ ad_proc im_trans_download_action {task_id task_status_id task_type_id user_id} {
 	        old_status_id,
 	        new_status_id
 	    ) values (
-		im_task_actions_seq.nextval,
+		:action_id,
 		$download_action_id,
 		:user_id,
 		:task_id,
-		sysdate,
+		:now,
 		:task_status_id,
 		:new_status_id
     )"
