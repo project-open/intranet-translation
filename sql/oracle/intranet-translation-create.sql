@@ -371,18 +371,22 @@ begin
 	'view_trans_tasks',
 	'View Trans Tasks',
 	'View Trans Tasks');
+    acs_privilege.add_child('admin', 'view_trans_task');
+
 
     -- Should Freelancers see the Trados matrix for the translation tasks?
     acs_privilege.create_privilege(
 	'view_trans_task_matrix',
 	'View Trans Task Matrix',
 	'View Trans Task Matrix');
+    acs_privilege.add_child('admin', 'view_trans_task_matrix');
 
     -- Should Freelancers see the translation status report?
     acs_privilege.create_privilege(
 	'view_trans_task_status',
 	'View Trans Task Status',
 	'View Trans Task Status');
+    acs_privilege.add_child('admin', 'view_trans_task_status');
 
     -- Should Freelancers see the translation project details?
     -- Everybody can see subject area, source and target language,
@@ -392,6 +396,8 @@ begin
 	'view_trans_proj_detail',
 	'View Trans Project Details',
 	'View Trans Project Details');
+    acs_privilege.add_child('admin', 'view_trans_proj_detail');
+
 end;
 /
 
