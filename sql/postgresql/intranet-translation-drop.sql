@@ -51,54 +51,7 @@ select inline_01 ();
 drop function inline_01 ();
 
 
-
--- Delete "Tigerpond" company and project
-create or replace function inline_02 ()
-returns integer as '
-DECLARE
-    v_office_id         integer;
-    v_company_id        integer;
-    v_project_id	integer;
-    v_user_id		integer;
-BEGIN
-
-	select office_id  into v_office_id
-	from im_offices 
-	where office_path = ''tigerpond_main_office''; 
-
-        select company_id  into v_company_id
-        from im_companies
-        where company_path = ''tigerpond'';
-
-        select project_id  into v_project_id
-        from im_projects
-        where project_path = ''1004_0001'';
-
-        select party_id into v_user_id
-        from parties where email=''project.manager@project-open.com'';
-	PERFORM im_biz_object_member__delete(v_project_id,v_user_id);
-
-        select party_id into v_user_id
-        from parties where email=''staff.member2@project-open.com'';
-        PERFORM im_biz_object_member__delete(v_project_id,v_user_id);
-
-        select party_id into v_user_id
-        from parties where email=''senior.manager@project-open.com'';
-        PERFORM im_biz_object_member__delete(v_project_id,v_user_id);
-
-	PERFORM im_project__delete(v_project_id);
-	PERFORM im_company__delete(v_company_id);
-	PERFORM im_office__delete(v_office_id);
-
-    return 0;
-end;' language 'plpgsql';
-
-select inline_02 ();
-
-drop function inline_02 ();
-
-
--- drop categories
+-- try to drop categories
 delete from im_category_hierarchy where parent_id = 2500;
 delete from im_categories where category_id = 2500;
 delete from im_categories where category_id >= 87 and category_id <= 96;
