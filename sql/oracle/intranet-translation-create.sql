@@ -404,3 +404,5 @@ end;
 /
 commit;
 
+@../common/intranet-translation-common.sql
+@../common/intranet-translation-backup.sql

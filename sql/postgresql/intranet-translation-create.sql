@@ -417,3 +417,5 @@ select inline_0 ();
 drop function inline_0 ();
 
 
+@../common/intranet-translation-common.sql
+@../common/intranet-translation-backup.sql
