@@ -22,14 +22,13 @@
 -- to entry in the sector.
 
 
-
 -----------------------------------------------------------
 -- Views
 
 -- Add a columns to the projects view showing the "trans_project_size":
 --
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (2023,20,NULL,'Appr. Size',
+extra_select, extra_where, sort_order, visible_for) values (2023,20,NULL,'Size',
 '[if {"" == $trans_project_words} {
         set t ""
 } else {
