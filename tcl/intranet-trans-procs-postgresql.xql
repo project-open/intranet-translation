@@ -14,6 +14,58 @@
     <version>7.2</version>
   </rdbms>
   
+
+
+  <fullquery name="im_trans_trados_matrix_project.matrix_select">
+    <querytext>
+
+select
+        m.*,
+        acs_object.name(o.object_id) as object_name
+from
+        acs_objects o
+      LEFT JOIN
+        im_trans_trados_matrix m USING (object_id)
+where
+        o.object_id = :project_id
+      
+    </querytext>
+  </fullquery>
+
+
+  <fullquery name="im_trans_trados_matrix_company.matrix_select">
+    <querytext>
+
+select
+        m.*,
+        acs_object.name(o.object_id) as object_name
+from
+        acs_objects o
+      LEFT JOIN
+        im_trans_trados_matrix m USING (object_id)
+where
+        o.object_id = :company_id
+      
+    </querytext>
+  </fullquery>
+
+
+  <fullquery name="im_trans_trados_matrix_internal.matrix_select">
+    <querytext>
+
+select
+        m.*,
+        acs_object.name(o.object_id) as object_name
+from
+        acs_objects o
+      LEFT JOIN
+        im_trans_trados_matrix m USING (object_id)
+where
+        o.object_id = :company_id
+      
+    </querytext>
+  </fullquery>
+
   <fullquery name="im_task_status_component.task_status_sql">
     <querytext>
 select
@@ -49,6 +101,36 @@ where
     </querytext>
   </fullquery>
 
+
+  <fullquery name="im_task_error_component.select_tasks">
+    <querytext>
+select
+        min(t.task_id) as task_id,
+        t.task_name,
+        t.task_filename,
+        t.task_units,
+        im_category_from_id(t.source_language_id) as source_language,
+        uom_c.category as uom_name,
+        type_c.category as type_name
+from
+        im_trans_tasks t
+      LEFT JOIN
+        im_categories uom_c ON t.task_uom_id=uom_c.category_id
+      LEFT JOIN
+        im_categories type_c ON t.task_type_id=type_c.category_id
+where
+        project_id=:project_id
+        and t.task_status_id <> 372
+group by
+        t.task_name,
+        t.task_filename,
+        t.task_units,
+        t.source_language_id,
+        uom_c.category,
+        type_c.category
+
+    </querytext>
+  </fullquery>
 
   <fullquery name="im_task_component.select_tasks">
     <querytext>
@@ -95,21 +177,5 @@ where
     </querytext>
   </fullquery>
 
-
-  <fullquery name="im_trans_trados_matrix_project.matrix_select">
-    <querytext>
-
-select
-        m.*,
-        acs_object.name(o.object_id) as object_name
-from
-        acs_objects o
-      LEFT JOIN
-        im_trans_trados_matrix m USING (object_id)
-where
-        o.object_id = :project_id
-      
-    </querytext>
-  </fullquery>
 
 </queryset>
