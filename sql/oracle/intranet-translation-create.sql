@@ -206,7 +206,7 @@ begin
 		$return_url'
     );
 
--- Show the upload task component in project page
+     -- Show the upload task component in project page
 
     v_plugin := im_component_plugin.new (
 	plugin_name =>	'Project Translation Error Component',
@@ -231,13 +231,13 @@ begin
 	'View Trans Tasks',
 	'View Trans Tasks');
 
-    - Should Freelancers see the Trados matrix for the translation tasks?
+    -- Should Freelancers see the Trados matrix for the translation tasks?
     acs_privilege.create_privilege(
 	'view_trans_task_matrix',
 	'View Trans Task Matrix',
 	'View Trans Task Matrix');
 
-    - Should Freelancers see the translation status report?
+    -- Should Freelancers see the translation status report?
     acs_privilege.create_privilege(
 	'view_trans_task_status',
 	'View Trans Task Status',
@@ -380,20 +380,20 @@ insert into im_categories values (96,  'Glossary Compilation',
 -- Category Hierarchy
 -- -------------------------------------------------------------------
 
--- 2200-2299    Translation Hierarchy
+-- 2500-2599    Translation Hierarchy
 
-insert into im_categories values (2200,  'Translation Project',  
+insert into im_categories values (2500,  'Translation Project',  
 '',  'Intranet Project Type','category','t','f');
 
-insert into im_category_hierarchy values (2200,87);
-insert into im_category_hierarchy values (2200,88);
-insert into im_category_hierarchy values (2200,89);
-insert into im_category_hierarchy values (2200,90);
-insert into im_category_hierarchy values (2200,91);
-insert into im_category_hierarchy values (2200,92);
-insert into im_category_hierarchy values (2200,94);
-insert into im_category_hierarchy values (2200,95);
-insert into im_category_hierarchy values (2200,96);
+insert into im_category_hierarchy values (2500,87);
+insert into im_category_hierarchy values (2500,88);
+insert into im_category_hierarchy values (2500,89);
+insert into im_category_hierarchy values (2500,90);
+insert into im_category_hierarchy values (2500,91);
+insert into im_category_hierarchy values (2500,92);
+insert into im_category_hierarchy values (2500,94);
+insert into im_category_hierarchy values (2500,95);
+insert into im_category_hierarchy values (2500,96);
 
 
 -- -------------------------------------------------------------------

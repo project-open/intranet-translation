@@ -8,11 +8,12 @@
     <singleton-p>t</singleton-p>
     <auto-mount>intranet-translation</auto-mount>
 
-    <version name="0.5d" url="http://openacs.org/repository/download/apm/intranet-translation-0.5d.apm">
+    <version name="1.0" url="http://openacs.org/repository/download/apm/intranet-translation-1.0.apm">
         <owner url="mailto:fraber@fraber.de">Frank Bergmann</owner>
         <vendor url="http://www.project-open.com/">Project/Open</vendor>
 
-        <!-- No dependency information -->
+        <provides url="intranet-translation" version="1.0"/>
+        <requires url="intranet-core" version="1.0"/>
 
         <callbacks>
         </callbacks>
