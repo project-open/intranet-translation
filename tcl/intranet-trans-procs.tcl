@@ -972,15 +972,17 @@ where
 # Task Error Component
 # -------------------------------------------------------------------
 
-ad_proc im_task_error_component { user_id group_id user_admin_p user_is_employee_p return_url missing_task_list } {
+ad_proc im_task_error_component { user_id project_id user_admin_p user_is_employee_p return_url missing_task_list } {
     Return a piece of HTML for the project view page,
     containing the list of tasks that are not found in the filesystem.
 } {
 
+    im_project_permissions $user_id $project_id view read write admin
+
     # -------------------- Header -----------------------------------------------
     set task_table "
 <form action=/intranet-translation/trans-tasks/task-action method=POST>
-[export_form_vars group_id return_url]
+[export_form_vars project_id return_url]
 
 <table border=0>\n"
 
@@ -1020,7 +1022,7 @@ from
 	categories uom_c,
 	categories type_c
 where
-	project_id=:group_id
+	project_id=:project_id
 	and t.task_status_id <> 372
 	and t.task_uom_id=uom_c.category_id(+)
 	and t.task_type_id=type_c.category_id(+)
@@ -1082,7 +1084,7 @@ where
 # New Tasks Component
 # -------------------------------------------------------------------
 
-ad_proc im_new_task_component { user_id group_id user_admin_p user_is_employee_p return_url } {
+ad_proc im_new_task_component { user_id project_id user_admin_p user_is_employee_p return_url } {
     Return a piece of HTML to allow to add new tasks
 } {
 
@@ -1093,7 +1095,7 @@ ad_proc im_new_task_component { user_id group_id user_admin_p user_is_employee_p
     # $file_list is a sorted list of all files in "source_xx_XX":
     set task_list [list]
 
-    set project_path [im_filestorage_project_path $group_id]
+    set project_path [im_filestorage_project_path $project_id]
     if { [catch {
 	ns_log Notice "im_task_component: Checking $project_path"
 	exec /bin/mkdir -p $project_path
@@ -1174,7 +1176,7 @@ ad_proc im_new_task_component { user_id group_id user_admin_p user_is_employee_p
   <td>
 
     <form action=/intranet-translation/trans-tasks/task-action method=POST>
-    [export_form_vars group_id return_url]
+    [export_form_vars project_id return_url]
     <input type=submit value='Trados Import' name=submit>
     (\"Classical\" Trados import of a local 'wordcount.csv' file)
     </form>
@@ -1194,7 +1196,7 @@ ad_proc im_new_task_component { user_id group_id user_admin_p user_is_employee_p
 <tr $bgcolor(0)> 
   <td>
     <form enctype=multipart/form-data method=POST action=/intranet-translation/trans-tasks/trados-upload>
-    [export_form_vars group_id return_url]
+    [export_form_vars project_id return_url]
     <input type=file name=upload_file size=30 value='*.csv'>
     <input type=submit value='Add Trados Wordcount' name=submit>
     </form>
@@ -1215,7 +1217,7 @@ This file is used to define the tasks of the project, one task for each line of 
   <td>
 
     <form action=/intranet-translation/trans-tasks/task-action method=POST>
-    [export_form_vars group_id return_url]
+    [export_form_vars project_id return_url]
     <table border=0>
       <tr>
         <td>[im_select "task_name_file" $task_list]</td>
@@ -1241,7 +1243,7 @@ New files need to be located in the \"source_xx\" folder to appear in the drop-d
 <tr $bgcolor(0)> 
   <td>
     <form action=/intranet-translation/trans-tasks/task-action method=POST>
-    [export_form_vars group_id return_url]
+    [export_form_vars project_id return_url]
 
     <table border=0>
     <tr>
@@ -1273,7 +1275,7 @@ This task is not going to controled by the translation workflow."]
 # Determine the list of missing files
 # ---------------------------------------------------------------------
 
-ad_proc im_task_missing_file_list { group_id } {
+ad_proc im_task_missing_file_list { project_id } {
     Returns a list of task_ids that have not been found
     in the project folder.
     These task_ids can be used to display a list of 
@@ -1293,7 +1295,7 @@ from
         im_projects p,
         im_customers c
 where
-        p.project_id=:group_id
+        p.project_id=:project_id
         and p.customer_id=c.customer_id(+)"
 
     if { ![db_0or1row projects_info_query $query] } {
@@ -1302,7 +1304,7 @@ where
 	return
     }
 
-    set project_path [im_filestorage_project_path $group_id]
+    set project_path [im_filestorage_project_path $project_id]
     set source_folder "$project_path/source_$source_language"
     set org_paths [split $source_folder "/"]
     set org_paths_len [llength $org_paths]
@@ -1356,7 +1358,7 @@ select
 from
 	im_tasks t
 where
-	t.project_id = :group_id
+	t.project_id = :project_id
 "
 
     set missing_file_list [list]
