@@ -62,8 +62,10 @@
 
 delete from im_view_columns where view_id = 152;
 delete from im_views where view_id = 152;
-insert into im_views (view_id, view_name, view_type_id, view_sql
-) values (152, 'im_trans_project_details', 1410, '
+insert into im_views (
+	view_id, view_name, view_type_id, sort_order, view_sql
+) values (
+	152, 'im_trans_project_details', 1410, 150, '
 SELECT
 	p.*,
 	im_category_from_id(p.source_language_id) as source_language,
@@ -123,8 +125,10 @@ values (15217,152,NULL,'trans_project_hours','$trans_project_hours','','',17,'')
 
 delete from im_view_columns where view_id = 150;
 delete from im_views where view_id = 150;
-insert into im_views (view_id, view_name, view_type_id, view_sql
-) values (150, 'im_trans_tasks', 1410, '
+insert into im_views (
+	view_id, view_name, view_type_id, sort_order, view_sql
+) values (
+	150, 'im_trans_tasks', 1410, 160, '
 SELECT
 	t.*,
 	p.project_name,
@@ -203,8 +207,9 @@ extra_select, extra_where, sort_order, visible_for) values (15039,150,NULL,'othe
 
 delete from im_view_columns where view_id = 151;
 delete from im_views where view_id = 151;
-insert into im_views (view_id, view_name, view_type_id, view_sql
-) values (151, 'im_target_languages', 1410, '
+insert into im_views (
+	view_id, view_name, view_type_id, sort_order, view_sql
+) values (151, 'im_target_languages', 1410, 170, '
 SELECT
 	t.*,
 	p.project_name,
