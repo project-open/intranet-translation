@@ -126,7 +126,7 @@ create table im_target_languages (
 -----------------------------------------------------------
 -- Views
 
-insert into im_views values (90, 'trans_task_list', 'view_trans_tasks', '');
+insert into im_views (view_id, view_name, visible_for) values (90, 'trans_task_list', 'view_trans_tasks');
 
 
 -- Tranlation TasksListPage columns
