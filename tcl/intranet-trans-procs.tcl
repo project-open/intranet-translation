@@ -1259,6 +1259,8 @@ from
 	im_categories type_c
 where
 	t.project_id=:project_id
+and t.task_uom_id=uom_c.category_id(+)
+and t.task_type_id=type_c.category_id(+)
     "
 
     set bgcolor(0) " class=roweven"

@@ -90,7 +90,7 @@ if {$invoice_id} {
     db_1row invoices_info_query "
 select
 	i.invoice_nr,
-	ci.company_id,
+	ci.customer_id,
 	ci.provider_id,
 	ci.effective_date,
 	ci.payment_days,
@@ -114,7 +114,7 @@ from
 	im_companies p
 where 
         i.invoice_id=:invoice_id
-	and ci.company_id=c.company_id(+)
+	and ci.customer_id=c.company_id(+)
 	and ci.provider_id=p.company_id(+)
 	and i.invoice_id = ci.cost_id
 "
