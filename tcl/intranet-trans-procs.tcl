@@ -670,7 +670,7 @@ ad_proc im_trans_upload_action {task_id task_status_id task_type_id user_id} {
     }
 
     # Always register the user-action
-    set upload_action_id [db_string upload_action_id "select category_id from im_categories where category_type='Intranet Task Action Type' and lower(category)='upload'" -default ""]
+    set upload_action_id [db_string upload_action_id "select category_id from im_categories where category_type='Intranet File Action Type' and lower(category)='upload'" -default ""]
     db_dml register_action "insert into im_task_actions (
 	        action_id,
 	        action_type_id,
@@ -734,7 +734,7 @@ ad_proc im_trans_download_action {task_id task_status_id task_type_id user_id} {
     }
 
     # Always register the user-action
-    set download_action_id [db_string upload_action_id "select category_id from im_categories where category_type='Intranet Task Action Type' and lower(category)='download'" -default ""]
+    set download_action_id [db_string upload_action_id "select category_id from im_categories where category_type='Intranet File Action Type' and lower(category)='download'" -default ""]
     db_dml register_action "insert into im_task_actions (
 	        action_id,
 	        action_type_id,
@@ -873,8 +873,8 @@ ad_proc im_task_status_component { user_id project_id return_url } {
     set bgcolor(0) " class=roweven"
     set bgcolor(1) " class=rowodd"
 
-    set up [db_string upload_action_id "select category_id from im_categories where category_type='Intranet Task Action Type' and lower(category)='upload'" -default ""]
-    set down [db_string download_action_id "select category_id from im_categories where category_type='Intranet Task Action Type' and lower(category)='download'" -default ""]
+    set up [db_string upload_action_id "select category_id from im_categories where category_type='Intranet File Action Type' and lower(category)='upload'" -default ""]
+    set down [db_string download_action_id "select category_id from im_categories where category_type='Intranet File Action Type' and lower(category)='download'" -default ""]
 
     # ------------------Display the list of current tasks...-------------
 

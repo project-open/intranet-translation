@@ -499,13 +499,6 @@ commit;
 -- -------------------------------------------------------------------
 
 
--- insert into im_categories
-delete from im_categories where category_id >= 2420 and category_id < 2430;
-INSERT INTO im_categories VALUES (2420,'upload','This is the value of im_task_actions.action_type_id when a user uploads a task file.','Intranet Task Action Type','category','t','f');
-INSERT INTO im_categories VALUES (2421,'download','','Intranet Task Action Type','category','t','f');
-
-
-
 insert into im_categories values (87,  'Trans + Edit',  
 '',  'Intranet Project Type','category','t','f');
 insert into im_categories values (88,  'Edit Only',  '',  
