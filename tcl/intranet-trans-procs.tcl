@@ -28,6 +28,12 @@ ad_proc -public im_project_type_proof {} { return 95 }
 ad_proc -public im_project_type_glossary_comp {} { return 96 }
 
 
+ad_proc -public im_uom_page {} { return 323 }
+ad_proc -public im_uom_s_word {} { return 324 }
+ad_proc -public im_uom_t_word {} { return 325 }
+ad_proc -public im_uom_s_line {} { return 326 }
+ad_proc -public im_uom_t_line {} { return 327 }
+
 ad_proc -public im_package_translation_id { } {
 } {
     return [util_memoize "im_package_translation_id_helper"]
