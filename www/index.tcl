@@ -86,7 +86,7 @@ if { [empty_string_p $status_id] } {
 
 # Unprivileged users (clients & freelancers) can only see their 
 # own projects and no subprojects.
-if {![im_permission $current_user_id "view_projects_of_others"]} {
+if {![im_permission $current_user_id "view_projects_all"]} {
     set mine_p "t"
     set include_subprojects_p "f"
     
@@ -364,7 +364,7 @@ Filter Projects [im_new_project_html $user_id]
   </td>
 </tr>\n"
 
-if {[im_permission $current_user_id "view_projects_of_others"]} { 
+if {[im_permission $current_user_id "view_projects_all"]} { 
     append filter_html "
 <tr>
   <td valign=top>View:</td>
@@ -372,7 +372,7 @@ if {[im_permission $current_user_id "view_projects_of_others"]} {
 </tr>"
 }
 
-if {[im_permission $current_user_id "view_projects_of_others"]} {
+if {[im_permission $current_user_id "view_projects_all"]} {
     append filter_html "
 <tr>
   <td valign=top>Project Status:</td>
@@ -389,7 +389,7 @@ append filter_html "
   </td>
 </tr>\n"
 
-if {[im_permission $current_user_id "view_projects_of_others"]} { 
+if {[im_permission $current_user_id "view_projects_all"]} { 
 #    append filter_html "<a href=../allocations/index>Allocations</a> "
 }
 if {[im_permission $current_user_id "view_finance"]} { 
