@@ -1296,7 +1296,7 @@ This file is used to define the tasks of the project, one task for each line of 
       <tr>
         <td>[im_select "task_name_file" $task_list]</td>
         <td><input type=text size=2 value='0' name=task_units_file></td>
-        <td>[im_category_select "Intranet Translation UoM" "task_uom_file" 324]</td>
+        <td>[im_category_select "Intranet UoM" "task_uom_file" 324]</td>
         <td>[im_category_select "Intranet Project Type" task_type_file 86]</td>
         <td><input type=submit value='Add File' name=submit></td>
       </tr>
@@ -1323,7 +1323,7 @@ New files need to be located in the \"source_xx\" folder to appear in the drop-d
     <tr>
       <td><input type=text size=20 value='' name=task_name_manual></td>
       <td><input type=text size=2 value='0' name=task_units_manual></td>
-      <td>[im_category_select "Intranet Translation UoM" "task_uom_manual" 324]</td>
+      <td>[im_category_select "Intranet UoM" "task_uom_manual" 324]</td>
       <td>[im_category_select "Intranet Project Type" task_type_manual 86]</td>
       <td><input type=submit value='Add' name=submit></td>
     </tr>

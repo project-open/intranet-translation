@@ -486,15 +486,13 @@ INSERT INTO im_categories (category_id, category, category_type,category_descrip
 INSERT INTO im_categories VALUES (299,'none','No Language','Intranet Translation Language','category','t','f');
 
 
--- Unit or Mesurement
-INSERT INTO im_categories VALUES (320,'Hour','','Intranet Translation UoM','category','t','f');
-INSERT INTO im_categories VALUES (321,'Day','','Intranet Translation UoM','category','t','f');
--- INSERT INTO im_categories VALUES (322,'Week','','Intranet Translation UoM','category','t','f');
-INSERT INTO im_categories VALUES (323,'Page','','Intranet Translation UoM','category','t','f');
-INSERT INTO im_categories VALUES (324,'S-Word','','Intranet Translation UoM','category','t','f');
-INSERT INTO im_categories VALUES (325,'T-Word','','Intranet Translation UoM','category','t','f');
-INSERT INTO im_categories VALUES (326,'S-Line','','Intranet Translation UoM','category','t','f');
-INSERT INTO im_categories VALUES (327,'T-Line','','Intranet Translation UoM','category','t','f');
+-- Additional UoM categories for translation
+INSERT INTO im_categories VALUES (323,'Page','','Intranet UoM','category','t','f');
+INSERT INTO im_categories VALUES (324,'S-Word','','Intranet UoM','category','t','f');
+INSERT INTO im_categories VALUES (325,'T-Word','','Intranet UoM','category','t','f');
+INSERT INTO im_categories VALUES (326,'S-Line','','Intranet UoM','category','t','f');
+INSERT INTO im_categories VALUES (327,'T-Line','','Intranet UoM','category','t','f');
+
 
 -- Task Status
 INSERT INTO im_categories VALUES (340,'Created','','Intranet Translation Task Status','category','t','f');
