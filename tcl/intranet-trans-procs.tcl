@@ -540,7 +540,7 @@ append html "
     <td>
 <form action=/intranet-translation/projects/edit-trans-data method=POST>
 [export_form_vars project_id return_url]
-<input type=submit value=Edit>
+<input type=submit name=edit value=Edit>
 </form>
     </td>
   </tr>

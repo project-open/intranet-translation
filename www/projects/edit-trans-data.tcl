@@ -116,8 +116,10 @@ set page_body "
                       <td valign=top></td>
                       <td>
 		 	<p> 
-                          <input type=submit value='Submit changes' name=submit2>
-                          [im_gif help "Create the new folder structure"] 
+                          <input type=submit value='Submit changes' name=submit_changes>
+                          [im_gif help "Create the new folder structure"] <br>
+                          <input type=submit value='Create Language Subprojects' name=submit_subprojects>
+                          [im_gif help "Create folder structure and create a subproject for each language that you have chosen."] <br>
                         </p>
                       </td>
                     </tr>

@@ -11,7 +11,6 @@ ad_page_contract {
     @param return_url the url to return to
     @param project_id group id
 } {
-    return_url
     project_id:integer
     customer_project_nr
     final_customer
@@ -21,6 +20,8 @@ ad_page_contract {
     target_language_ids:multiple,optional
     subject_area_id:integer
     expected_quality_id:integer
+    submit_subprojects:optional
+    return_url
 }
 
 set user_id [ad_maybe_redirect_for_registration]
@@ -82,7 +83,7 @@ db_transaction {
 
 
 # ---------------------------------------------------------------------
-# Now create the directory structure necessary for the project
+# Create the directory structure necessary for the project
 # ---------------------------------------------------------------------
 
 set create_err ""
@@ -100,6 +101,94 @@ if {"" != $create_err || "" != $err_msg} {
     return
 }
 
+
+
+# ---------------------------------------------------------------------
+# Create Subprojects - one for each language
+# - Create subprojects with a name = "$project_name - $lang"
+# - Copy the contents of the project filestorage to the
+#   subprojects
+# ---------------------------------------------------------------------
+
+db_1row project_info "
+select
+	*
+from
+	im_projects
+where
+	project_id=:project_id
+"
+
+
+if {[exists_and_not_null submit_subprojects]} {
+    
+    foreach lang $target_language_ids {
+	set lang_name [db_string get_language "select category from im_categories where category_id=:lang"]
+
+        ns_log Notice "target_language=$lang_name"
+	set sub_project_name "${project_name} - $lang_name"
+	set sub_project_nr "${project_nr}_$lang_name"
+	set sub_project_path "${project_path}_$lang_name"
+
+	# -------------------------------------------
+	# Create a new Project if it didn't exist yet
+	set sub_project_id [db_string sub_project_id "select project_id from im_projects where project_nr=:sub_project_nr" -default 0]
+	if {!$sub_project_id} {
+
+	    set sub_project_id [project::new \
+        -project_name           $sub_project_name \
+        -project_nr             $sub_project_nr \
+        -project_path           $sub_project_path \
+        -customer_id            $customer_id \
+        -parent_id              $project_id \
+        -project_type_id        $project_type_id \
+	-project_status_id      $project_status_id]
+
+	    # add users to the project as PMs (1301):
+	    # - current_user (creator/owner)
+	    # - project_leader
+	    # - supervisor
+	    set role_id 1301
+	    im_biz_object_add_role $user_id $sub_project_id $role_id
+	    if {"" != $project_lead_id} {
+		im_biz_object_add_role $project_lead_id $sub_project_id $role_id
+	    }
+	    if {"" != $supervisor_id} {
+		im_biz_object_add_role $supervisor_id $sub_project_id $role_id
+	    }
+	}
+
+	# -----------------------------------------------------------------
+	# Update the Project
+
+	set project_update_sql "
+update im_projects set
+        requires_report_p =	:requires_report_p,
+	parent_id =		:project_id,
+	project_status_id =	:project_status_id,
+	source_language_id = 	:source_language_id,
+	subject_area_id = 	:subject_area_id,
+	expected_quality_id =	:expected_quality_id,
+        start_date =    	:start_date,
+        end_date =      	:end_date
+where
+        project_id = :sub_project_id"
+
+	db_dml project_update $project_update_sql
+
+
+	# -----------------------------------------------------------------
+	# Set the target language of the subproject
+	db_dml delete_target_languages "delete from im_target_languages where project_id=:sub_project_id"
+	db_dml set_target_language "
+		insert into im_target_languages
+		(project_id, language_id) values
+		(:sub_project_id, :lang)
+	"	
+
+
+    }
+}
 
 ad_returnredirect $return_url
 
