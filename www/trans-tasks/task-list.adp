@@ -1,5 +1,5 @@
 <master src="../../../intranet-core/www/master">
-<property name="title"><#Translation_Tasks Translation Tasks#></property>
+<property name="title">#intranet-translation.Translation_Tasks#</property>
 
 <br>
 @project_menu;noquote@

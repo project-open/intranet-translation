@@ -1,7 +1,7 @@
 <master src="../../../intranet-core/www/master">
 
-<property name="title"><#Companies Companies#></property>
-<property name="context"><#context context#></property>
+<property name="title">#intranet-translation.Companies#</property>
+<property name="context">#intranet-translation.context#</property>
 
 <property name="focus">@focus;noquote@</property>
 
@@ -11,15 +11,15 @@
 <table border=0>
 <tr>
   <td colspan=2 class=rowtitle align=middle>
-    <#Trados_Matrix Trados Matrix#>
+    #intranet-translation.Trados_Matrix#
   </td>
 </tr>
 <tr>
-  <td><#X_Trans X Trans#></td>
+  <td>#intranet-translation.X_Trans#</td>
   <td><input type=text name=match_x size=8 value=@match_x@></td>
 </tr>
 <tr>
-  <td><#Repetitions Repetitions#></td>
+  <td>#intranet-translation.Repetitions#</td>
   <td><input type=text name=match_rep size=8 value=@match_rep@></td>
 </tr>
 <tr>
@@ -43,7 +43,7 @@
   <td><input type=text name=match50 size=8 value=@match50@></td>
 </tr>
 <tr>
-  <td><#No_Match No Match#></td>
+  <td>#intranet-translation.No_Match#</td>
   <td><input type=text name=match0 size=8 value=@match0@></td>
 </tr>
 <tr>

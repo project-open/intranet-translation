@@ -16,41 +16,41 @@
         <table border=0 cellPadding=0 cellspacing=2 width=100%>
 
 
-	        <tr><td align=middle class=rowtitle colspan=2><#cost_type_Data @cost_type@ Data#></td></tr>
+	        <tr><td align=middle class=rowtitle colspan=2>#intranet-translation.cost_type_Data#</td></tr>
 	        <tr>
-	          <td  class=rowodd><#cost_type_nr @cost_type@ nr.:#></td>
+	          <td  class=rowodd>#intranet-translation.cost_type_nr#</td>
 	          <td  class=rowodd> 
 	            <input type=text name=invoice_nr size=15 value='@invoice_nr@'>
 	          </td>
 	        </tr>
 	        <tr> 
-	          <td  class=roweven><#cost_type_date @cost_type@ date:#></td>
+	          <td  class=roweven>#intranet-translation.cost_type_date#</td>
 	          <td  class=roweven> 
 	            <input type=text name=invoice_date size=15 value='@effective_date@'>
 	          </td>
 	        </tr>
 	        <tr> 
-	          <td class=roweven><#Payment_terms Payment terms#></td>
+	          <td class=roweven>#intranet-translation.Payment_terms#</td>
 	          <td class=roweven> 
 	            <input type=text name=payment_days size=5 value='@payment_days@'>
-	            <#days days#></td>
+	            #intranet-translation.days#</td>
 	        </tr>
 <if @invoice_or_bill_p@>
 	        <tr> 
-	          <td class=rowodd><#Payment_Method Payment Method#></td>
+	          <td class=rowodd>#intranet-translation.Payment_Method#</td>
 	          <td class=rowodd>@payment_method_select;noquote@</td>
 	        </tr>
 </if>
 	        <tr> 
-	          <td class=roweven> <#cost_type_template @cost_type@ template:#></td>
+	          <td class=roweven> #intranet-translation.cost_type_template#</td>
 	          <td class=roweven>@template_select;noquote@</td>
 	        </tr>
 	        <tr> 
-	          <td class=rowodd><#cost_type_status @cost_type@ status#></td>
+	          <td class=rowodd>#intranet-translation.cost_type_status#</td>
 	          <td class=rowodd>@status_select;noquote@</td>
 	        </tr>
 	        <tr> 
-	          <td class=roweven><#cost_type_type @cost_type@ type#></td>
+	          <td class=roweven>#intranet-translation.cost_type_type#</td>
 	          <td class=roweven>@type_select;noquote@</td>
 	        </tr>
 
@@ -65,10 +65,10 @@
 <!-- Let the user select the company. Provider=Internal -->
 
 		<tr>
-		  <td align=center valign=top class=rowtitle colspan=2><#Company Company#></td>
+		  <td align=center valign=top class=rowtitle colspan=2>#intranet-translation.Company#</td>
 		</tr>
 		<tr>
-		  <td class=roweven><#Company Company:#></tr>
+		  <td class=roweven>#intranet-translation.Company_1#</tr>
 		  <td class=roweven>@company_select;noquote@</td>
 		</tr>
 		<input type=hidden name=provider_id value=0>
@@ -77,10 +77,10 @@
 <else>
 
 		<tr>
-		  <td align=center valign=top class=rowtitle colspan=2><#Provider Provider#></td>
+		  <td align=center valign=top class=rowtitle colspan=2>#intranet-translation.Provider#</td>
 		</tr>
 		<tr>
-		  <td class=roweven><#Provider Provider:#></tr>
+		  <td class=roweven>#intranet-translation.Provider_1#</tr>
 		  <td class=roweven>@provider_select;noquote@</td>
 		</tr>
 		<input type=hidden name=company_id value=0>
@@ -109,7 +109,7 @@
           <td colspan=99 align=right> 
             <table border=0 cellspacing=1 cellpadding=0>
               <tr> 
-                <td><#VATnbsp VAT&nbsp;#></td>
+                <td>#intranet-translation.VATnbsp#</td>
                 <td><input type=text name=vat value='@vat@' size=4> % &nbsp;</td>
               </tr>
             </table>
@@ -121,7 +121,7 @@
           <td colspan=99 align=right> 
             <table border=0 cellspacing=1 cellpadding=0>
               <tr> 
-                <td><#TAXnbsp TAX&nbsp;#></td>
+                <td>#intranet-translation.TAXnbsp#</td>
                 <td><input type=text name=tax value='@tax@' size=4> % &nbsp;</td>
               </tr>
             </table>

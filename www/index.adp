@@ -1,6 +1,6 @@
 <master>
-<property name="title"><#Companies Companies#></property>
-<property name="context"><#context context#></property>
+<property name="title">#intranet-translation.Companies#</property>
+<property name="context">#intranet-translation.context#</property>
 
 <%= $page_body %>
 
