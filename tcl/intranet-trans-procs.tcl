@@ -1324,10 +1324,10 @@ where
     if {$project_admin && $ctr > 0} {
 	append task_table "
 <tr align=right> 
-  <td align=left><font size=-1> 
+  <td align=left>
 <!--    <input type=submit value='Trados Import' name=submit> -->
-    </font></td>
-  <td colspan=8 align=right><font size=-1>&nbsp;</td>
+  </td>
+  <td colspan=12 align=right>&nbsp;</td>
   <td align=center><input type=submit value=Save name=submit></td>
   <td align=center><input type=submit value=Del name=submit></td>
   <td align=center><input type=submit value=\"Assign\" name=submit></td>
