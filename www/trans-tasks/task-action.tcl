@@ -27,7 +27,7 @@ ad_page_contract {
 # Get the list of target languages of the current project.
 # We will need this list if a new task is added, because we
 # will have to add the task for each of the target languages...
-set target_language_ids [im_target_language_ids $project_id im_projects]
+set target_language_ids [im_target_language_ids $project_id]
 
 if {0 == [llength $target_language_ids]} {
     # No target languages defined -

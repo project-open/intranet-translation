@@ -30,6 +30,8 @@ ad_page_contract {
 # Defaults & security
 # ---------------------------------------------------------------------
 
+ns_log Notice "trados-import: trados_wordcount_file=$trados_wordcount_file"
+
 set user_id [ad_maybe_redirect_for_registration]
 im_project_permissions $user_id $project_id view read write admin
 if {!$write} {
@@ -37,7 +39,7 @@ if {!$write} {
     return
 }
 
-set target_language_ids [im_target_language_ids $project_id im_projects]
+set target_language_ids [im_target_language_ids $project_id]
 if {0 == [llength $target_language_ids]} {
     ad_return_complaint 1 "<li>The project has no target language defined,
         so we are unable to add translation tasks to the project.<BR>
@@ -365,6 +367,15 @@ INSERT INTO im_trans_tasks (
 
 append page_body "</table>\n"
 append page_body "\n<P><A HREF=$return_url>Return to previous page</A></P>\n"
+
+
+# Remove the wordcount file
+if { [catch {
+    exec /bin/rm $trados_wordcount_file
+} err_msg] } {
+    ad_return_complaint 1 "<li>Error deleting the temporary wordcount file $trados_wordcount_file"
+    return
+}
 
 if {0 == $err_count} {
     # No errors - return to the $return_url

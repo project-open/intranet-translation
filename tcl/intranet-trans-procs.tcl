@@ -180,10 +180,9 @@ ad_proc im_task_user_select {select_name user_list default_user_id {role ""}} {
 
 
 
-ad_proc -public im_target_languages { on_what_id on_which_table} {
+ad_proc -public im_target_languages { project_id} {
     Returns a (possibly empty list) of target languages 
     (i.e. "en_ES", ...) used for a specific project or task
-    (on_which_table=im_projects or im_trans_tasks).
 } {
     set result [list]
     set sql "
@@ -192,8 +191,7 @@ select
 from 
 	im_target_languages l
 where 
-	on_what_id=:on_what_id
-	and on_which_table=:on_which_table
+	project_id=:project_id
 "
     db_foreach select_target_languages $sql {
 	lappend result $target_language
@@ -202,9 +200,8 @@ where
 }
 
 
-ad_proc -public im_target_language_ids { on_what_id on_which_table} {
+ad_proc -public im_target_language_ids { project_id} {
     Returns a (possibly empty list) of target language IDs used
-    for a specific project or task (on_which_table=im_projects or im_trans_tasks).
 } {
     set result [list]
     set sql "
@@ -213,8 +210,7 @@ select
 from 
 	im_target_languages
 where 
-	on_what_id=:on_what_id
-	and on_which_table=:on_which_table
+	project_id=:project_id
 "
     db_foreach select_target_languages $sql {
 	lappend result $language_id

@@ -4,17 +4,27 @@ ad_page_contract {
     Purpose: verifies and stores project information to db
 
     @param return_url the url to return to
-    @param group_id group id
+    @param project_id group id
 } {
-    return_url:optional
-    group_id:integer
-    customer_project_nr:optional
-    final_customer:optional
-    customer_contact_id:integer,optional
+    return_url
+    project_id:integer
+    customer_project_nr
+    final_customer
+    customer_contact_id:integer 
     expected_quality_id:integer,optional
+    source_language_id:integer
+    target_language_ids:multiple
+    subject_area_id:integer
+    expected_quality_id:integer
 }
 
 set user_id [ad_maybe_redirect_for_registration]
+
+# Allow for empty target languages(?)
+if {![info exists target_language_ids]} {
+    set target_language_ids [list]
+}
+
 
 set sql "
 update im_projects set
@@ -31,8 +41,15 @@ if {[exists_and_not_null customer_contact_id]} {
 if {[exists_and_not_null expected_quality_id]} {
     append sql "expected_quality_id=:expected_quality_id,\n"
 }
-append sql "group_id=:group_id
-where group_id=:group_id
+if {[exists_and_not_null subject_area_id]} {
+    append sql "subject_area_id=:subject_area_id,\n"
+}
+if {[exists_and_not_null source_language_id]} {
+    append sql "source_language_id=:source_language_id,\n"
+}
+
+append sql "project_id=:project_id
+where project_id=:project_id
 "
 
 db_transaction {
@@ -41,7 +58,21 @@ db_transaction {
 db_release_unused_handles
 
 if { ![exists_and_not_null return_url] } {
-    set return_url "[im_url_stub]/projects/view?[export_url_vars group_id]"
+    set return_url "[im_url_stub]/projects/view?[export_url_vars project_id]"
+}
+
+
+# Save the information about the project target languages
+# in the im_target_languages table
+#
+db_transaction {
+    db_dml delete_im_target_language "delete from im_target_languages where project_id=:project_id"
+    
+    foreach lang $target_language_ids {
+	ns_log Notice "target_language=$lang"
+	set sql "insert into im_target_languages values ($project_id, $lang)"
+        db_dml insert_im_target_language $sql
+    }
 }
 
 ad_returnredirect $return_url

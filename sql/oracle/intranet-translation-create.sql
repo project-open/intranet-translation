@@ -19,6 +19,7 @@
 -- Add some translation specific fields to a project.
 
 alter table im_projects add	customer_project_nr	varchar(50);
+alter table im_projects add	customer_contact_id	integer references users;
 alter table im_projects add	source_language_id	references im_categories;
 alter table im_projects add	subject_area_id		references im_categories;
 alter table im_projects add	expected_quality_id	references im_categories;
@@ -111,13 +112,13 @@ create table im_task_actions (
 
 -- define into which language we have to translate a certain project.
 create table im_target_languages (
-				-- can refer to several target objects
-	on_what_id		not null references im_projects,
-				-- allow to be used on both im_projects 
-				-- and im_trans_tasks
-	on_which_table		varchar(50),
-	language_id		not null references im_categories,
-	primary key (on_what_id, on_which_table, language_id)
+	project_id		not null 
+				constraint im_target_lang_proj_fk
+				references im_projects,
+	language_id		not null 
+				constraint im_target_lang_lang_fk
+				references im_categories,
+	primary key (project_id, language_id)
 );
 
 
