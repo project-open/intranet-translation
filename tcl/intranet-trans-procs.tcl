@@ -1823,8 +1823,8 @@ where
 	# The directory probably doesn't exist yet, so don't generate
 	# an error
 	ns_log Notice "im_task_missing_file_list: directory $source_folder doesn't exist"
-	ad_return_complaint 1 "im_task_missing_file_list: directory $source_folder<br>
-                       probably does not exist:<br>$err_msg"
+#	ad_return_complaint 1 "im_task_missing_file_list: directory $source_folder<br>
+#                       probably does not exist:<br>$err_msg"
 	set file_list ""
     }
 
