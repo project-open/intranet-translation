@@ -78,6 +78,9 @@ create table im_trans_tasks (
 	task_uom_id		integer not null 
 				constraint im_trans_tasks_uom_fk
 				references im_categories,
+				-- references to financial documents: helps to make
+				-- sure a single task isn't invoiced twice or not
+				-- being invoiced at all...
 				-- invoice_id=null => needs to be invoiced still
 				-- invoice_id!= null => has already been invoiced
 	invoice_id		integer 
