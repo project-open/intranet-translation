@@ -147,7 +147,6 @@ ad_proc -public im_trans_trados_matrix_component { user_id object_id return_url 
 <td class=rowtitle align=center>75%</td>
 <td class=rowtitle align=center>50%</td>
 <td class=rowtitle align=center>0%</td>
-<td class=rowtitle align=center>Type</td>
 "
 
     set value_html "
@@ -159,12 +158,11 @@ ad_proc -public im_trans_trados_matrix_component { user_id object_id return_url 
 <td align=right>[expr 100 * $matrix(75)]%</td>
 <td align=right>[expr 100 * $matrix(50)]%</td>
 <td align=right>[expr 100 * $matrix(0)]%</td>
-<td align=right>$matrix(type)</td>
 "
 
     set html "
 <table border=0>
-<tr class=rowtitle><td class=rowtitle colspan=99 align=center>Trados Matrix</td></tr>
+<tr class=rowtitle><td class=rowtitle colspan=99 align=center>Trados Matrix ($matrix(type))</td></tr>
 <tr class=rowtitle>$header_html</tr>
 <tr class=roweven>$value_html</tr>
 <tr class=rowplain>

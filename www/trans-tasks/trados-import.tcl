@@ -132,6 +132,8 @@ append page_body "
 <tr>
   <td class=rowtitle align=center>Filename</td>
   <td class=rowtitle align=center>Task Name</td>
+  <td class=rowtitle align=center>XTr</td>
+  <td class=rowtitle align=center>Rep</td>
   <td class=rowtitle align=center>100%</td>
   <td class=rowtitle align=center>95%</td>
   <td class=rowtitle align=center>85%</td>
@@ -218,9 +220,12 @@ db_transaction {
 	set chars_per_word	[lindex $trados_fields 2]
 
 	if {[string equal $trados_version "3"]} {
-	    set rep_segments	[lindex $trados_fields 3]
-	    set rep_words	[lindex $trados_fields 4]
-	    set rep_placeables	[lindex $trados_fields 5]
+	    set px_segments	0
+	    set px_words	0
+	    set px_placeables	0
+	    set prep_segments	[lindex $trados_fields 3]
+	    set prep_words	[lindex $trados_fields 4]
+	    set prep_placeables	[lindex $trados_fields 5]
 	    set p100_segments	[lindex $trados_fields 6]
 	    set p100_words	[lindex $trados_fields 7]
 	    set p100_placeables	[lindex $trados_fields 8]
@@ -241,9 +246,13 @@ db_transaction {
 	    set p0_placeables	[lindex $trados_fields 23]
 	}
 	if {[string equal $trados_version "5.5"] || [string equal $trados_version "5.0"]} {
-	    set rep_segments	[lindex $trados_fields 7]
-	    set rep_words	[lindex $trados_fields 8]
-	    set rep_placeables	[lindex $trados_fields 9]
+	    set px_segments	[lindex $trados_fields 3]
+	    set px_words	[lindex $trados_fields 4]
+	    set px_placeables	[lindex $trados_fields 5]
+
+	    set prep_segments	[lindex $trados_fields 7]
+	    set prep_words	[lindex $trados_fields 8]
+	    set prep_placeables	[lindex $trados_fields 9]
 
 	    set p100_segments	[lindex $trados_fields 11]
 	    set p100_words	[lindex $trados_fields 12]
@@ -307,13 +316,7 @@ db_transaction {
 
 	# Calculate the number of "effective" words based on
 	# a valuation of repetitions
-        set task_units [im_trans_trados_matrix_calculate $customer_id $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
-
-	# SLS Formula to count repeated words:
-	# The valuation factor depends on the type of repetition.
-	#
-	set nomatch_words [expr $p75_words+$p50_words+$p0_words]
-	set task_units [expr ($p100_words*0.25)+($p95_words*0.3)+($p85_words*0.5)+$nomatch_words]
+        set task_units [im_trans_trados_matrix_calculate $customer_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
 
 	set billable_units $task_units
 	set task_type_id $project_type_id
@@ -329,6 +332,8 @@ db_transaction {
 <tr $bgcolor([expr $ctr % 2])>
   <td>$filename</td>
   <td>$task_name</td>
+  <td>$px_words</td>
+  <td>$prep_words</td>
   <td>$p100_words</td>
   <td>$p95_words</td>
   <td>$p85_words</td>
@@ -353,12 +358,12 @@ INSERT INTO im_trans_tasks (
 	task_id, task_name, project_id, task_type_id, 
 	task_status_id, description, source_language_id, target_language_id, 
 	task_units, billable_units, task_uom_id,
-	match100, match95, match85, match0
+	match_x, match_rep, match100, match95, match85, match75, match50, match0
 ) VALUES (
 	im_trans_tasks_seq.nextval, :task_name, :project_id, :task_type_id, 
 	:task_status_id, :task_description, :source_language_id, :target_language_id, 
 	:task_units, :billable_units, :task_uom_id, 
-	:p100_words, :p95_words, :p85_words, :nomatch_words
+	:px_words, :prep_words, :p100_words, :p95_words, :p85_words, :p75_words, :p50_words, :p0_words
 )"
 
             if { [catch {
