@@ -1185,30 +1185,14 @@ ad_proc im_new_task_component { user_id project_id return_url } {
     # $file_list is a sorted list of all files in "source_xx_XX":
     set task_list [list]
 
-    set project_path [im_filestorage_project_path $project_id]
-    if { [catch {
-	ns_log Notice "im_task_component: Checking $project_path"
-	exec /bin/mkdir -p $project_path
-	set file_list [exec /usr/bin/find $project_path -type f]
-    } err_msg] } {
-	# Probably some permission errors - return empty string
-#	ad_return_complaint 1 "im_task_component: $err_msg"
-	ns_log Notice "\nim_task_component:
-	'exec /usr/bin/find $project_path' failed with error:
-	err_msg=$err_msg\n"
-	
-	lappend task_list ""
-	lappend task_list "Error retreiving file list"
-	set file_list ""
-    }
+    # Get the sorted list of files in the directory
+    set files [lsort [im_filestorage_find_files $project_id]]
 
+    set project_path [im_filestorage_project_path $project_id]
     set org_paths [split $project_path "/"]
     set org_paths_len [llength $org_paths]
     set start_index $org_paths_len
 
-    # Get the sorted list of files in the directory
-    set files [lsort [split $file_list "\n"]]
-    
     foreach file $files {
 
 	# Get the basic information about a file
@@ -1404,12 +1388,13 @@ where
     ns_log Notice "org_paths_len=$org_paths_len"
     
     if { [catch {
-	exec /bin/mkdir -p $source_folder
 	set file_list [exec /usr/bin/find "$source_folder" -type f]
     } err_msg] } {
-	ad_return_complaint 1 "<li>Unable to read from '$source_folder':<br>
-	$err_msg"
-	return
+	# The directory probably doesn't exist yet, so don't generate
+	# an error
+	ns_log Notice "im_task_missing_file_list: directory $source_folder
+                       probably doesn't exist:<br>$err_msg"
+	set file_list ""
     }
 
     # Get the sorted list of files in the directory
