@@ -26,7 +26,7 @@ ad_page_contract {
 set user_id [ad_maybe_redirect_for_registration]
 im_project_permissions $user_id $project_id view read write admin
 if {!$write} {
-    append 1 "<li>You have insufficient privileges to view this page.\n"
+    ad_return_complaint 1 "<li>You have insufficient privileges to view this page.\n"
     return
 }
 
