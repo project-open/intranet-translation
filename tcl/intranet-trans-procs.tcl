@@ -1499,13 +1499,18 @@ ad_proc im_task_error_component { user_id project_id return_url } {
 
     if {![im_permission $user_id view_trans_proj_detail]} { return "" }
 
-    set missing_task_list [im_task_missing_file_list $project_id]
-    ns_log Notice "im_task_error_component: missing_task_list=$missing_task_list"
-
     # Show the missing tasks only to people who can write on the
     # project
     im_project_permissions $user_id $project_id view read write admin
     if {!$write} { return "" }
+
+
+    # -------------------------------------------------------
+    # Get the list of tasks with missing files
+
+    set missing_task_list [im_task_missing_file_list $project_id]
+    ns_log Notice "im_task_error_component: missing_task_list=$missing_task_list"
+
 
     # -------------------- SQL -----------------------------------
     set sql "
@@ -1775,7 +1780,7 @@ ad_proc im_task_missing_file_list { project_id } {
     The algorithm works O(n*log(n)), using ns_set, so
     it should be a reasonably cheap operation.
 } {
-    set find_cmd [parameter::get -package_id [im_package_core_id] -parameter "FindCmd" -default "/bin/find"]
+    set find_cmd [im_filestorage_find_cmd]
 
     set query "
 select
@@ -1810,7 +1815,8 @@ where
     } err_msg] } {
 	# The directory probably doesn't exist yet, so don't generate
 	# an error
-	ns_log Notice "im_task_missing_file_list: directory $source_folder
+	ns_log Notice "im_task_missing_file_list: directory $source_folder doesn't exist"
+	ad_return_complaint 1 "im_task_missing_file_list: directory $source_folder<br>
                        probably does not exist:<br>$err_msg"
 	set file_list ""
     }
