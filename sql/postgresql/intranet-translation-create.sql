@@ -92,9 +92,9 @@ create table im_trans_tasks (
 				-- being invoiced at all...
 				-- invoice_id=null => needs to be invoiced still
 				-- invoice_id!= null => has already been invoiced
-	invoice_id		integer 
-				constraint im_trans_tasks_invoice_fk
-				references im_invoices,
+	invoice_id		integer , -- Todo: remove comments when toni finish invoices
+--				constraint im_trans_tasks_invoice_fk
+--				references im_invoices,
 				-- "Trados Matrix" determine duplicated words
 	match_x			numeric(12,0),
 	match_rep		numeric(12,0),
@@ -147,22 +147,32 @@ create table im_trans_trados_matrix (
 -- actions that have occured around im_trans_tasks: upload, download, ...
 create sequence im_task_actions_seq start 1;
 create table im_task_actions (
-	action_id		integer primary key,
-	action_type_id		references im_categories,
-	user_id			not null references users,
-	task_id			not null references im_trans_tasks,
+	action_id		integer constraint im_task_actions_pk primary key,
+	action_type_id		integer 
+	                        constraint im_task_action_type_fk
+				references im_categories,
+	user_id			integer	not null 
+				constraint im_task_action_user_fk
+				references users,
+	task_id			integer not null 
+				constraint im_task_action_task_fk
+				references im_trans_tasks,
 	action_date		date,
-	old_status_id		references im_categories,
-	new_status_id		references im_categories
+	old_status_id		integer
+                                constraint im_task_action_old_fk
+				references im_categories,
+	new_status_id		integer
+                                constraint im_task_action_new_fk
+				references im_categories
 );
 
 
 -- define into which language we have to translate a certain project.
 create table im_target_languages (
-	project_id		not null 
+	project_id		integer not null 
 				constraint im_target_lang_proj_fk
 				references im_projects,
-	language_id		not null 
+	language_id		integer not null 
 				constraint im_target_lang_lang_fk
 				references im_categories,
 	primary key (project_id, language_id)
@@ -369,16 +379,10 @@ select im_component_plugin__new (
 select acs_privilege__create_privilege(	'view_trans_tasks',	'View Trans Tasks',	'View Trans Tasks');
 
     -- Should Freelancers see the Trados matrix for the translation tasks?
-select acs_privilege__create_privilege(
-	'view_trans_task_matrix',
-	'View Trans Task Matrix',
-	'View Trans Task Matrix');
+select acs_privilege__create_privilege(	'view_trans_task_matrix','View Trans Task Matrix','View Trans Task Matrix');
 
     -- Should Freelancers see the translation status report?
-select acs_privilege__create_privilege(
-	'view_trans_task_status',
-	'View Trans Task Status',
-	'View Trans Task Status');
+select acs_privilege__create_privilege(	'view_trans_task_status','View Trans Task Status','View Trans Task Status');
 
     -- Should Freelancers see the translation project details?
     -- Everybody can see subject area, source and target language,
@@ -434,7 +438,7 @@ begin
     select group_id into v_proman from groups where group_name = ''Project Managers'';
     select group_id into v_accounting from groups where group_name = ''Accounting'';
     select group_id into v_employees from groups where group_name = ''Employees'';
-    select group_id into v_companies from groups where group_name = ''Companies'';
+    select group_id into v_companies from groups where group_name = ''Customers'';
     select group_id into v_freelancers from groups where group_name = ''Freelancers'';
 
     select menu_id
@@ -458,12 +462,12 @@ begin
         null                    -- p_visible_tcl
     );
 
-    acs_permission__grant_permission(v_menu, v_admins, ''read'');
-    acs_permission__grant_permission(v_menu, v_senman, ''read'');
-    acs_permission__grant_permission(v_menu, v_proman, ''read'');
-    acs_permission__grant_permission(v_menu, v_accounting, ''read'');
-    acs_permission__grant_permission(v_menu, v_employees, ''read'');
-    acs_permission__grant_permission(v_menu, v_companies, ''read'');
+    PERFORM acs_permission__grant_permission(v_menu, v_admins, ''read'');
+    PERFORM acs_permission__grant_permission(v_menu, v_senman, ''read'');
+    PERFORM acs_permission__grant_permission(v_menu, v_proman, ''read'');
+    PERFORM acs_permission__grant_permission(v_menu, v_accounting, ''read'');
+    PERFORM acs_permission__grant_permission(v_menu, v_employees, ''read'');
+    PERFORM acs_permission__grant_permission(v_menu, v_companies, ''read'');
     -- no freelancers!
 
 
@@ -483,12 +487,12 @@ begin
         null                    -- p_visible_tcl
     );
 
-    acs_permission__grant_permission(v_menu, v_admins, ''read'');
-    acs_permission__grant_permission(v_menu, v_senman, ''read'');
-    acs_permission__grant_permission(v_menu, v_proman, ''read'');
-    acs_permission__grant_permission(v_menu, v_accounting, ''read'');
-    acs_permission__grant_permission(v_menu, v_employees, ''read'');
-    acs_permission__grant_permission(v_menu, v_companies, ''read'');
+    PERFORM acs_permission__grant_permission(v_menu, v_admins, ''read'');
+    PERFORM acs_permission__grant_permission(v_menu, v_senman, ''read'');
+    PERFORM acs_permission__grant_permission(v_menu, v_proman, ''read'');
+    PERFORM acs_permission__grant_permission(v_menu, v_accounting, ''read'');
+    PERFORM acs_permission__grant_permission(v_menu, v_employees, ''read'');
+    PERFORM acs_permission__grant_permission(v_menu, v_companies, ''read'');
     -- no freelancers!
 
     return 0;
@@ -725,7 +729,7 @@ drop function inline_0 ();
 
 
 -- Create a "Tigerpond" project
-create or replace function inline_0 ()
+create or replace function inline_1 ()
 returns integer as '
 declare
 	v_project_id		integer;
@@ -747,68 +751,18 @@ begin
 		null,	      -- context_id
 
 		''Large Translation Project'', -- project_name
-		''2004_0001'',		     -- project_nr
-		''2004_0001'',		     -- project_path
+		''1004_0001'',		     -- project_nr
+		''1004_0001'',		     -- project_path
 		null,			     -- parent_id
 		v_company_id,		     -- company_id
 		89,			     -- project_type_id -> Trans+Edit+Proof Project
 		76			     -- project_status_id -> Active
 	);
 
-	-- Add some users
-	-- 1300 is full member, 1301 is PM, 1302 is Key Account
-	select party_id	into v_user_id
-	from parties where email=''project.manager@project-open.com'';
-	v_rel_id := im_biz_object_member__new (
-        	null,			      -- id
-		'im_biz_object_member',	      -- object_type
-		v_project_id,		      -- object_id
-        	v_user_id,		      -- user_id
-        	1301,			      -- role_id
-		null,			      -- user_id
-		null			      -- user_ip
-	);
-
-	select party_id	into v_user_id
-	from parties where email=''staff.member2@project-open.com'';
-	v_rel_id := im_biz_object_member__new (
-                null,                         -- id
-                'im_biz_object_member',       -- object_type
-                v_project_id,                 -- object_id
-                v_user_id,                    -- user_id
-                1300,                         -- role_id
-                null,                         -- user_id
-                null                          -- user_ip
-	);
-
-	select party_id	into v_user_id
-	from parties where email=''senior.manager@project-open.com'';
-	v_rel_id := im_biz_object_member__new (
-                null,                         -- id
-                'im_biz_object_member',       -- object_type
-                v_project_id,                 -- object_id
-                v_user_id,                    -- user_id
-                1300,                         -- role_id
-                null,                         -- user_id
-                null                          -- user_ip
-	);
-
-	select party_id	into v_user_id
-	from parties where email=''free.lance2@project-open.com'';
-	v_rel_id := im_biz_object_member__new (
-                null,                         -- id
-                'im_biz_object_member',       -- object_type
-                v_project_id,                 -- object_id
-                v_user_id,                    -- user_id
-                1300,                         -- role_id
-                null,                         -- user_id
-                null                          -- user_ip
-	);
-
     return 0;
 end;' language 'plpgsql';
 
-select inline_0 ();
+select inline_1 ();
 
-drop function inline_0 ();
+drop function inline_1 ();
 
