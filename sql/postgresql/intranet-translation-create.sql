@@ -373,7 +373,7 @@ begin
         ''/intranet-translation/trans-tasks/task-list?view_name=trans_tasks'', -- url
         50,                     -- sort_order
         v_project_menu,         -- parent_menu_id
-        '[im_project_has_type [ns_set get $bind_vars project_id] "Translation Project"]' -- p_visible_tcl
+        ''[im_project_has_type [ns_set get $bind_vars project_id] "Translation Project"]'' -- p_visible_tcl
     );
 
     PERFORM acs_permission__grant_permission(v_menu, v_admins, ''read'');
@@ -398,7 +398,7 @@ begin
         ''/intranet-translation/trans-tasks/task-assignments?view=standard'', -- url
         60,                     -- sort_order
         v_project_menu,         -- parent_menu_id
-        '[im_project_has_type [ns_set get $bind_vars project_id] "Translation Project"]'  -- p_visible_tcl
+        ''[im_project_has_type [ns_set get $bind_vars project_id] "Translation Project"]''  -- p_visible_tcl
     );
 
     PERFORM acs_permission__grant_permission(v_menu, v_admins, ''read'');
