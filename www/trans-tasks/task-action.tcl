@@ -109,7 +109,6 @@ switch -glob $submit {
 	    db_dml update_billable_units $sql
 	}
 	
-#	doc_return  200 text/html "[im_return_template]"
 	ad_returnredirect $return_url
 	return
     }
@@ -150,6 +149,9 @@ switch -glob $submit {
 	# This means that the task does not require to
 	# have a file associated in the filestorage.
 	set task_filename ""
+
+	ns_log Notice "task-action: Add manual task: im_task_insert $project_id [ns_urldecode $task_name_manual] $task_filename $task_units_manual $task_uom_manual $task_type_manual $target_language_ids"
+
 	im_task_insert $project_id [ns_urldecode $task_name_manual] $task_filename $task_units_manual $task_uom_manual $task_type_manual $target_language_ids
 	ad_returnredirect $return_url
 	return

@@ -197,11 +197,12 @@ ad_proc im_task_insert {project_id task_name task_filename task_units task_uom t
 		task_status_id, description, source_language_id, target_language_id, 
 		task_units, billable_units, task_uom_id, match100, match95, match85, 
 		match0
-	) VALUES (:
-		new_task_id, :task_name, :task_filename, :project_id, :task_type, 
+	) VALUES (
+		:new_task_id, :task_name, :task_filename, :project_id, :task_type, 
  		:task_status_id, :task_description, :source_language_id, :target_language_id, 
  		:task_units, :task_units, :task_uom, :match100, :match95, :match85, :match0
  	)"
+
 
     # Add a new task for every project target language
     foreach target_language_id $target_language_ids {
@@ -221,6 +222,7 @@ ad_proc im_task_insert {project_id task_name task_filename task_units task_uom t
 	}
 
 	set new_task_id [db_nextval im_trans_tasks_seq]
+
         if { [catch {
 	    db_dml insert_tasks $sql
         } err_msg] } {
@@ -1731,10 +1733,10 @@ ad_proc im_new_task_component { user_id project_id return_url } {
   <tr $bgcolor(0)> 
 
     <td>[im_select -translate_p 0 "task_name_file" $task_list]</td>
-    <td><input type=text size=2 value='0' name=task_units_file></td>
+    <td><input type=text size=2 value=0 name=task_units_file></td>
     <td>[im_category_select "Intranet UoM" "task_uom_file" 324]</td>
     <td>[im_category_select "Intranet Project Type" task_type_file 86]</td>
-    <td><input type=submit value='[_ intranet-translation.Add_File]' name=submit></td>
+    <td><input type=submit value=\"[_ intranet-translation.Add_File]\" name=submit></td>
     <td>[im_gif help "Add a new file to the list of tasks. \n New files need to be located in the \"source_xx\" folder to appear in the drop-down box on the left."]</td>
   </tr>
 </form>
@@ -1743,15 +1745,15 @@ ad_proc im_new_task_component { user_id project_id return_url } {
 
     # -------------------- Add Task Manually --------------------------
     append task_table "
-<form action=/intranet-translation/trans-tasks/task-action method=POST>
+<form action=\"/intranet-translation/trans-tasks/task-action\" method=POST>
 [export_form_vars project_id return_url]
   <tr $bgcolor(0)> 
 
-    <td><input type=text size=20 value='' name=task_name_manual></td>
-    <td><input type=text size=2 value='0' name=task_units_manual></td>
+    <td><input type=text size=20 value=\"\" name=task_name_manual></td>
+    <td><input type=text size=2 value=0 name=task_units_manual></td>
     <td>[im_category_select "Intranet UoM" "task_uom_manual" 324]</td>
     <td>[im_category_select "Intranet Project Type" task_type_manual 86]</td>
-    <td><input type=submit value='[_ intranet-translation.Add]' name=submit></td>
+    <td><input type=submit value=\"[_ intranet-translation.Add]\" name=submit></td>
     <td>[im_gif help "Add a \"manual\" task to the project. \n This task is not going to controled by the translation workflow."]</td>
   </tr>
 </form>"
@@ -1810,7 +1812,7 @@ where
 	# The directory probably doesn't exist yet, so don't generate
 	# an error
 	ns_log Notice "im_task_missing_file_list: directory $source_folder
-                       probably doesn't exist:<br>$err_msg"
+                       probably does not exist:<br>$err_msg"
 	set file_list ""
     }
 
