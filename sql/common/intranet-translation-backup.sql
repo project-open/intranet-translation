@@ -14,35 +14,47 @@
 --
 -- @author	frank.bergmann@project-open.com
 
--- 100	im_projects
--- 101	im_project_roles
--- 102	im_customers
--- 103	im_customer_roles
--- 104	im_offices
--- 105	im_office_roles
--- 106	im_categories
+
+-- 100  im_projects
+-- 101  im_project_roles
+-- 102  im_customers
+-- 103  im_customer_roles
+-- 104  im_offices
+-- 105  im_office_roles
+-- 106  im_categories
+-- 107	im_employees
 --
--- 110	users
--- 111	im_profiles
--- 115	im_employees
+-- 110  users
+-- 111  im_profiles
 --
--- 120	im_freelancers
+-- 120  im_freelancers
+-- 121  im_freelance_skills
 --
--- 130	im_forums
+-- 130  im_forum_topics
+-- 131	im_forum_folders
+-- 132	im_forum_topic_user_map
 --
--- 140	im_filestorage
+-- 140  im_filestorage
 --
--- 150	im_translation
+-- 150  im_translation
+-- 151	im_target_languages
+-- 152	im_project_trans_details
 --
--- 160	im_quality
+-- 160  im_quality
 --
--- 170	im_marketplace
+-- 170  im_marketplace
 --
--- 180	im_hours
+-- 180  im_hours
+-- 181  im_absences
 --
--- 190	im_invoices
---
--- 200
+-- 190  im_costs
+-- 191  im_payments
+-- 192  im_invoices
+-- 193  im_invoice_items
+-- 194  im_project_invoice_map
+-- 195  im_trans_prices
+-- 196	im_cost_centers
+-- 197	im_investments
 
 ---------------------------------------------------------
 -- Backup Translation Project Details
@@ -132,7 +144,7 @@ WHERE
 	t.project_id = p.project_id
 ');
 
-delete from im_view_columns where column_id > 15004 and column_id < 15099;
+delete from im_view_columns where column_id > 15000 and column_id < 15099;
 --
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (15001,150,NULL,'project_name','$project_name','','',1,'');
@@ -204,12 +216,12 @@ WHERE
 	t.project_id = p.project_id
 ');
 
-delete from im_view_columns where column_id > 18104 and column_id < 18199;
+delete from im_view_columns where column_id > 15100 and column_id < 15199;
 --
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (18101,181,NULL,'project_name','$project_name','','',1,'');
+extra_select, extra_where, sort_order, visible_for) values (15101,151,NULL,'project_name','$project_name','','',1,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (18103,181,NULL,'language','$language','','',3,'');
+extra_select, extra_where, sort_order, visible_for) values (15103,151,NULL,'language','$language','','',3,'');
 --
 -- commit;
 
