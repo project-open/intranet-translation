@@ -489,6 +489,11 @@ ad_proc im_task_status_component { user_id project_id return_url } {
     File movements outside the translation workflow (moving files
     in the filesystem) are not reflected by this component (yet).
 } {
+    # Is this a translation project?
+    if {![im_project_has_type $project_id "Translation Project"]} {
+	return ""
+    }
+
     set bgcolor(0) " class=roweven"
     set bgcolor(1) " class=rowodd"
 
@@ -1016,33 +1021,15 @@ ad_proc im_task_error_component { user_id project_id return_url } {
     Return a piece of HTML for the project view page,
     containing the list of tasks that are not found in the filesystem.
 } {
+    # Is this a translation project?
+    if {![im_project_has_type $project_id "Translation Project"]} {
+	return ""
+    }
+
     set missing_task_list [im_task_missing_file_list $project_id]
     im_project_permissions $user_id $project_id view read write admin
 
-    # -------------------- Header -----------------------------------------------
-    set task_table "
-<form action=/intranet-translation/trans-tasks/task-action method=POST>
-[export_form_vars project_id return_url]
-
-<table border=0>\n"
-
-    append task_table "
-<tr><td class=rowtitle align=center colspan=20>
-  Please upload the following tasks
-</td></tr>\n"
-
-append task_table "
-<tr> 
-  <td class=rowtitle>Task Name</td>
-  <td class=rowtitle>Target Lang</td>
-  <td class=rowtitle>&nbsp;Units&nbsp;</td>
-  <td class=rowtitle align=middle>[im_gif delete "Delete the Task"]</td>
-  <td class=rowtitle>[im_gif open "Upload files"]</td>
-</tr>
-"
-
     # -------------------- SQL -----------------------------------
-
     set sql "
 select 
 	t.*,
@@ -1064,7 +1051,7 @@ where
 	and t.task_status_id <> 372
 	and t.task_uom_id=uom_c.category_id(+)
 	and t.task_type_id=type_c.category_id(+)
-    "
+"
 
     set bgcolor(0) " class=roweven"
     set bgcolor(1) " class=rowodd"
@@ -1100,19 +1087,39 @@ where
         incr ctr
     }
     
+    # Return an empty string if there are no errors
+    if {$ctr == 0} {
+	return ""
+    }
 
-    # -------------------- Action Row -------------------------------
-    append task_table $task_table_rows
+    # ----------------- Put everything together -------------------------
+    set task_table "
+<form action=/intranet-translation/trans-tasks/task-action method=POST>
+[export_form_vars project_id return_url]
 
-	append task_table "
+<table border=0>
+<tr>
+  <td class=rowtitle align=center colspan=20>
+    Please upload the following tasks
+  </td>
+</tr>
+<tr> 
+  <td class=rowtitle>Task Name</td>
+  <td class=rowtitle>Target Lang</td>
+  <td class=rowtitle>&nbsp;Units&nbsp;</td>
+  <td class=rowtitle align=middle>[im_gif delete "Delete the Task"]</td>
+  <td class=rowtitle>[im_gif open "Upload files"]</td>
+</tr>
+
+$task_table_rows
+
 <tr align=right> 
   <td colspan=3>&nbsp;</td>
   <td align=center><input type=submit value=Del name=submit></td>
   <td></td>
 </tr>
 </table>
-</form>
-"
+</form>\n"
 
     return $task_table
 }
