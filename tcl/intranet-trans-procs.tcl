@@ -219,6 +219,72 @@ where
 }
 
 
+ad_proc -public im_trans_project_details { user_id project_id return_url } {
+    Return a formatted HTML widget showing the translation
+    specific fields of a translation project.
+} {
+
+    set query "
+select
+        p.*
+from
+        im_projects p
+where
+        p.project_id=:project_id
+"
+
+    if { ![db_0or1row projects_info_query $query] } {
+	ad_return_complaint 1 "Can't find the project with ID '$project_id'"
+	return
+    }
+
+    set html "
+<table cellpadding=0 cellspacing=2 border=0>
+  <tr> 
+    <td colspan=2 class=rowtitle align=middle>
+      Project Details
+    </td>
+  </tr>
+  <tr> 
+    <td>Client Project#</td>
+    <td>$customer_project_nr</td>
+  </tr>
+  <tr> 
+    <td>Final User</td>
+    <td>$final_customer</td>
+  </tr>
+  <tr> 
+    <td>Subject Area</td>
+    <td>[im_category_from_id $subject_area_id]</td>
+  </tr>
+  <tr> 
+    <td>Source Language</td>
+    <td>[im_category_from_id $source_language_id]</td>
+  </tr>
+  <tr> 
+    <td>Target Languages</td>
+    <td>[im_target_languages $project_id]</td>
+  </tr>
+  <tr> 
+    <td>Quality Level</td>
+    <td>[im_category_from_id $expected_quality_id]</td>
+  </tr>
+  <tr> 
+    <td></td>
+    <td>
+<form action=/intranet-translation/projects/edit-trans-data method=POST>
+[export_form_vars project_id return_url]
+<input type=submit value=Edit>
+</form>
+    </td>
+  </tr>
+</table>
+"
+
+    return $html
+}
+
+
 # -------------------------------------------------------------------
 # Status Engine for im_trans_tasks
 #

@@ -167,6 +167,27 @@ where category_type = 'Intranet Translation Task Status';
 -- -------------------------------------------------------------------
 
 
+-- Show the translation specific fields in the ProjectViewPage
+--
+declare
+    v_plugin            integer;
+begin
+    v_plugin := im_component_plugin.new (
+        plugin_name =>  'Project Translation Details',
+        package_name => 'intranet-translation',
+        page_url =>     '/intranet/projects/view',
+        location =>     'left',
+        sort_order =>   10,
+        component_tcl =>
+        'im_trans_project_details \
+                $user_id \
+                $project_id \
+                $return_url'
+    );
+end;
+/
+
+
 -- Show the task component in project page
 --
 declare
@@ -270,7 +291,7 @@ begin
     v_menu := im_menu.new (
 	package_name =>	'intranet',
 	label =>	'project_trans_tasks',
-	name =>		'Trans Tasks',
+	name =>		'Tasks',
 	url =>	'/intranet-translation/trans-tasks/task-list?view_name=trans_tasks',
 	sort_order =>	50,
 	parent_menu_id => v_project_menu
