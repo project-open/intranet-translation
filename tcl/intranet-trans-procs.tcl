@@ -1265,6 +1265,8 @@ where
 
     set bgcolor(0) " class=roweven"
     set bgcolor(1) " class=rowodd"
+    set trans_project_words 0
+    set trans_project_hours 0
     set ctr 0
     set task_table_rows ""
 
@@ -1343,16 +1345,26 @@ where
 	    eval $cmd
 	    append task_table "</td>\n"
 	}
-        append task_table "</tr>\n"
-        incr ctr
+	append task_table "</tr>\n"
+
+	incr ctr
+	if {$task_uom_id == [im_uom_s_word]} { set trans_project_words [expr $trans_project_words + $task_units] }
+	if {$task_uom_id == [im_uom_hour]} { set trans_project_hours [expr $trans_project_hours + $task_units] }
     }
 
     if {$ctr > 0} {
          append task_table $task_table_rows
     } else {
-         append task_table "
-<tr><td colspan=7 align=center>No tasks found</td></tr>"
+         append task_table "<tr><td colspan=7 align=center>No tasks found</td></tr>"
     }
+
+    # -------------------- Calculate the project size -------------------------------
+    db_dml update_project_size "
+	update im_projects set 
+		trans_project_words = :trans_project_words,
+		trans_project_hours = :trans_project_hours
+	where project_id = :project_id
+    "
 
     # -------------------- Action Row -------------------------------
     # End of the task-list loop.
@@ -1364,7 +1376,6 @@ where
 	append task_table "
 <tr align=right> 
   <td align=left>
-<!--    <input type=submit value='Trados Import' name=submit> -->
   </td>
   <td colspan=12 align=right>&nbsp;</td>
   <td align=center><input type=submit value=Save name=submit></td>

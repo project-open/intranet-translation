@@ -34,6 +34,10 @@ alter table im_projects add	subject_area_id		references im_categories;
 alter table im_projects add	expected_quality_id	references im_categories;
 alter table im_projects add	final_customer		varchar(50);
 
+-- An approximate value for the size (number of words) of the project
+alter table im_projects add	trans_project_words	number(12,0);
+alter table im_projects add	trans_project_hours	number(12,0);
+
 
 -----------------------------------------------------------
 -- Tasks
@@ -163,6 +167,22 @@ create table im_target_languages (
 
 -----------------------------------------------------------
 -- Views
+
+
+
+-- Add a columns to the projects view showing the "trans_project_size":
+--
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (2023,20,NULL,'Appr. Size',
+'[if {"" == $trans_project_words} {
+        set t ""
+} else {
+        set t "${trans_project_words}w ${trans_project_hours}h"
+}]','','',15,'');
+
+
+
+
 
 insert into im_views (view_id, view_name, visible_for) values (90, 'trans_task_list', 'view_trans_tasks');
 
