@@ -1,11 +1,53 @@
-# /tcl/intranet-trans.tcl
+# /packages/intranet-translation/tcl/intranet-trans-procs.tcl
+#
+# Copyright (C) 2004 Project/Open
+# All rights reserved (this is not GPLed software!).
+# Please check http://www.project-open.com/ for licensing
+# details.
 
 ad_library {
     Bring together all "components" (=HTML + SQL code)
     related to the Translation sector
 
-    @author fraber@fraber.de
-    @creation-date  27 June 2003
+    @author frank.bergmann@project-open.com
+}
+
+
+
+
+ad_proc -public im_translation_task_permissions {user_id task_id view_var read_var write_var admin_var} {
+    Fill the "by-reference" variables read, write and admin
+    with the permissions of $user_id on $project_id
+
+    Allow to download the file if the user is an admin, a project admin
+    or an employee of the company. Or if the user is an translator, editor,
+    proofer or "other" of the specified task.
+} {
+    upvar $view_var view
+    upvar $read_var read
+    upvar $write_var write
+    upvar $admin_var admin
+
+    set view 0
+    set read 0
+    set write 0
+    set admin 0
+
+    set user_is_admin_p [im_is_user_site_wide_or_intranet_admin $user_id]
+    set user_is_wheel_p [ad_user_group_member [im_wheel_group_id] $user_id]
+    set user_is_group_member_p [ad_user_group_member $project_id $user_id]
+    set user_is_employee_p [im_user_is_employee_p $user_id]
+
+    if {$user_is_admin_p} { set admin 1}
+    if {$user_is_wheel_p} { set admin 1}
+    if {$user_is_group_member_p} { set read 1}
+    if {$upload == 2} {set read 1}
+
+    if {$admin} {
+	set read 1
+	set write 1
+    }
+    if ($read) { set view 1 }
 }
 
 
