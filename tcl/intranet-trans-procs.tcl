@@ -1803,6 +1803,11 @@ where
 	return
     }
 
+    # No source language defined yet - we can only return an empty list here
+    if {"" == $source_language} {
+	return ""
+    }
+
     set project_path [im_filestorage_project_path $project_id]
     set source_folder "$project_path/source_$source_language"
     set org_paths [split $source_folder "/"]
