@@ -8,6 +8,28 @@ ad_library {
     @creation-date  27 June 2003
 }
 
+
+ad_proc -public im_target_language_ids { on_what_id on_which_table} {
+    Returns a (possibly empty list) of target language IDs used
+    for a specific project or task (on_which_table=im_projects or im_tasks).
+} {
+    set result [list]
+    set sql "
+select
+	language_id
+from 
+	im_target_languages
+where 
+	on_what_id=:on_what_id
+	and on_which_table=:on_which_table
+"
+    db_foreach select_target_languages $sql {
+	lappend result $language_id
+    }
+    return $result
+}
+
+
 # -------------------------------------------------------------------
 # Serve the abstract URLs to download im_tasks files and
 # to advance the task status.
@@ -104,7 +126,7 @@ where
 }
 
 # -------------------------------------------------------------------
-# Drop-Down for User assignments
+# Drop-Down Components
 # -------------------------------------------------------------------
 
 ad_proc im_task_user_select {select_name user_list default_user_id {role ""}} {
@@ -129,6 +151,34 @@ ad_proc im_task_user_select {select_name user_list default_user_id {role ""}} {
     append select_html "</select>\n"
     return $select_html
 }
+
+
+
+
+ad_proc -public im_target_languages { on_what_id on_which_table} {
+    Returns a (possibly empty list) of target languages 
+    (i.e. "en_ES", ...) used for a specific project or task
+    (on_which_table=im_projects or im_tasks).
+} {
+    set result [list]
+    set sql "
+select
+	im_category_from_id(l.language_id) as target_language
+from 
+	im_target_languages l
+where 
+	on_what_id=:on_what_id
+	and on_which_table=:on_which_table
+"
+    db_foreach select_target_languages $sql {
+	lappend result $target_language
+    }
+    return $result
+}
+
+
+
+
 
 
 # -------------------------------------------------------------------
@@ -388,7 +438,7 @@ ad_proc im_task_component_upload {user_id user_admin_p task_status_id source_lan
 # Task Status Component
 # -------------------------------------------------------------------
 
-ad_proc im_task_status_component { user_id group_id user_admin_p user_is_employee_p return_url } {
+ad_proc im_task_status_component { user_id project_id return_url } {
     Returns a formatted HTML component, representing a summary of
     the current project.
     The table shows for each participating user how many files have
@@ -400,6 +450,8 @@ ad_proc im_task_status_component { user_id group_id user_admin_p user_is_employe
     set bgcolor(0) " class=roweven"
     set bgcolor(1) " class=rowodd"
 
+    im_project_permissions $user_id $project_id view read write admin
+
     set up [db_string upload_action_id "select category_id from categories where category_type='Intranet Task Action Type' and lower(category)='upload'" -default ""]
     set down [db_string download_action_id "select category_id from categories where category_type='Intranet Task Action Type' and lower(category)='download'" -default ""]
 
@@ -407,7 +459,7 @@ ad_proc im_task_status_component { user_id group_id user_admin_p user_is_employe
 
     set task_status_html "
 <form action=/intranet-translation/trans-tasks/task-action method=POST>
-[export_form_vars group_id return_url]
+[export_form_vars project_id return_url]
 
 <table cellpadding=0 cellspacing=2 border=0>
 <tr>
@@ -465,7 +517,7 @@ from
 	from
 		im_tasks t
 	where
-		t.project_id = :group_id
+		t.project_id = :project_id
 	) t
 "
 
@@ -507,7 +559,7 @@ from
 		im_tasks t,
 		im_task_actions a
 	where
-		m.group_id = :group_id
+		m.group_id = :project_id
 		and m.group_id = t.project_id
 		and u.user_id = m.member_id
 		and (	u.user_id = t.trans_id 
@@ -518,7 +570,7 @@ from
 		and a.task_id = t.task_id
 	) t
 where
-	m.group_id = :group_id
+	m.group_id = :project_id
 	and m.member_id = u.user_id
 	and u.user_id = t.user_id
 group by
@@ -551,7 +603,7 @@ from
 		group_member_map m,
 		im_tasks t
 	where
-		m.group_id = :group_id
+		m.group_id = :project_id
 		and m.group_id = t.project_id
 		and u.user_id = m.member_id
 		and (
@@ -590,7 +642,7 @@ from
 	($task_status_sql) s,
 	($task_filecount_sql) c
 where
-	m.group_id = :group_id
+	m.group_id = :project_id
 	and m.member_id = u.user_id
 	and u.user_id = s.user_id(+)
 	and u.user_id = c.user_id(+)
