@@ -114,19 +114,12 @@ declare
     v_plugin            integer;
 begin
     v_plugin := im_component_plugin.new (
-        plugin_id =>    null,
-        object_type =>  'im_component_plugin',
-        creation_date => sysdate,
-        creation_user => 0,
-        creation_ip =>  null,
-        context_id =>   null,
-
+	plugin_name =>	'Project Translation Task Status',
 	package_name =>	'intranet-translation',
         page_url =>     '/intranet/projects/view',
         location =>     'bottom',
         sort_order =>   10,
         component_tcl => 
-
 	'im_task_status_component \
 		$user_id \
 		$project_id \
@@ -138,19 +131,12 @@ begin
 -- Show the upload task component in project page
 
     v_plugin := im_component_plugin.new (
-        plugin_id =>    null,
-        object_type =>  'im_component_plugin',
-        creation_date => sysdate,
-        creation_user => 0,
-        creation_ip =>  null,
-        context_id =>   null,
-
+	plugin_name =>	'Project Translation Error Component',
 	package_name =>	'intranet-translation',
         page_url =>     '/intranet/projects/view',
         location =>     'bottom',
         sort_order =>   20,
         component_tcl => 
-
 	'im_task_error_component \
 		$user_id \
 		$project_id \
