@@ -60,7 +60,7 @@ ad_proc im_task_insert {project_id task_name task_filename task_units task_uom t
     }
     
     if {"" == $source_language_id} {
-	ad_return_complaint 1 "<li><#_ You haven't defined the source language of your project.#><br><#_ Please edit your project and add a source language.#>"
+	ad_return_complaint 1 "<li>[_ intranet-translation.lt_You_havent_defined_th]<br>[_ intranet-translation.lt_Please_edit_your_proj]"
 	return
     }
 
@@ -91,7 +91,7 @@ VALUES
         if { [catch {
 	    db_dml insert_tasks $sql
         } err_msg] } {
-	    ad_return_complaint "<#_ Database Error#>" "<#_ Did you enter the same task name twice?#><BR>
+	    ad_return_complaint "[_ intranet-translation.Database_Error]" "[_ intranet-translation.lt_Did_you_enter_the_sam]<BR>
             Here is the error:<BR> <P>$err_msg"
         }
     }
@@ -113,7 +113,7 @@ switch -glob $submit {
 	    ad_returnredirect $return_url
 	}
 
-	set error "<#_ Unknown submit command#>: '$submit'"
+	set error "[_ intranet-translation.lt_Unknown_submit_comman]: '$submit'"
 	ad_returnredirect "/error?error=$error"
     }
 
@@ -206,7 +206,7 @@ switch -glob $submit {
     }
 
     default {
-	ad_return_complaint 1 "<li><#_ Unknown submit command#>: '$submit'"
+	ad_return_complaint 1 "<li>[_ intranet-translation.lt_Unknown_submit_comman]: '$submit'"
     }
 }
 

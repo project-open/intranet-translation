@@ -17,6 +17,7 @@
   <msg key="Client_project_">Client project #</msg>
   <msg key="Comment">Comment</msg>
   <msg key="Company_Contact">Company Contact</msg>
+  <msg key="Database_Error">Database Error</msg>
   <msg key="Del">Del</msg>
   <msg key="Dn">Dn</msg>
   <msg key="Edit">Edit</msg>
@@ -39,6 +40,7 @@
   <msg key="lt_Couldnt_find_the_spec">Couldn't find the specified task #%task_id%</msg>
   <msg key="lt_Create_folder_structu">Create folder structure and create a subproject for each language that you have chosen.</msg>
   <msg key="lt_Create_the_new_folder">Create the new folder structure</msg>
+  <msg key="lt_Did_you_enter_the_sam">Did you enter the same task name twice?</msg>
   <msg key="lt_Edit_Trados_Matrix_of">Edit Trados Matrix of '%object_name%'</msg>
   <msg key="lt_Edit_Translation_Deta">Edit Translation Details</msg>
   <msg key="lt_Error_creating_subfol">Error creating subfolder %path%</msg>
@@ -54,6 +56,7 @@
   <msg key="lt_Please_check_your_inp">Please check your input or ask the project manager.</msg>
   <msg key="lt_Please_choose_only_a_">Please choose only a single role for assignment</msg>
   <msg key="lt_Please_determine_the_">Please determine the valid file and delete or rename the other ones.</msg>
+  <msg key="lt_Please_edit_your_proj">Please edit your project and add a source language.</msg>
   <msg key="lt_Please_start_Trados_a">Please start Trados and generate a file for this folder.</msg>
   <msg key="lt_Please_try_to_repeat_">Please try to repeat your Trados analysis or inform the system administrator.</msg>
   <msg key="lt_Please_upload_a_file_">Please upload a file with the extension \&quot;.CSV\&quot;.</msg>
@@ -78,6 +81,7 @@ system meanwhile.)</msg>
   <msg key="lt_Translation_target_la">Translation target languages. Searate target folders will be created for every language that you select</msg>
   <msg key="lt_Unable_to_read_the_fi">Unable to read the file '%trados_wordcount_file%'.</msg>
   <msg key="lt_Unknown_Input_method_">Unknown Input method '%import_method%'.</msg>
+  <msg key="lt_Unknown_submit_comman">Unknown submit command</msg>
   <msg key="lt_Unknown_Trados_Versio">Unknown Trados Version</msg>
   <msg key="lt_Use_the_Browse_button">Use the 'Browse...' button to locate your file, then click 'Open'.</msg>
   <msg key="lt_Use_the_Browse_button_1">Use the Browse... button to locate your file, and click \&quot;Add ...\&quot; to upload a Trados wordcount (.CSV) file to.</msg>
@@ -92,6 +96,7 @@ system meanwhile.)</msg>
   <msg key="lt_You_have_insufficient_3">You have insufficient privileges to view this page.</msg>
   <msg key="lt_You_have_no_rights_to">You have no rights to modify this object.</msg>
   <msg key="lt_You_have_no_rights_to_1">You have no rights to see this object.</msg>
+  <msg key="lt_You_havent_defined_th">You haven't defined the source language of your project.</msg>
   <msg key="lt_You_havent_selected_a">You haven't selected a user for auto assignation</msg>
   <msg key="lt_Your_are_trying_to_do">Your are trying to download the file \&quot;$file_name\&quot;, but the file doesn't exist in our system.</msg>
   <msg key="lt_Your_file_doesnt_coin">Your file doesn't coincide with the expected file:</msg>
