@@ -12,6 +12,22 @@ ad_library {
     @author frank.bergmann@project-open.com
 }
 
+# -------------------------------------------------------------------
+# Additional constant functions
+# -------------------------------------------------------------------
+
+ad_proc -public im_project_type_trans_edit {} { return 87 }
+ad_proc -public im_project_type_edit {} { return 88 }
+ad_proc -public im_project_type_trans_edit_proof {} { return 89 }
+ad_proc -public im_project_type_ling_validation {} { return 90 }
+ad_proc -public im_project_type_localization {} { return 91 }
+ad_proc -public im_project_type_technology {} { return 92 }
+ad_proc -public im_project_type_trans {} { return 93 }
+ad_proc -public im_project_type_trans_spot {} { return 94 }
+ad_proc -public im_project_type_proof {} { return 95 }
+ad_proc -public im_project_type_glossary_comp {} { return 96 }
+
+
 ad_proc -public im_package_translation_id { } {
 } {
     return [util_memoize "im_package_translation_id_helper"]

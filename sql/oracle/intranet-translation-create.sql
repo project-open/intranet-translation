@@ -495,6 +495,8 @@ insert into im_categories values (91,  'Localization',
 '',  'Intranet Project Type','category','t','f');
 insert into im_categories values (92,  'Technology',  
 '',  'Intranet Project Type','category','t','f');
+insert into im_categories values (93,  'Trans Only',  
+'',  'Intranet Project Type','category','t','f');
 insert into im_categories values (94,  'Trans + Int. Spotcheck',  
 '',  'Intranet Project Type','category','t','f');
 insert into im_categories values (95,  'Proof Only',  
@@ -518,6 +520,7 @@ insert into im_category_hierarchy values (2500,89);
 insert into im_category_hierarchy values (2500,90);
 insert into im_category_hierarchy values (2500,91);
 insert into im_category_hierarchy values (2500,92);
+insert into im_category_hierarchy values (2500,93);
 insert into im_category_hierarchy values (2500,94);
 insert into im_category_hierarchy values (2500,95);
 insert into im_category_hierarchy values (2500,96);
