@@ -1,4 +1,4 @@
-<master src="../../intranet-core/www/master">
+<master src="../../../intranet-core/www/master">
 <property name="title">@page_title;noquote@</property>
 
 <%= [im_costs_navbar "none" "/intranet/invoices/index" "" "" [list]] %>
