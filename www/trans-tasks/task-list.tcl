@@ -19,7 +19,7 @@ set user_id [ad_maybe_redirect_for_registration]
 set return_url [im_url_with_query]
 set page_title "Project Tasks"
 set context_bar [ad_context_bar [list /intranet/projects/ "Projects"] [list "/intranet/projects/view?project_id=$project_id" "One project"] $page_title]
-set customer_view_page "/intranet/customers/view"
+set company_view_page "/intranet/companies/view"
 
 set task_component [im_task_component $user_id $project_id $return_url]
 set task_new_component [im_new_task_component $user_id $project_id $return_url]

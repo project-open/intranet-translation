@@ -27,12 +27,12 @@
 --
 -- Add some translation specific fields to a project.
 
-alter table im_projects add	customer_project_nr	varchar(50);
-alter table im_projects add	customer_contact_id	integer references users;
+alter table im_projects add	company_project_nr	varchar(50);
+alter table im_projects add	company_contact_id	integer references users;
 alter table im_projects add	source_language_id	references im_categories;
 alter table im_projects add	subject_area_id		references im_categories;
 alter table im_projects add	expected_quality_id	references im_categories;
-alter table im_projects add	final_customer		varchar(50);
+alter table im_projects add	final_company		varchar(50);
 
 -- An approximate value for the size (number of words) of the project
 alter table im_projects add	trans_project_words	number(12,0);
@@ -121,7 +121,7 @@ create unique index im_trans_tasks_unique_idx on im_trans_tasks
 create index im_trans_tasks_project_id_idx on im_trans_tasks(project_id);
 
 
--- Trados Matrix by object (normally by customer)
+-- Trados Matrix by object (normally by company)
 create table im_trans_trados_matrix (
 	object_id		integer 
 				constraint im_trans_matrix_cid_fk
@@ -269,15 +269,15 @@ declare
     v_plugin            integer;
 begin
     v_plugin := im_component_plugin.new (
-        plugin_name =>  'Customer Trados Matrix',
+        plugin_name =>  'Company Trados Matrix',
         package_name => 'intranet-translation',
-        page_url =>     '/intranet/customers/view',
+        page_url =>     '/intranet/companies/view',
         location =>     'left',
         sort_order =>   70,
         component_tcl =>
         'im_trans_trados_matrix_component \
                 $user_id \
-                $customer_id \
+                $company_id \
                 $return_url'
     );
 end;
@@ -386,7 +386,7 @@ begin
 
     -- Should Freelancers see the translation project details?
     -- Everybody can see subject area, source and target language,
-    -- but the customer project#, delivery date and customer contact
+    -- but the company project#, delivery date and company contact
     -- are normally reserved for employees.
     acs_privilege.create_privilege(
 	'view_trans_proj_detail',
@@ -435,7 +435,7 @@ declare
 	v_employees		integer;
 	v_accounting		integer;
 	v_senman		integer;
-	v_customers		integer;
+	v_companies		integer;
 	v_freelancers		integer;
 	v_proman		integer;
 	v_admins		integer;
@@ -446,7 +446,7 @@ begin
     select group_id into v_proman from groups where group_name = 'Project Managers';
     select group_id into v_accounting from groups where group_name = 'Accounting';
     select group_id into v_employees from groups where group_name = 'Employees';
-    select group_id into v_customers from groups where group_name = 'Customers';
+    select group_id into v_companies from groups where group_name = 'Companies';
     select group_id into v_freelancers from groups where group_name = 'Freelancers';
 
     select menu_id
@@ -468,7 +468,7 @@ begin
     acs_permission.grant_permission(v_menu, v_proman, 'read');
     acs_permission.grant_permission(v_menu, v_accounting, 'read');
     acs_permission.grant_permission(v_menu, v_employees, 'read');
-    acs_permission.grant_permission(v_menu, v_customers, 'read');
+    acs_permission.grant_permission(v_menu, v_companies, 'read');
     -- no freelancers!
 
 
@@ -486,7 +486,7 @@ begin
     acs_permission.grant_permission(v_menu, v_proman, 'read');
     acs_permission.grant_permission(v_menu, v_accounting, 'read');
     acs_permission.grant_permission(v_menu, v_employees, 'read');
-    acs_permission.grant_permission(v_menu, v_customers, 'read');
+    acs_permission.grant_permission(v_menu, v_companies, 'read');
     -- no freelancers!
 end;
 /
@@ -681,10 +681,10 @@ INSERT INTO im_categories VALUES (570,'Tec-Mech. eng','','Intranet Translation S
 -- reserved until 599
 
 
-prompt Create the "Tigerpond" customer
+prompt Create the "Tigerpond" company
 DECLARE
     v_office_id		integer;
-    v_customer_id	integer;
+    v_company_id	integer;
 BEGIN
     -- First setup the main office
     v_office_id := im_office.new(
@@ -693,15 +693,15 @@ BEGIN
         office_path     => 'tigerpond_main_office'
     );
 
-    v_customer_id := im_customer.new(
-	object_type	=> 'im_customer',
-	customer_name	=> 'Tigerpond',
-	customer_path	=> 'tigerpond',
+    v_company_id := im_company.new(
+	object_type	=> 'im_company',
+	company_name	=> 'Tigerpond',
+	company_path	=> 'tigerpond',
 	main_office_id	=> v_office_id,
 	-- Translation Agency
-	customer_type_id => 54,
+	company_type_id => 54,
 	-- 'Active' status
-	customer_status_id => 46
+	company_status_id => 46
     );
 end;
 /
@@ -712,21 +712,21 @@ commit;
 prompt Create a "Tigerpond" project
 declare
 	v_project_id		integer;
-	v_customer_id		integer;
+	v_company_id		integer;
 	v_rel_id		integer;
 	v_user_id		integer;
 begin
-	select customer_id
-	into v_customer_id
-	from im_customers
-	where customer_path = 'tigerpond';
+	select company_id
+	into v_company_id
+	from im_companies
+	where company_path = 'tigerpond';
 
 	v_project_id := im_project.new(
 		object_type	=> 'im_project',
 		project_name	=> 'Large Translation Project',
 		project_nr	=> '2004_0001',
 		project_path	=> '2004_0001',
-		customer_id	=> v_customer_id,
+		company_id	=> v_company_id,
 		-- Trans+Edit+Proof Project
 		project_type_id	=> 89
 	);

@@ -10,8 +10,8 @@
 
 -- 100	im_projects
 -- 101	im_project_roles
--- 102	im_customers
--- 103	im_customer_roles
+-- 102	im_companies
+-- 103	im_company_roles
 -- 104	im_offices
 -- 105	im_office_roles
 -- 106	im_categories

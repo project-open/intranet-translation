@@ -35,14 +35,14 @@ set target_language_ids [im_target_language_ids $project_id]
 db_1row projects_info_query { 
 select 
         p.*,
-        p.customer_project_nr,
-        c.customer_name
+        p.company_project_nr,
+        c.company_name
 from
 	im_projects p,
-	im_customers c
+	im_companies c
 where 
 	p.project_id=:project_id 
-        and p.project_id=c.customer_id(+)
+        and p.project_id=c.company_id(+)
 }
 
 set page_body "
@@ -58,14 +58,14 @@ set page_body "
                     <tr> 
                       <td>Client project #</td>
                       <td> 
-                        <input type=text size=40 name=customer_project_nr value='$customer_project_nr'>
+                        <input type=text size=40 name=company_project_nr value='$company_project_nr'>
                          [im_gif help "An optional field specifying the project reference code of the client. Is used when printing the invoice. Example: 20030310A12478"]
                       </td>
                     </tr>
                     <tr> 
                       <td>Final User &nbsp;</td>
                       <td> 
-                        <input type=text size=20 name=final_customer value='$final_customer'>
+                        <input type=text size=20 name=final_company value='$final_company'>
                          [im_gif help "Who is the final consumer (when working for an agency)? Examples: \"Shell\", \"UBS\", ..."]
                       </td>
                     </tr>
@@ -73,7 +73,7 @@ set page_body "
                     <tr> 
                       <td>Client contact &nbsp;</td>
                       <td>
-[im_customer_contact_select "customer_contact_id" $customer_contact_id $customer_id]
+[im_company_contact_select "company_contact_id" $company_contact_id $company_id]
                       </td>
                     </tr>
 

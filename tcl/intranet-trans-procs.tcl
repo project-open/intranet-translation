@@ -217,11 +217,11 @@ ad_proc -public im_trans_trados_matrix_calculate { object_id px_words prep_words
     a valuation of repetitions from the associated tradox
     matrix.<br>
     If object_id is an "im_project", first check if the project
-    has a matrix associated and then fallback to the customers
+    has a matrix associated and then fallback to the companies
     matrix.<br>
-    If the customer doesn't have a matrix, fall back to the 
-    "Internal" customer<br>
-    If the "Internal" customer doesn't have a matrix fall
+    If the company doesn't have a matrix, fall back to the 
+    "Internal" company<br>
+    If the "Internal" company doesn't have a matrix fall
     back to some default values.
 } {
     return [im_trans_trados_matrix_calculate_helper $object_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
@@ -254,8 +254,8 @@ ad_proc -public im_trans_trados_matrix { object_id } {
 	im_project {
 	    array set matrix [im_trans_trados_matrix_project $object_id]
 	}
-	im_customer {
-	    array set matrix [im_trans_trados_matrix_customer $object_id]
+	im_company {
+	    array set matrix [im_trans_trados_matrix_company $object_id]
 	}
 	default {
 	    array set matrix [im_trans_trados_matrix_default]
@@ -272,8 +272,8 @@ ad_proc -public im_trans_trados_matrix_project { project_id } {
 } {
     set count [db_string matrix_count "select count(*) from im_trans_trados_matrix where object_id=:project_id"]
     if {!$count} { 
-	set customer_id [db_string project_customer "select customer_id from im_projects project_id=:project_id"]
-	return [im_trans_trados_matrix_customer] 
+	set company_id [db_string project_company "select company_id from im_projects project_id=:project_id"]
+	return [im_trans_trados_matrix_company] 
     }
 
     # Get match100, match95, ...
@@ -297,17 +297,17 @@ where
     set matrix(75) $match75
     set matrix(50) $match50
     set matrix(0) $match0
-    set matrix(type) im_customer
+    set matrix(type) im_company
     set matrix(object) $project_id
 
     return [array get matrix]
 }
 
 
-ad_proc -public im_trans_trados_matrix_customer { customer_id } {
-    Returns an array with the trados matrix values for a customer.
+ad_proc -public im_trans_trados_matrix_company { company_id } {
+    Returns an array with the trados matrix values for a company.
 } {
-    set count [db_string matrix_count "select count(*) from im_trans_trados_matrix where object_id=:customer_id"]
+    set count [db_string matrix_count "select count(*) from im_trans_trados_matrix where object_id=:company_id"]
     if {!$count} { return [im_trans_trados_matrix_internal] }
 
     # Get match100, match95, ...
@@ -319,7 +319,7 @@ from
         acs_objects o,
         im_trans_trados_matrix m
 where
-        o.object_id = :customer_id
+        o.object_id = :company_id
         and o.object_id = m.object_id(+)
 "
 
@@ -331,18 +331,18 @@ where
     set matrix(75) $match75
     set matrix(50) $match50
     set matrix(0) $match0
-    set matrix(type) im_customer
-    set matrix(object) $customer_id
+    set matrix(type) im_company
+    set matrix(object) $company_id
 
     return [array get matrix]
 }
 
 ad_proc -public im_trans_trados_matrix_internal { } {
-    Returns an array with the trados matrix values for the "Internal" customer.
+    Returns an array with the trados matrix values for the "Internal" company.
 } {
-    set customer_id [im_customer_internal]
+    set company_id [im_company_internal]
     
-    set count [db_string matrix_count "select count(*) from im_trans_trados_matrix where object_id=:customer_id"]
+    set count [db_string matrix_count "select count(*) from im_trans_trados_matrix where object_id=:company_id"]
     if {!$count} { return [im_trans_trados_matrix_default] }
 
     # Get match100, match95, ...
@@ -354,7 +354,7 @@ from
         acs_objects o,
         im_trans_trados_matrix m
 where
-        o.object_id = :customer_id
+        o.object_id = :company_id
         and o.object_id = m.object_id(+)
 "
 
@@ -373,7 +373,7 @@ where
 
 
 ad_proc -public im_trans_trados_matrix_default { } {
-    Returns an array with the trados matrix values for the "Internal" customer.
+    Returns an array with the trados matrix values for the "Internal" company.
 } {
     set matrix(x) 0.25
     set matrix(rep) 0.25
@@ -509,7 +509,7 @@ ad_proc -public im_trans_project_details_component { user_id project_id return_u
     set query "
 select
         p.*,
-	im_name_from_user_id(p.customer_contact_id) as customer_contact_name
+	im_name_from_user_id(p.company_contact_id) as company_contact_name
 from
         im_projects p
 where
@@ -533,11 +533,11 @@ if {[im_permission $user_id view_trans_proj_detail]} {
     append html "
   <tr> 
     <td>Client Project#</td>
-    <td>$customer_project_nr</td>
+    <td>$company_project_nr</td>
   </tr>
   <tr> 
     <td>Final User</td>
-    <td>$final_customer</td>
+    <td>$final_company</td>
   </tr>
   <tr> 
     <td>Quality Level</td>
@@ -546,12 +546,12 @@ if {[im_permission $user_id view_trans_proj_detail]} {
 "
 }
 
-set customer_contact_html [im_render_user_id $customer_contact_id $customer_contact_name $user_id $project_id]
-if {"" != $customer_contact_html} {
+set company_contact_html [im_render_user_id $company_contact_id $company_contact_name $user_id $project_id]
+if {"" != $company_contact_html} {
     append html "
   <tr> 
-    <td>Customer Contact</td>
-    <td>$customer_contact_html</td>
+    <td>Company Contact</td>
+    <td>$company_contact_html</td>
   </tr>
 "
 }
@@ -1196,7 +1196,7 @@ ad_proc im_task_component { user_id project_id return_url } {
     # Get the permissions for the current _project_
     im_project_permissions $user_id $project_id project_view project_read project_write project_admin
 
-    set customer_view_page "/intranet/customers/view"
+    set company_view_page "/intranet/companies/view"
 
     # -------------------- Column Selection ---------------------------------
     # Define the column headers and column contents that
@@ -1699,16 +1699,16 @@ ad_proc im_task_missing_file_list { project_id } {
     set query "
 select
         p.project_nr as project_short_name,
-        c.customer_name as customer_short_name,
+        c.company_name as company_short_name,
         p.source_language_id,
         im_category_from_id(p.source_language_id) as source_language,
         p.project_type_id
 from
         im_projects p,
-        im_customers c
+        im_companies c
 where
         p.project_id=:project_id
-        and p.customer_id=c.customer_id(+)"
+        and p.company_id=c.company_id(+)"
 
     if { ![db_0or1row projects_info_query $query] } {
 	ad_return_complaint 1 "Can't find the project with group

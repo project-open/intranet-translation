@@ -42,16 +42,16 @@ if { ![exists_and_not_null return_url] } {
 set query "
 select
         p.project_nr as project_short_name,
-        c.customer_name as customer_short_name,
+        c.company_name as company_short_name,
         p.source_language_id,
         im_category_from_id(p.source_language_id) as source_language,
         p.project_type_id
 from
         im_projects p,
-        im_customers c
+        im_companies c
 where
         p.project_id=:project_id
-        and p.customer_id=c.customer_id(+)"
+        and p.company_id=c.company_id(+)"
 
 
 if { ![db_0or1row projects_info_query $query] } {

@@ -1,4 +1,4 @@
-# /packages/intranet-translation/projects/edit-customer-data-2.tcl
+# /packages/intranet-translation/projects/edit-company-data-2.tcl
 #
 # Copyright (C) 2003-2004 Project/Open
 #
@@ -12,9 +12,9 @@ ad_page_contract {
     @param project_id group id
 } {
     project_id:integer
-    customer_project_nr
-    final_customer
-    customer_contact_id:integer 
+    company_project_nr
+    final_company
+    company_contact_id:integer 
     expected_quality_id:integer,optional
     source_language_id:integer
     target_language_ids:multiple,optional
@@ -35,14 +35,14 @@ if {![info exists target_language_ids]} {
 set sql "
 update im_projects set
 "
-if {[exists_and_not_null final_customer]} {
-    append sql "final_customer=:final_customer,\n"
+if {[exists_and_not_null final_company]} {
+    append sql "final_company=:final_company,\n"
 }
-if {[exists_and_not_null customer_project_nr]} {
-    append sql "customer_project_nr=:customer_project_nr,\n"
+if {[exists_and_not_null company_project_nr]} {
+    append sql "company_project_nr=:company_project_nr,\n"
 }
-if {[exists_and_not_null customer_contact_id]} {
-    append sql "customer_contact_id=:customer_contact_id,\n"
+if {[exists_and_not_null company_contact_id]} {
+    append sql "company_contact_id=:company_contact_id,\n"
 }
 if {[exists_and_not_null expected_quality_id]} {
     append sql "expected_quality_id=:expected_quality_id,\n"
@@ -139,7 +139,7 @@ if {[exists_and_not_null submit_subprojects]} {
         -project_name           $sub_project_name \
         -project_nr             $sub_project_nr \
         -project_path           $sub_project_path \
-        -customer_id            $customer_id \
+        -company_id            $company_id \
         -parent_id              $project_id \
         -project_type_id        $project_type_id \
 	-project_status_id      $project_status_id]

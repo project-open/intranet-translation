@@ -71,16 +71,16 @@ set err_count 0
 set project_query "
 select
         p.project_nr as project_short_name,
-	p.customer_id,
-        c.customer_name as customer_short_name,
+	p.company_id,
+        c.company_name as company_short_name,
         p.source_language_id,
         p.project_type_id
 from
         im_projects p,
-        im_customers c
+        im_companies c
 where
         p.project_id=:project_id
-        and p.customer_id=c.customer_id(+)"
+        and p.company_id=c.company_id(+)"
 
 
 
@@ -310,7 +310,7 @@ db_transaction {
 
 	# Calculate the number of "effective" words based on
 	# a valuation of repetitions
-        set task_units [im_trans_trados_matrix_calculate $customer_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
+        set task_units [im_trans_trados_matrix_calculate $company_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
 
 	set billable_units $task_units
 	set task_type_id $project_type_id
