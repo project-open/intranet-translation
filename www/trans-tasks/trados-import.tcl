@@ -54,7 +54,7 @@ if {0 == [llength $target_language_ids]} {
 set project_path [im_filestorage_project_path $project_id]
 
 set page_title "[_ intranet-translation.Trados_Upload]"
-set context_bar [ad_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] $page_title]
+set context_bar [im_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] $page_title]
 
 set bgcolor(0) " class=roweven"
 set bgcolor(1) " class=rowodd"

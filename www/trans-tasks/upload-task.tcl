@@ -19,7 +19,7 @@ ad_page_contract {
 set user_id [ad_maybe_redirect_for_registration]
 set page_title "[_ intranet-translation.Upload_New_FileURL]"
 
-set context_bar [ad_context_bar [list "/intranet/projects/" "[_ intranet-translation.Projects]"]  [list "/intranet/projects/view?group_id=$project_id" "[_ intranet-translation.One_Project]"]  "[_ intranet-translation.Upload_File]"]
+set context_bar [im_context_bar [list "/intranet/projects/" "[_ intranet-translation.Projects]"]  [list "/intranet/projects/view?group_id=$project_id" "[_ intranet-translation.One_Project]"]  "[_ intranet-translation.Upload_File]"]
 
 set bgcolor(0) " class=roweven"
 set bgcolor(1) " class=rowodd"

@@ -52,6 +52,6 @@ if {"" == $match_x} { set match_x $default(x) }
 
 set page_title "[_ intranet-translation.lt_Edit_Trados_Matrix_of]"
 if {"" != $match100} { set page_title "[_ intranet-translation.lt_New_Trados_Matrix_of_]" }
-set context_bar [ad_context_bar $page_title]
+set context_bar [im_context_bar $page_title]
 set focus {}
 

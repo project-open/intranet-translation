@@ -1,6 +1,6 @@
 <master src="../../../intranet-core/www/master">
 
-<property name="title">#intranet-translation.Companies#</property>
+<property name="title">#intranet-translation.Trados_Matrix#</property>
 <property name="context">#intranet-translation.context#</property>
 <property name="main_navbar_label">finance</property>
 

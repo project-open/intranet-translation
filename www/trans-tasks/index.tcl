@@ -17,7 +17,7 @@ ad_page_contract {
 set user_id [ad_maybe_redirect_for_registration]
 set return_url [im_url_with_query]
 set page_title "[_ intranet-translation.Project_Tasks]"
-set context_bar [ad_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] [list "/intranet/projects/view?group_id=$group_id" "[_ intranet-translation.One_project]"] $page_title]
+set context_bar [im_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] [list "/intranet/projects/view?group_id=$group_id" "[_ intranet-translation.One_project]"] $page_title]
 set task_return_url "/intranet/trans-tasks/task-list?[export_url_vars group_id return_url]"
 
 set missing_task_list [im_task_missing_file_list $group_id]

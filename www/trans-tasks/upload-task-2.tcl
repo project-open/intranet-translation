@@ -25,9 +25,9 @@ set project_path [im_filestorage_project_path $project_id]
 set page_title "[_ intranet-translation.Upload_Successful]"
 # Set the context bar as a function on whether this is a subproject or not:
 if {[im_permission $user_id view_projects]} {
-    set context_bar [ad_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] [list "/intranet/projects/view?group_id=$project_id" "[_ intranet-translation.One_project]"] $page_title]
+    set context_bar [im_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] [list "/intranet/projects/view?group_id=$project_id" "[_ intranet-translation.One_project]"] $page_title]
 } else {
-    set context_bar [ad_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] $page_title]
+    set context_bar [im_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] $page_title]
 }
 
 
