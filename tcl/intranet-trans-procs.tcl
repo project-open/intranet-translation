@@ -551,15 +551,20 @@ ad_proc im_task_status_component { user_id project_id return_url } {
     File movements outside the translation workflow (moving files
     in the filesystem) are not reflected by this component (yet).
 } {
+    ns_log Notice "im_trans_status_component($user_id, $project_id)"
     # Is this a translation project?
+
     if {![im_project_has_type $project_id "Translation Project"]} {
+	return ""
+    }
+
+    im_project_permissions $user_id $project_id view read write admin
+    if {![im_permission $user_id view_trans_task_status]} {
 	return ""
     }
 
     set bgcolor(0) " class=roweven"
     set bgcolor(1) " class=rowodd"
-
-    im_project_permissions $user_id $project_id view read write admin
 
     set up [db_string upload_action_id "select category_id from im_categories where category_type='Intranet Task Action Type' and lower(category)='upload'" -default ""]
     set down [db_string download_action_id "select category_id from im_categories where category_type='Intranet Task Action Type' and lower(category)='download'" -default ""]
@@ -605,6 +610,8 @@ ad_proc im_task_status_component { user_id project_id return_url } {
 </tr>\n"
 
     # ------------------- Get the number of tasks to assign----------------
+    # This SQL calculates the overall number of files/wordcounts to be
+    # assigned. We are going to subtract the assigned files/wcs from it.
 
     set unassigned_files_sql "
 select
@@ -619,10 +626,10 @@ select
 from
 	(select
 		t.task_type_id,
-		CASE WHEN t.task_type_id in (85,86,88,94) THEN t.task_units END as trans,
-		CASE WHEN t.task_type_id in (86,87,88,94) THEN t.task_units  END as edit,
-		CASE WHEN t.task_type_id in (88,95) THEN t.task_units  END as proof,
-		CASE WHEN t.task_type_id in (89,90,91,92,93,96) THEN t.task_units END as other
+		CASE WHEN t.task_type_id in (87,89,94) THEN t.task_units END as trans,
+		CASE WHEN t.task_type_id in (87,88,89,94) THEN t.task_units  END as edit,
+		CASE WHEN t.task_type_id in (89,95) THEN t.task_units  END as proof,
+		CASE WHEN t.task_type_id in (85,86,90,91,92,96) THEN t.task_units END as other
 	from
 		im_trans_tasks t
 	where
@@ -650,7 +657,7 @@ select
 	sum(other_up) as other_up
 from
 	users u,
-	group_member_map m,
+	acs_rels r,
 	(select distinct
 		t.task_id,
 		u.user_id,
@@ -664,13 +671,13 @@ from
 		CASE WHEN u.user_id = t.other_id and action_type_id=:up THEN 1 END as other_up
 	from
 		users u,
-		group_member_map m,
+		acs_rels r,
 		im_trans_tasks t,
 		im_task_actions a
 	where
-		m.group_id = :project_id
-		and m.group_id = t.project_id
-		and u.user_id = m.member_id
+		r.object_id_one = :project_id
+		and r.object_id_one = t.project_id
+		and u.user_id = r.object_id_two
 		and (	u.user_id = t.trans_id 
 			or u.user_id = t.edit_id 
 			or u.user_id = t.proof_id 
@@ -679,8 +686,8 @@ from
 		and a.task_id = t.task_id
 	) t
 where
-	m.group_id = :project_id
-	and m.member_id = u.user_id
+	r.object_id_one = :project_id
+	and r.object_id_two = u.user_id
 	and u.user_id = t.user_id
 group by
 	u.user_id
@@ -709,12 +716,12 @@ from
 		CASE WHEN u.user_id = t.other_id THEN t.task_units END as other_ass
 	from
 		users u,
-		group_member_map m,
+		acs_rels r,
 		im_trans_tasks t
 	where
-		m.group_id = :project_id
-		and m.group_id = t.project_id
-		and u.user_id = m.member_id
+		r.object_id_one = :project_id
+		and r.object_id_one = t.project_id
+		and u.user_id = r.object_id_two
 		and (
 			u.user_id = t.trans_id 
 			or u.user_id = t.edit_id 
@@ -747,12 +754,12 @@ select
 	s.other_up
 from
 	users u,
-	group_member_map m,
+	acs_rels r,
 	($task_status_sql) s,
 	($task_filecount_sql) c
 where
-	m.group_id = :project_id
-	and m.member_id = u.user_id
+	r.object_id_one = :project_id
+	and r.object_id_two = u.user_id
 	and u.user_id = s.user_id(+)
 	and u.user_id = c.user_id(+)
 "
@@ -1123,7 +1130,12 @@ where
     
     # Return an empty string if there are no errors
     if {$ctr == 0} {
-	return ""
+#	return ""
+	append task_table_rows "
+<tr $bgcolor([expr $ctr % 2])>
+  <td colspan=99 align=center>No missing files found</td>
+</tr>
+"
     }
 
     # ----------------- Put everything together -------------------------
@@ -1134,7 +1146,7 @@ where
 <table border=0>
 <tr>
   <td class=rowtitle align=center colspan=20>
-    Please upload the following tasks
+    Missing Translation Files
   </td>
 </tr>
 <tr> 

@@ -225,15 +225,23 @@ end;
 
 -- Create Translation specific privileges
 begin
+    -- Freelancers should normally not see the translation tasks(?)
     acs_privilege.create_privilege(
 	'view_trans_tasks',
 	'View Trans Tasks',
 	'View Trans Tasks');
 
+    - Should Freelancers see the Trados matrix for the translation tasks?
     acs_privilege.create_privilege(
 	'view_trans_task_matrix',
 	'View Trans Task Matrix',
 	'View Trans Task Matrix');
+
+    - Should Freelancers see the translation status report?
+    acs_privilege.create_privilege(
+	'view_trans_task_status',
+	'View Trans Task Status',
+	'View Trans Task Status');
 end;
 /
 
@@ -250,6 +258,14 @@ begin
     im_priv_create('view_trans_task_matrix', 'Project Managers');
     im_priv_create('view_trans_task_matrix', 'Senior Managers');
     im_priv_create('view_trans_task_matrix', 'P/O Admins');
+end;
+/
+
+begin
+    im_priv_create('view_trans_task_status', 'Employees');
+    im_priv_create('view_trans_task_status', 'Project Managers');
+    im_priv_create('view_trans_task_status', 'Senior Managers');
+    im_priv_create('view_trans_task_status', 'P/O Admins');
 end;
 /
 
@@ -340,7 +356,6 @@ INSERT INTO im_categories VALUES (2421,'download','','Intranet Task Action Type'
 
 
 
-
 insert into im_categories values (87,  'Trans + Edit',  
 '',  'Intranet Project Type','category','t','f');
 insert into im_categories values (88,  'Edit Only',  '',  
@@ -360,30 +375,36 @@ insert into im_categories values (95,  'Proof Only',
 insert into im_categories values (96,  'Glossary Compilation',  
 '',  'Intranet Project Type','category','t','f');
 
-insert into im_categories values (97,  'Translation Project',  
+
+-- -------------------------------------------------------------------
+-- Category Hierarchy
+-- -------------------------------------------------------------------
+
+-- 2200-2299    Translation Hierarchy
+
+insert into im_categories values (2200,  'Translation Project',  
 '',  'Intranet Project Type','category','t','f');
 
+insert into im_category_hierarchy values (2200,87);
+insert into im_category_hierarchy values (2200,88);
+insert into im_category_hierarchy values (2200,89);
+insert into im_category_hierarchy values (2200,90);
+insert into im_category_hierarchy values (2200,91);
+insert into im_category_hierarchy values (2200,92);
+insert into im_category_hierarchy values (2200,94);
+insert into im_category_hierarchy values (2200,95);
+insert into im_category_hierarchy values (2200,96);
 
-insert into im_category_hierarchy values (97,87);
-insert into im_category_hierarchy values (97,88);
-insert into im_category_hierarchy values (97,89);
-insert into im_category_hierarchy values (97,90);
-insert into im_category_hierarchy values (97,91);
-insert into im_category_hierarchy values (97,92);
-insert into im_category_hierarchy values (97,94);
-insert into im_category_hierarchy values (97,95);
-insert into im_category_hierarchy values (97,96);
 
+-- -------------------------------------------------------------------
+-- Other Categories
+-- -------------------------------------------------------------------
 
 -- Intranet Quality
 INSERT INTO im_categories VALUES (110,'Premium Quality','Premium Quality','Intranet Quality','category','t','f');
 INSERT INTO im_categories VALUES (111,'High Quality','High Quality','Intranet Quality','category','t','f');
 INSERT INTO im_categories VALUES (112,'Average Quality','Average Quality','Intranet Quality','category','t','f');
 INSERT INTO im_categories VALUES (113,'Draft Quality','Draft Quality','Intranet Quality','category','t','f');
-
-
-
-
 
 
 -- Setup the most frequently used language (lang, sort_key, name)
