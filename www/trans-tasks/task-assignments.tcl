@@ -14,10 +14,8 @@ ad_page_contract {
     project_id:integer
     return_url
     {orderby "subproject_name"}
-
     {auto_assigment ""}
     {auto_assigned_words 0}
-
     {trans_auto_id 0}
     {edit_auto_id 0}
     {proof_auto_id 0}
@@ -165,21 +163,21 @@ db_foreach select_tasks $task_sql {
     set proof 0
     set other 0
     switch $task_type_id {
-	85 { # Trans Only
+	97 { # Trans Only
 	    set trans 1
 	    incr n_trans
 	}
-	86 { # Trans + Edit  
+	87 { # Trans + Edit  
 	    set trans 1 
 	    set edit 1
 	    incr n_trans
 	    incr n_edit
 	}
-	87 { # Edit Only  
+	88 { # Edit Only  
 	    set edit 1
 	    incr n_edit
 	}
-	88 { # Trans + Edit + Proof  
+	89 { # Trans + Edit + Proof  
 	    set trans 1 
 	    set edit 1 
 	    set proof 1
