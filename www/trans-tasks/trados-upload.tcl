@@ -26,7 +26,7 @@ ad_page_contract {
 set user_id [ad_maybe_redirect_for_registration]
 im_project_permissions $user_id $project_id view read write admin
 if {!$write} {
-    ad_return_complaint 1 "<li>You have insufficient privileges to view this page.\n"
+    ad_return_complaint 1 "<li>[_ intranet-translation.lt_You_have_insufficient_3]"
     return
 }
 
@@ -44,7 +44,7 @@ ns_log Notice "trados-upload: max_n_bytes=$max_n_bytes"
 ns_log Notice "trados-upload: tmp_filename=$tmp_filename"
 
 if { $max_n_bytes && ([file size $tmp_filename] > $max_n_bytes) } {
-    ad_return_complaint 1 "Your file is larger than the maximum permissible upload size:  [util_commify_number $max_n_bytes] bytes"
+    ad_return_complaint 1 "[_ intranet-translation.lt_Your_file_is_larger_t]:  [util_commify_number $max_n_bytes] bytes"
     return 0
 }
 
@@ -52,8 +52,8 @@ set file_extension [string tolower [file extension $upload_file]]
 ns_log Notice "trados-upload: file_extension=$file_extension"
 
 if {![string equal $file_extension ".csv"]} {
-    ad_return_complaint 1 "<li>Your file is not a trados wordcount file.<br>
-    Please upload a file with the extension \".CSV\"."
+    ad_return_complaint 1 "<li>[_ intranet-translation.lt_Your_file_is_not_a_tr]<br>
+    [_ intranet-translation.lt_Please_upload_a_file_]"
     return 0
 }
 

@@ -45,7 +45,7 @@ set perm_cmd "${object_type}_permissions \$user_id \$object_id view read write a
 eval $perm_cmd
 
 if {!$write} {
-    ad_return_complaint 1 "You have no rights to modify this object."
+    ad_return_complaint 1 "[_ intranet-translation.lt_You_have_no_rights_to]
     return
 }
 

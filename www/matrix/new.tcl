@@ -18,7 +18,7 @@ set perm_cmd "${object_type}_permissions \$user_id \$object_id view read write a
 eval $perm_cmd
 
 if {!$read} {
-    ad_return_complaint 1 "You have no rights to see this object."
+    ad_return_complaint 1 "[_ intranet-translation.lt_You_have_no_rights_to_1]"
     return
 }
 
@@ -50,8 +50,8 @@ if {"" == $match_rep} { set match_rep $default(rep) }
 if {"" == $match_x} { set match_x $default(x) }
 
 
-set page_title "Edit Trados Matrix of '$object_name'"
-if {"" != $match100} { set page_title "New Trados Matrix of '$object_name'" }
+set page_title "[_ intranet-translation.lt_Edit_Trados_Matrix_of]"
+if {"" != $match100} { set page_title "[_ intranet-translation.lt_New_Trados_Matrix_of_]" }
 set context_bar [ad_context_bar $page_title]
 set focus {}
 

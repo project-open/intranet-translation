@@ -18,15 +18,15 @@ ad_page_contract {
 }
 
 set user_id [ad_maybe_redirect_for_registration]
-set page_title "Edit Translation Details"
-set context_bar [ad_context_bar [list /intranet/projects/ "Projects"] [list "/intranet/projects/view?[export_url_vars project_id]" "One project"] $page_title]
+set page_title "[_ intranet-translation.lt_Edit_Translation_Deta]"
+set context_bar [ad_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] [list "/intranet/projects/view?[export_url_vars project_id]" "[_ intranet-translation.One_project]"] $page_title]
 
 # set required_field "<font color=red size=+1><B>*</B></font>"
 set required_field ""
 
 im_project_permissions $user_id $project_id view read write admin
 if {!$write} {
-    ad_return_complaint 1 "<li>You have insufficient privileges to see this page"
+    ad_return_complaint 1 "<li>[_ intranet-translation.lt_You_have_insufficient]"
     return
 }
 
@@ -51,61 +51,61 @@ set page_body "
                   <table border=0>
                     <tr> 
                       <td colspan=2 class=rowtitle align=middle>
-                        Project Details
+                        [_ intranet-translation.Project_Details]
                       </td>
                     </tr>
                     <tr> 
                     <tr> 
-                      <td>Client project #</td>
+                      <td>[_ intranet-translation.Client_project_]</td>
                       <td> 
                         <input type=text size=40 name=company_project_nr value='$company_project_nr'>
-                         [im_gif help "An optional field specifying the project reference code of the client. Is used when printing the invoice. Example: 20030310A12478"]
+                         [im_gif help "[_ intranet-translation.lt_An_optional_field_spe]"]
                       </td>
                     </tr>
                     <tr> 
-                      <td>Final User &nbsp;</td>
+                      <td>[_ intranet-translation.Final_User] &nbsp;</td>
                       <td> 
                         <input type=text size=20 name=final_company value='$final_company'>
-                         [im_gif help "Who is the final consumer (when working for an agency)? Examples: \"Shell\", \"UBS\", ..."]
+                         [im_gif help "[_ intranet-translation.lt_Who_is_the_final_cons]"]
                       </td>
                     </tr>
 
                     <tr> 
-                      <td>Client contact &nbsp;</td>
+                      <td>[_ intranet-translation.Client_contact] &nbsp;</td>
                       <td>
 [im_company_contact_select "company_contact_id" $company_contact_id $company_id]
                       </td>
                     </tr>
 
                    <tr>
-                      <td>Source Language $required_field </td>
+                      <td>[_ intranet-translation.Source_Language] $required_field </td>
                       <td>
 [im_category_select "Intranet Translation Language" source_language_id $source_language_id]
 [im_admin_category_gif "Intranet Translation Language"]
-[im_gif help "Translation source language"]
+[im_gif help "[_ intranet-translation.lt_Translation_source_la]"]
                       </td>
                     </tr>
 
                     <tr>
-                      <td>Target Language(s) </td>
+                      <td>[_ intranet-translation.Target_Languages] </td>
                       <td>
 [im_category_select_multiple "Intranet Translation Language" target_language_ids $target_language_ids 6 multiple]
 [im_admin_category_gif "Intranet Translation Language"]
-[im_gif help "Translation target languages. Searate target folders will be created for every language that you select"]
+[im_gif help "[_ intranet-translation.lt_Translation_target_la]"]
                       </td>
                     </tr>
 
                     <tr>
-                      <td>Subject Area </td>
+                      <td>[_ intranet-translation.Subject_Area] </td>
                       <td>
 [im_category_select "Intranet Translation Subject Area" subject_area_id $subject_area_id]
 [im_admin_category_gif "Intranet Translation Subject Area"]
-[im_gif help "Add a new subject area"]
+[im_gif help "[_ intranet-translation.lt_Add_a_new_subject_are]"]
                       </td>
                     </tr>
 
                     <tr> 
-                      <td>Quality Level</td>
+                      <td>[_ intranet-translation.Quality_Level]</td>
                       <td> 
 [im_category_select "Intranet Quality" "expected_quality_id" $expected_quality_id]
 [im_admin_category_gif "Intranet Quality"]
@@ -117,9 +117,9 @@ set page_body "
                       <td>
 		 	<p> 
                           <input type=submit value='Submit changes' name=submit_changes>
-                          [im_gif help "Create the new folder structure"] <br>
+                          [im_gif help "[_ intranet-translation.lt_Create_the_new_folder]"] <br>
                           <input type=submit value='Create Language Subprojects' name=submit_subprojects>
-                          [im_gif help "Create folder structure and create a subproject for each language that you have chosen."] <br>
+                          [im_gif help "[_ intranet-translation.lt_Create_folder_structu]"] <br>
                         </p>
                       </td>
                     </tr>
@@ -127,5 +127,6 @@ set page_body "
                 </form>
 "
 
-doc_return  200 text/html [im_return_template]
+ad_return_template
+
 

@@ -146,7 +146,7 @@ where
     # Build the list of selected tasks ready for invoices
     set invoice_mode "new"
     set in_clause_list [list]
-    set cost_type [db_string cost_type "select im_category_from_id(:cost_type_id) from dual"]
+    set cost_type [db_string cost_type "select im_category_from_id(:cost_type_id) from dual" -default ""]
     set button_text "New $cost_type"
     set page_title "New $cost_type"
     set context_bar [ad_context_bar [list /intranet/invoices/ "Finance"] $page_title]

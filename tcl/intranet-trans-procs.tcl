@@ -10,6 +10,7 @@ ad_library {
     related to the Translation sector
 
     @author frank.bergmann@project-open.com
+    @author juanjoruizx@yahoo.es
 }
 
 # -------------------------------------------------------------------
@@ -89,7 +90,7 @@ where
 	and t.project_id = p.project_id"
 
     if {![db_0or1row task_info_query $task_sql] } {
-	doc_return 403 text/html "Task \#$task_id doesn't exist"
+	doc_return 403 text/html "[_ intranet-translation.lt_Task_task_id_doesnt_e]"
 	return
     }
 
@@ -121,7 +122,7 @@ where
     if {$user_is_employee_p} { set allow 1}
     if {$download_folder != ""} {set allow 1}
     if {!$allow} {
-	doc_return 403 text/html "You are not allowed to see the file"
+	doc_return 403 text/html "[_ intranet-translation.lt_You_are_not_allowed_t_1]"
     }
 
     # Use the task_name as file name (dirty, dangerous?)
@@ -145,20 +146,16 @@ where
     } else {
 	ns_log notice "intranet_task_download: file '$file' not readable"
 
-	set subject "File is missing in project #$project_nr: $file_name"
+	set subject "[_ intranet-translation.lt_File_is_missing_in_pr]"
 	set subject [ad_urlencode $subject]
 
-	ad_return_complaint 1 "<li>The specified file doesn't exist<br>
-        Your are trying to download the file \"$file_name\", but the file
-        doesn't exist in our system.<p>
-        The most probable cause for this error is that the Project Manager
-        hasn't uploaded the file yet.<br>
-	Please send an email to 
+	ad_return_complaint 1 "<li>[_ intranet-translation.lt_The_specified_file_do]<br>
+        [_ intranet-translation.lt_Your_are_trying_to_do]<p>
+        [_ intranet-translation.lt_The_most_probable_cau] 
 	<A href=\"mailto:$project_lead_email?subject=$subject\">
 	  $project_lead_name
 	</a>."
 	return
-#	doc_return 200 text/html "Did not find the specified file"
     }
 }
 
@@ -174,8 +171,8 @@ ad_proc -public im_trans_trados_matrix_component { user_id object_id return_url 
 } {
     array set matrix [im_trans_trados_matrix $object_id]
     set header_html "
-<td class=rowtitle align=center>XTr</td>
-<td class=rowtitle align=center>Rep</td>
+<td class=rowtitle align=center>[_ intranet-translation.XTr]</td>
+<td class=rowtitle align=center>[_ intranet-translation.Rep]</td>
 <td class=rowtitle align=center>100%</td>
 <td class=rowtitle align=center>95%</td>
 <td class=rowtitle align=center>85%</td>
@@ -197,7 +194,7 @@ ad_proc -public im_trans_trados_matrix_component { user_id object_id return_url 
 
     set html "
 <table border=0>
-<tr class=rowtitle><td class=rowtitle colspan=99 align=center>Trados Matrix ($matrix(type))</td></tr>
+<tr class=rowtitle><td class=rowtitle colspan=99 align=center>[_ intranet-translation.Trados_Matrix] ($matrix(type))</td></tr>
 <tr class=rowtitle>$header_html</tr>
 <tr class=roweven>$value_html</tr>
 <tr class=rowplain>
@@ -443,9 +440,9 @@ ad_proc im_task_user_select {select_name user_list default_user_id {role ""}} {
     ns_log Notice "default_user_id=$default_user_id"
     set select_html "<select name='$select_name'>\n"
     if {"" == $default_user_id} {
-	append select_html "<option value='' selected>-- Please Select --</option>\n"
+	append select_html "<option value='' selected>[_ intranet-translation.--_Please_Select_--]</option>\n"
     } else {
-	append select_html "<option value=''>-- Please Select --</option>\n"
+	append select_html "<option value=''>[_ intranet-translation.--_Please_Select_--]</option>\n"
     }
 
     foreach user_list_entry $user_list {
@@ -517,7 +514,7 @@ where
 "
 
     if { ![db_0or1row projects_info_query $query] } {
-	ad_return_complaint 1 "Can't find the project with ID '$project_id'"
+	ad_return_complaint 1 "[_ intranet-translation.lt_Cant_find_the_project_1]"
 	return
     }
 
@@ -525,22 +522,22 @@ where
 <table cellpadding=0 cellspacing=2 border=0>
   <tr> 
     <td colspan=2 class=rowtitle align=middle>
-      Project Details
+      [_ intranet-translation.Project_Details]
     </td>
   </tr>
 "
 if {[im_permission $user_id view_trans_proj_detail]} {
     append html "
   <tr> 
-    <td>Client Project#</td>
+    <td>[_ intranet-translation.Client_Project]</td>
     <td>$company_project_nr</td>
   </tr>
   <tr> 
-    <td>Final User</td>
+    <td>[_ intranet-translation.Final_User]</td>
     <td>$final_company</td>
   </tr>
   <tr> 
-    <td>Quality Level</td>
+    <td>[_ intranet-translation.Quality_Level]</td>
     <td>[im_category_from_id $expected_quality_id]</td>
   </tr>
 "
@@ -550,7 +547,7 @@ set company_contact_html [im_render_user_id $company_contact_id $company_contact
 if {"" != $company_contact_html} {
     append html "
   <tr> 
-    <td>Company Contact</td>
+    <td>[_ intranet-translation.Company_Contact]</td>
     <td>$company_contact_html</td>
   </tr>
 "
@@ -559,15 +556,15 @@ if {"" != $company_contact_html} {
 
 append html "
   <tr> 
-    <td>Subject Area</td>
+    <td>[_ intranet-translation.Subject_Area]</td>
     <td>[im_category_from_id $subject_area_id]</td>
   </tr>
   <tr> 
-    <td>Source Language</td>
+    <td>[_ intranet-translation.Source_Language]</td>
     <td>[im_category_from_id $source_language_id]</td>
   </tr>
   <tr> 
-    <td>Target Languages</td>
+    <td>[_ intranet-translation.Target_Languages_1]</td>
     <td>[im_target_languages $project_id]</td>
   </tr>
   <tr> 
@@ -575,7 +572,7 @@ append html "
     <td>
 <form action=/intranet-translation/projects/edit-trans-data method=POST>
 [export_form_vars project_id return_url]
-<input type=submit name=edit value=Edit>
+<input type=submit name=edit value=\"[_ intranet-translation.Edit]\">
 </form>
     </td>
   </tr>
@@ -885,35 +882,35 @@ ad_proc im_task_status_component { user_id project_id return_url } {
 <table cellpadding=0 cellspacing=2 border=0>
 <tr>
   <td class=rowtitle align=center colspan=17>
-    Project Workflow Status
-[im_gif help "Shows the status of all tasks\nAss: Assigned Files\nDn: Downloaded Files\nUp: Uploaded Files"]
+    [_ intranet-translation.lt_Project_Workflow_Stat]
+[im_gif help "[_ intranet-translation.lt_Shows_the_status_of_a]"]
   </td>
 </tr>
 <tr>
-  <td class=rowtitle align=center rowspan=2>Name</td>
-  <td class=rowtitle align=center colspan=3>Translation</td>
-  <td class=rowtitle align=center colspan=3>Editing</td>
-  <td class=rowtitle align=center colspan=3>Proofing</td>
-  <td class=rowtitle align=center colspan=3>Other</td>
-  <td class=rowtitle align=center colspan=3>Wordcount</td>
+  <td class=rowtitle align=center rowspan=2>[_ intranet-translation.Name]</td>
+  <td class=rowtitle align=center colspan=3>[_ intranet-translation.Translation]</td>
+  <td class=rowtitle align=center colspan=3>[_ intranet-translation.Editing]</td>
+  <td class=rowtitle align=center colspan=3>[_ intranet-translation.Proofing]</td>
+  <td class=rowtitle align=center colspan=3>[_ intranet-translation.Other]</td>
+  <td class=rowtitle align=center colspan=3>[_ intranet-translation.Wordcount]</td>
 </tr>
 <tr>
-  <td class=rowtitle align=center>Ass</td>
-  <td class=rowtitle align=center>Dn</td>
-  <td class=rowtitle align=center>Up</td>
-  <td class=rowtitle align=center>Ass</td>
-  <td class=rowtitle align=center>Dn</td>
-  <td class=rowtitle align=center>Up</td>
-  <td class=rowtitle align=center>Ass</td>
-  <td class=rowtitle align=center>Dn</td>
-  <td class=rowtitle align=center>Up</td>
-  <td class=rowtitle align=center>Ass</td>
-  <td class=rowtitle align=center>Dn</td>
-  <td class=rowtitle align=center>Up</td>
+  <td class=rowtitle align=center>[_ intranet-translation.Ass]</td>
+  <td class=rowtitle align=center>[_ intranet-translation.Dn]</td>
+  <td class=rowtitle align=center>[_ intranet-translation.Up]</td>
+  <td class=rowtitle align=center>[_ intranet-translation.Ass]</td>
+  <td class=rowtitle align=center>[_ intranet-translation.Dn]</td>
+  <td class=rowtitle align=center>[_ intranet-translation.Up]</td>
+  <td class=rowtitle align=center>[_ intranet-translation.Ass]</td>
+  <td class=rowtitle align=center>[_ intranet-translation.Dn]</td>
+  <td class=rowtitle align=center>[_ intranet-translation.Up]</td>
+  <td class=rowtitle align=center>[_ intranet-translation.Ass]</td>
+  <td class=rowtitle align=center>[_ intranet-translation.Dn]</td>
+  <td class=rowtitle align=center>[_ intranet-translation.Up]</td>
 
-  <td class=rowtitle align=center>Trans</td>
-  <td class=rowtitle align=center>Edit</td>
-  <td class=rowtitle align=center>Proof</td>
+  <td class=rowtitle align=center>[_ intranet-translation.Trans]</td>
+  <td class=rowtitle align=center>[_ intranet-translation.Edit]</td>
+  <td class=rowtitle align=center>[_ intranet-translation.Proof]</td>
 </tr>\n"
 
     # ------------------- Get the number of tasks to assign----------------
@@ -1152,8 +1149,8 @@ where
     append task_status_html "
 <tr>
   <td colspan=12 align=left>
-    <input type=submit value='View Tasks' name=submit>
-    <input type=submit value='Assign Tasks' name=submit>
+    <input type=submit value='[_ intranet-translation.View_Tasks]' name=submit>
+    <input type=submit value='[_ intranet-translation.Assign_Tasks]' name=submit>
   </td>
 </tr>
 "
@@ -1234,7 +1231,8 @@ foreach col $column_headers {
     set header ""
     set header_cmd "set header \"$col\""
     eval $header_cmd
-    append task_table "<td class=rowtitle>$header</td>\n"
+    set header_tr [lang::util::suggest_key $header]
+    append task_table "<td class=rowtitle>[_ intranet-translation.$header_tr]</td>\n"
 }
 append task_table "
 </tr>\n"
@@ -1324,7 +1322,7 @@ and t.task_type_id=type_c.category_id(+)
 	if {$download_folder != ""} {
 	    set download_link "
   <A HREF='/intranet-translation/download-task/$task_id/$download_folder/$task_name'>
-    [im_gif save "Click right and choose \"Save target as\" to download the file"]
+    [im_gif save "[_ intranet-translation.lt_Click_right_and_choos]"]
   </A>\n"
 	}
 
@@ -1333,7 +1331,7 @@ and t.task_type_id=type_c.category_id(+)
 	if {$upload_folder != ""} {
 	    set upload_link "
   <A HREF='/intranet-translation/trans-tasks/upload-task?[export_url_vars project_id task_id return_url]'>
-    [im_gif open "Upload file"]
+    [im_gif open "[_ intranet-translation.Upload_file]"]
   </A>\n"
 	}
 	
@@ -1355,7 +1353,7 @@ and t.task_type_id=type_c.category_id(+)
     if {$ctr > 0} {
          append task_table $task_table_rows
     } else {
-         append task_table "<tr><td colspan=7 align=center>No tasks found</td></tr>"
+         append task_table "<tr><td colspan=7 align=center>[_ intranet-translation.No_tasks_found]</td></tr>"
     }
 
     # -------------------- Calculate the project size -------------------------------
@@ -1378,9 +1376,9 @@ and t.task_type_id=type_c.category_id(+)
   <td align=left>
   </td>
   <td colspan=12 align=right>&nbsp;</td>
-  <td align=center><input type=submit value=Save name=submit></td>
-  <td align=center><input type=submit value=Del name=submit></td>
-  <td align=center><input type=submit value=\"Assign\" name=submit></td>
+  <td align=center><input type=submit value=\"[_ intranet-translation.Save]\" name=submit></td>
+  <td align=center><input type=submit value=\"[_ intranet-translation.Del]\" name=submit></td>
+  <td align=center><input type=submit value=\"[_ intranet-translation.Assign]\" name=submit></td>
 </tr>"
     }
 
@@ -1466,7 +1464,7 @@ group by
   <td align=right>$task_units $uom_name</td>
   <td align=center>
     <A HREF='/intranet-translation/trans-tasks/upload-task?[export_url_vars project_id task_id return_url]'>
-      [im_gif open "Upload file"]
+      [im_gif open "[_ intranet-translation.Upload_file]"]
     </A>
   </td>
 </tr>\n"
@@ -1478,7 +1476,7 @@ group by
 #	return ""
 	append task_table_rows "
 <tr $bgcolor([expr $ctr % 2])>
-  <td colspan=99 align=center>No missing files found</td>
+  <td colspan=99 align=center>[_ intranet-translation.lt_No_missing_files_foun]</td>
 </tr>
 "
     }
@@ -1491,13 +1489,13 @@ group by
 <table border=0>
 <tr>
   <td class=rowtitle align=center colspan=20>
-    Missing Translation Files
+    [_ intranet-translation.lt_Missing_Translation_F]
   </td>
 </tr>
 <tr> 
-  <td class=rowtitle>Task Name</td>
-  <td class=rowtitle>&nbsp;Units&nbsp;</td>
-  <td class=rowtitle>[im_gif open "Upload files"]</td>
+  <td class=rowtitle>[_ intranet-translation.Task_Name]</td>
+  <td class=rowtitle>[_ intranet-translation.Units]</td>
+  <td class=rowtitle>[im_gif open "[_ intranet-translation.Upload_files]"]</td>
 </tr>
 
 $task_table_rows
@@ -1572,10 +1570,10 @@ ad_proc im_new_task_component { user_id project_id return_url } {
 <table border=0>
 <tr>
   <td colspan=1 class=rowtitle align=center>
-    Add a New Task
+    [_ intranet-translation.Add_a_New_Task]
   </td>
   <td class=rowtitle align=center>
-    Help
+    [_ intranet-translation.Help]
   </td>
 </tr>
 "
@@ -1589,13 +1587,13 @@ ad_proc im_new_task_component { user_id project_id return_url } {
 
     <form action=/intranet-translation/trans-tasks/task-action method=POST>
     [export_form_vars project_id return_url]
-    <input type=submit value='Trados Import' name=submit>
-    (\"Classical\" Trados import of a local 'wordcount.csv' file)
+    <input type=submit value='[_ intranet-translation.Trados_Import]' name=submit>
+    [_ intranet-translation.lt_Classical_Trados_impo]
     </form>
 
   </td>
   <td>
-    [im_gif help "Add the content of a local Trados 'wordcount.csv' file to the list of tasks. \nThe file needs to be called 'wordcount.csv' (lowercase letters), it needs to reside in the project folder, and there may not be more then one file with this name."]
+    [im_gif help "[_ intranet-translation.lt_Add_the_content_of_a_]"]
   </td>
 </tr>
 "
@@ -1610,12 +1608,12 @@ ad_proc im_new_task_component { user_id project_id return_url } {
     <form enctype=multipart/form-data method=POST action=/intranet-translation/trans-tasks/trados-upload>
     [export_form_vars project_id return_url]
     <input type=file name=upload_file size=30 value='*.csv'>
-    <input type=submit value='Add Trados Wordcount' name=submit>
+    <input type=submit value='[_ intranet-translation.Add_Trados_Wordcount]' name=submit>
     </form>
   </td>
   <td>
-    [im_gif help "Use the Browse... button to locate your file, and click \"Add ...\" to upload a Trados wordcount (.CSV) file to. 
-This file is used to define the tasks of the project, one task for each line of the wordcount file."]
+    [im_gif help "[_ intranet-translation.lt_Use_the_Browse_button_1] 
+[_ intranet-translation.lt_This_file_is_used_to_]"]
   </td>
 </tr>
 "
@@ -1636,15 +1634,15 @@ This file is used to define the tasks of the project, one task for each line of 
         <td><input type=text size=2 value='0' name=task_units_file></td>
         <td>[im_category_select "Intranet UoM" "task_uom_file" 324]</td>
         <td>[im_category_select "Intranet Project Type" task_type_file 86]</td>
-        <td><input type=submit value='Add File' name=submit></td>
+        <td><input type=submit value='[_ intranet-translation.Add_File]' name=submit></td>
       </tr>
     </table>
     </form>
 
   </td>
   <td>
-    [im_gif help "Add a new file to the list of tasks.
-New files need to be located in the \"source_xx\" folder to appear in the drop-down box on the left."]
+    [im_gif help "[_ intranet-translation.lt_Add_a_new_file_to_the]
+[_ intranet-translation.lt_New_files_need_to_be_]"]
   </td>
 </tr>
 "
@@ -1663,15 +1661,15 @@ New files need to be located in the \"source_xx\" folder to appear in the drop-d
       <td><input type=text size=2 value='0' name=task_units_manual></td>
       <td>[im_category_select "Intranet UoM" "task_uom_manual" 324]</td>
       <td>[im_category_select "Intranet Project Type" task_type_manual 86]</td>
-      <td><input type=submit value='Add' name=submit></td>
+      <td><input type=submit value='[_ intranet-translation.Add]' name=submit></td>
     </tr>
     </table>
     </form>
 
   </td>
   <td>
-    [im_gif help "Add a \"manual\" task to the project.
-This task is not going to controled by the translation workflow."]
+    [im_gif help "[_ intranet-translation.lt_Add_a_manual_task_to_]
+[_ intranet-translation.lt_This_task_is_not_goin]"]
   </td>
 </tr>"
 
@@ -1711,8 +1709,7 @@ where
         and p.company_id=c.company_id(+)"
 
     if { ![db_0or1row projects_info_query $query] } {
-	ad_return_complaint 1 "Can't find the project with group
-        id of $project_id"
+	ad_return_complaint 1 "[_ intranet-translation.lt_Cant_find_the_project]"
 	return
     }
 

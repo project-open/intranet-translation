@@ -17,8 +17,8 @@ ad_page_contract {
     task_id:integer
     return_url
 }  -errors {
-    project_id:integer {The project_id specified doesn't look like an integer.}
-    task_id:integer {The task_id specified doesn't look like an integer.}
+    project_id:integer "[_ intranet-translation.lt_The_project_id_specif]"
+    task_id:integer "[_ intranet-translation.lt_The_task_id_specified]"
 }
 
 set user_id [ad_maybe_redirect_for_registration]
@@ -37,7 +37,7 @@ where
 	and t.project_id = :project_id"
 
 if {![db_0or1row task_info_query $task_sql] } {
-    ad_return_complaint 1 "<li>Couldn't find the specified task #$task_id"
+    ad_return_complaint 1 "<li>[_ intranet-translation.lt_Couldnt_find_the_spec]"
     return
 }
 
@@ -49,7 +49,7 @@ set upload [lindex $upload_list 0]
 set folder [lindex $upload_list 1]
 
 if {!$read} {
-    ad_return_complaint 1 "<li>You have insufficient access rights to download this file."
+    ad_return_complaint 1 "<li>[_ intranet-translation.lt_You_have_insufficient_1]"
     return
 }
 
@@ -75,5 +75,5 @@ if [file readable $file] {
 
     rp_serve_concrete_file $file
 } else {
-    ad_return_complaint 1 "<li>The specified file $file is not available."
+    ad_return_complaint 1 "<li>[_ intranet-translation.lt_The_specified_file_fi]"
 }

@@ -17,9 +17,9 @@ ad_page_contract {
 }
 
 set user_id [ad_maybe_redirect_for_registration]
-set page_title "Upload New File/URL"
+set page_title "[_ intranet-translation.Upload_New_FileURL]"
 
-set context_bar [ad_context_bar [list "/intranet/projects/" "Projects"]  [list "/intranet/projects/view?group_id=$project_id" "One Project"]  "Upload File"]
+set context_bar [ad_context_bar [list "/intranet/projects/" "[_ intranet-translation.Projects]"]  [list "/intranet/projects/view?group_id=$project_id" "[_ intranet-translation.One_Project]"]  "[_ intranet-translation.Upload_File]"]
 
 set bgcolor(0) " class=roweven"
 set bgcolor(1) " class=rowodd"
@@ -35,19 +35,19 @@ set page_content "
                         <td class=rowtitle align=center colspan=2>Upload a file</td>
                       </tr>
                       <tr $bgcolor(0)> 
-                        <td align=right>Filename </td>
+                        <td align=right>[_ intranet-translation.Filename] </td>
                         <td>$filename</td>
                       </tr>
                       <tr $bgcolor(1)> 
-                        <td align=right>File </td>
+                        <td align=right>[_ intranet-translation.File] </td>
                         <td>
                           <input type=file name=upload_file size=30>
-                          [im_gif help "Use the &quot;Browse...&quot; button to locate your file, then click &quot;Open&quot;."]
+                          [im_gif help "[_ intranet-translation.lt_Use_the_Browse_button]"]
                         </td>
                       </tr>
                       <tr $bgcolor(0)> 
-                        <td valign=top align=right>Comment<br>
-			<font size=-1>(optional)</font>
+                        <td valign=top align=right>[_ intranet-translation.Comment]<br>
+			<font size=-1>[_ intranet-translation.optional]</font>
                         </td>
                         <td colspan=1>
                           <textarea rows=5 cols=50 name=description wrap></textarea>
@@ -56,18 +56,16 @@ set page_content "
                       <tr $bgcolor(1)> 
                         <td></td>
                         <td> 
-                          <input type=submit value='Submit and Upload'><br>
+                          <input type=submit value='[_ intranet-translation.Submit_and_Upload]'><br>
                         </td>
                       </tr>
                     </table>
 <blockquote>
-(This page may take several minutes to upload your file, depending on the
-size of the file and your Internet connection. Please do not interrupt the 
-system meanwhile.)
+[_ intranet-translation.lt_This_page_may_take_se]
 </blockquote>
 
 </form>
 "
 
 db_release_unused_handles
-doc_return  200 text/html [im_return_template]
+ad_return_template

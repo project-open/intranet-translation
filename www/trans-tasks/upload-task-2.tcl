@@ -22,12 +22,12 @@ ad_page_contract {
 set user_id [ad_maybe_redirect_for_registration]
 set project_path [im_filestorage_project_path $project_id]
 
-set page_title "Upload Successful"
+set page_title "[_ intranet-translation.Upload_Successful]"
 # Set the context bar as a function on whether this is a subproject or not:
 if {[im_permission $user_id view_projects]} {
-    set context_bar [ad_context_bar [list /intranet/projects/ "Projects"] [list "/intranet/projects/view?group_id=$project_id" "One project"] $page_title]
+    set context_bar [ad_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] [list "/intranet/projects/view?group_id=$project_id" "[_ intranet-translation.One_project]"] $page_title]
 } else {
-    set context_bar [ad_context_bar [list /intranet/projects/ "Projects"] $page_title]
+    set context_bar [ad_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] $page_title]
 }
 
 
@@ -49,7 +49,7 @@ where
 	and t.project_id=:project_id"
 
 if {![db_0or1row task_info_query $task_sql] } {
-    ad_return_complaint 1 "<li>Couldn't find the specified task #$task_id"
+    ad_return_complaint 1 "<li>[_ intranet-translation.lt_Couldnt_find_the_spec]"
     return
 }
 
@@ -66,8 +66,7 @@ set download_folder [lindex $upload_list 0]
 set upload_folder [lindex $upload_list 1]
 if {"" == $upload_folder} {
     ad_return_complaint 1 "
-	<li>You are not allowed to upload the file (anymore)<br>
-	while the task has status '$task_status'."
+	<li>[_ intranet-translation.lt_You_are_not_allowed_t]"
     return
 }
 
@@ -78,7 +77,8 @@ set tmp_filename [ns_queryget upload_file.tmpfile]
 set filesize [file size $tmp_filename]
 
 if { $max_n_bytes && ($filesize > $max_n_bytes) } {
-    ad_return_complaint 1 "Your file is larger than the maximum permissible upload size:  [util_commify_number $max_n_bytes] bytes"
+    set util_commify_number_max_n_bytes [util_commify_number $max_n_bytes]
+    ad_return_complaint 1 "[_ intranet-translation.lt_Your_file_is_larger_t_1]"
     return 0
 }
 
@@ -103,11 +103,11 @@ ns_log Notice "task_name_body=$task_name_body"
 # Make sure both filenames coincide to avoid translator errors
 #
 if {![string equal $upload_file_body $task_name_body]} {
-    set error "<li>Your file doesn't coincide with the expected file:<br>
-    Your file: $upload_file<br>
-    Expected file: $task_name<br>
-    Please check your input or ask the project manager."
-    ad_return_complaint "User Error" $error
+    set error "<li>[_ intranet-translation.lt_Your_file_doesnt_coin]<br>
+    [_ intranet-translation.lt_Your_file_upload_file]<br>
+    [_ intranet-translation.lt_Expected_file_task_na]<br>
+    [_ intranet-translation.lt_Please_check_your_inp]"
+    ad_return_complaint "[_ intranet-translation.User_Error]" $error
     return
 }
 
@@ -132,7 +132,7 @@ for {set i 0} {$i < $subfolder_len} {incr i} {
 	    exec /bin/mkdir "$path"
 	} err_msg] } {
 	    # Probably some permission errors
-	    ad_return_complaint "Error creating subfolder $path" $err_msg
+	    ad_return_complaint "[_ intranet-translation.lt_Error_creating_subfol]" $err_msg
 	    return
 	}
     }
@@ -149,7 +149,7 @@ if { [catch {
 
 } err_msg] } {
     # Probably some permission errors
-    ad_return_complaint  "Error writing upload file"  $err_msg
+    ad_return_complaint  "[_ intranet-translation.lt_Error_writing_upload_]"  $err_msg
     return
 }
 
@@ -159,11 +159,11 @@ im_trans_upload_action $task_id $task_status_id $task_type_id $user_id
 
 
 set page_body "
-<H2>Upload Successful</H2>
-Your have successfully uploaded $filesize bytes of file '$task_name'.
-<P><A href=\"$return_url\">Return to Project Page</A></P>
+<H2>[_ intranet-translation.Upload_Successful]</H2>
+[_ intranet-translation.lt_Your_have_successfull]
+<P><A href=\"$return_url\">[_ intranet-translation.lt_Return_to_Project_Pag]</A></P>
 "
 
-doc_return 200 text/html [im_return_template]
+ad_return_template
 return
 

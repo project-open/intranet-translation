@@ -40,23 +40,21 @@ ns_log Notice "trados-import: trados_wordcount_file=$trados_wordcount_file"
 set user_id [ad_maybe_redirect_for_registration]
 im_project_permissions $user_id $project_id view read write admin
 if {!$write} {
-    append 1 "<li>You have insufficient privileges to view this page.\n"
+    append 1 "<li>[_ intranet-translation.lt_You_have_insufficient_3]"
     return
 }
 
 set target_language_ids [im_target_language_ids $project_id]
 if {0 == [llength $target_language_ids]} {
-    ad_return_complaint 1 "<li>The project has no target language defined,
-        so we are unable to add translation tasks to the project.<BR>
-        Please back up to the project page and add at least one
-        target language to the project."
+    ad_return_complaint 1 "<li>[_ intranet-translation.lt_The_project_has_no_ta]<BR>
+        Please back up to the project page and add at least one target language to the project.#>"
     return
 }
 
 set project_path [im_filestorage_project_path $project_id]
 
-set page_title "Trados Upload"
-set context_bar [ad_context_bar [list /intranet/projects/ "Projects"] $page_title]
+set page_title "[_ intranet-translation.Trados_Upload]"
+set context_bar [ad_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] $page_title]
 
 set bgcolor(0) " class=roweven"
 set bgcolor(1) " class=rowodd"
@@ -85,8 +83,7 @@ where
 
 
 if { ![db_0or1row projects_info_query $project_query] } {
-    ad_return_complaint 1 "Can't find the project with group 
-    id of $project_id"
+    ad_return_complaint 1 "[_ intranet-translation.lt_Cant_find_the_project]"
     return
 }
 
@@ -96,7 +93,7 @@ if { ![db_0or1row projects_info_query $project_query] } {
 # ---------------------------------------------------------------------
 
 append page_body "
-<P><A HREF=$return_url>Return to previous page</A></P>
+<P><A HREF=$return_url>[_ intranet-translation.lt_Return_to_previous_pa]</A></P>
 <table cellpadding=0 cellspacing=2 border=0>
 "
 
@@ -120,7 +117,7 @@ switch $line2_len {
 append page_body "
 <P>
 <tr><td colspan=2 class=rowtitle align=center>
-  Wordcount Import
+  [_ intranet-translation.Wordcount_Import]
 </td></tr>
 <tr><td>Trados-Version</td><td>$trados_version</td></tr>
 <tr><td>Project Path</td><td>$project_path</td></tr>
@@ -130,27 +127,25 @@ append page_body "
 
 <table cellpadding=0 cellspacing=2 border=0>
 <tr>
-  <td class=rowtitle align=center>Filename</td>
-  <td class=rowtitle align=center>Task Name</td>
-  <td class=rowtitle align=center>XTr</td>
-  <td class=rowtitle align=center>Rep</td>
+  <td class=rowtitle align=center>[_ intranet-translation.Filename]</td>
+  <td class=rowtitle align=center>[_ intranet-translation.Task_Name]</td>
+  <td class=rowtitle align=center>[_ intranet-translation.XTr]</td>
+  <td class=rowtitle align=center>[_ intranet-translation.Rep]</td>
   <td class=rowtitle align=center>100%</td>
   <td class=rowtitle align=center>95%</td>
   <td class=rowtitle align=center>85%</td>
   <td class=rowtitle align=center>75%</td>
   <td class=rowtitle align=center>50%</td>
   <td class=rowtitle align=center>0%</td>
-  <td class=rowtitle align=center>Weighted</td>
+  <td class=rowtitle align=center>[_ intranet-translation.Weighted]</td>
 </tr>
 "
 
 if {[string equal "unknown" $trados_version]} {
     ad_return_complaint 1 "
-        <li>Unknown Trados Version<br>
-	Your file '$trados_wordcount_file' has not been<BR>
-	created with one of the supported Trados versions (3.0 and 5.5).<BR>
-	Please try to repeat your Trados analsyis or inform the
-	system administrator."
+        <li>[_ intranet-translation.lt_Unknown_Trados_Versio]<br>
+	[_ intranet-translation.lt_Your_file_trados_word]<BR>
+	[_ intranet-translation.lt_Please_try_to_repeat_]"
     return
 }
 
@@ -302,8 +297,8 @@ db_transaction {
 
 	    }
 	    default {
-		ad_return_complaint 1 "<LI>Internal error: Unknown Input
-		method '$inport_method'."
+		ad_return_complaint 1 "<LI>[_ intranet-translation.Internal_error]: 
+		[_ intranet-translation.lt_Unknown_Input_method_]"
 		return
 	    }
 	}
@@ -375,14 +370,14 @@ INSERT INTO im_trans_tasks (
 }
 
 append page_body "</table>\n"
-append page_body "\n<P><A HREF=$return_url>Return to previous page</A></P>\n"
+append page_body "\n<P><A HREF=$return_url>[_ intranet-translation.lt_Return_to_previous_pa]</A></P>\n"
 
 
 # Remove the wordcount file
 if { [catch {
     exec /bin/rm $trados_wordcount_file
 } err_msg] } {
-    ad_return_complaint 1 "<li>Error deleting the temporary wordcount file $trados_wordcount_file"
+    ad_return_complaint 1 "<li>[_ intranet-translation.lt_Error_deleting_the_te]"
     return
 }
 
@@ -393,4 +388,4 @@ if {0 == $err_count} {
 }
 
 db_release_unused_handles
-doc_return  200 text/html [im_return_template]
+ad_return_template

@@ -33,8 +33,8 @@ ad_page_contract {
 
 set user_id [ad_maybe_redirect_for_registration]
 
-set page_title "Assignments"
-set context_bar [ad_context_bar [list /intranet/projects/ "Projects"] [list "/intranet/projects/view?project_id=$project_id" "One project"] $page_title]
+set page_title "[_ intranet-translation.Assignments]"
+set context_bar [ad_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] [list "/intranet/projects/view?project_id=$project_id" "[_ intranet-translation.One_project]"] $page_title]
 
 if {"" == $return_url} { set return_url "/intranet/projects/view?project_id=$project_id" }
 
@@ -52,16 +52,16 @@ if {$proof_auto_id > 0} { incr assigned_roles }
 if {$other_auto_id > 0} { incr assigned_roles }
 if {$assigned_roles > 1} {
     incr error
-    append errors "<LI>Please choose only a single role for assignment"
+    append errors "<LI>[_ intranet-translation.lt_Please_choose_only_a_]"
 }
 
 if {$auto_assigned_words > 0 && $assigned_roles == 0} {
     incr error
-    append errors "<LI>You haven't selected a user for auto assignation"
+    append errors "<LI>[_ intranet-translation.lt_You_havent_selected_a]"
 }
 
 if { $error > 0 } {
-    ad_return_complaint "Input Error" "$errors"
+    ad_return_complaint "[_ intranet-translation.Input_Error]" "$errors"
 }
 
 # ---------------------------------------------------------------------
@@ -122,19 +122,19 @@ set task_html "
 	<table border=0>
 	  <tr>
 	    <td colspan=$task_colspan class=rowtitle align=center>
-	      Task Assignments
+	      [_ intranet-translation.Task_Assignments]
 	    </td>
 	  </tr>
 	  <tr>
-	    <td class=rowtitle align=center>Task Name</td>
-	    <td class=rowtitle align=center>Target Lang</td>
-	    <td class=rowtitle align=center>Task Type</td>
-	    <td class=rowtitle align=center>Size</td>
-	    <td class=rowtitle align=center>UoM</td>
-	    <td class=rowtitle align=center>Trans</td>
-	    <td class=rowtitle align=center>Edit</td>
-	    <td class=rowtitle align=center>Proof</td>
-	    <td class=rowtitle align=center>Other</td>
+	    <td class=rowtitle align=center>[_ intranet-translation.Task_Name]</td>
+	    <td class=rowtitle align=center>[_ intranet-translation.Target_Lang]</td>
+	    <td class=rowtitle align=center>[_ intranet-translation.Task_Type]</td>
+	    <td class=rowtitle align=center>[_ intranet-translation.Size]</td>
+	    <td class=rowtitle align=center>[_ intranet-translation.UoM]</td>
+	    <td class=rowtitle align=center>[_ intranet-translation.Trans]</td>
+	    <td class=rowtitle align=center>[_ intranet-translation.Edit]</td>
+	    <td class=rowtitle align=center>[_ intranet-translation.Proof]</td>
+	    <td class=rowtitle align=center>[_ intranet-translation.Other]</td>
 	  </tr>
 "
 
@@ -297,28 +297,28 @@ append task_html "
 set autoassignment_html_body ""
 set autoassignment_html "
 <table>
-<tr><td colspan=4 class=rowtitle align=center>Auto Assignment</td></tr>\n<tr align=center>"
+<tr><td colspan=4 class=rowtitle align=center>[_ intranet-translation.Auto_Assignment]</td></tr>\n<tr align=center>"
 if { $n_trans > 0 } {
-    append autoassignment_html "<td class=rowtitle>Trans</td>"
+    append autoassignment_html "<td class=rowtitle>[_ intranet-translation.Trans]</td>"
     append autoassignment_html_body "<td>[im_task_user_select trans_auto_id $users "" translator]</td>\n"
 }
 if { $n_edit > 0 } {
-    append autoassignment_html "<td class=rowtitle>Edit</td>"
+    append autoassignment_html "<td class=rowtitle>[_ intranet-translation.Edit]</td>"
     append autoassignment_html_body "<td>[im_task_user_select edit_auto_id $users "" editor]</td>\n"
 }
 if { $n_proof > 0} {
-    append autoassignment_html "<td class=rowtitle>Proof</td>"
+    append autoassignment_html "<td class=rowtitle>[_ intranet-translation.Proof]</td>"
     append autoassignment_html_body "<td>[im_task_user_select proof_auto_id $users "" proof]</td>\n"
 }
 if { $n_other > 0 } {
-    append autoassignment_html "<td class=rowtitle>Other</td>"
+    append autoassignment_html "<td class=rowtitle>Other#></td>"
     append autoassignment_html_body "<td>[im_task_user_select other_auto_id $users ""]</td>\n"
 }
 
 append autoassignment_html "</tr>\n
 <tr>$autoassignment_html_body<td>
 <input type=text size=6 name=auto_assigned_words>
-<input type=submit name='auto_assigment' value='Auto Assigment'></td>
+<input type=submit name='auto_assigment' value='[_ intranet-translation.Auto_Assigment]'></td>
 </tr>\n
 </table>\n"
 

@@ -24,7 +24,7 @@ ad_page_contract {
 set user_id [ad_maybe_redirect_for_registration]
 im_project_permissions $user_id $project_id view read write admin
 if {!$write} {
-    ad_return_complaint 1 "You have insufficient permissions to view this page"
+    ad_return_complaint 1 "[_ intranet-translation.lt_You_have_insufficient_2]"
     return
 }
 
@@ -55,8 +55,7 @@ where
 
 
 if { ![db_0or1row projects_info_query $query] } {
-    ad_return_complaint 1 "Can't find the project with group 
-    id of $project_id"
+    ad_return_complaint 1 "[_ intranet-translation.lt_Cant_find_the_project]"
     return
 }
 
@@ -74,28 +73,25 @@ set files [split $file_list "\n"]
 if {[llength $files] > 1} {
     # Too many files
     ad_return_complaint 1 "<li>
-    We have found more then one 'wordcount.csv' files in
-    the project path '$project_path'. Please determine the valid file
-    and delete or rename the other ones."
+    [_ intranet-translation.lt_We_have_found_more_th] 
+    [_ intranet-translation.lt_Please_determine_the_]"
     return
 }
     
 if {[llength $files] == 0} {
     # No file found
     ad_return_complaint 1 "<li>
-	We have not found a 'wordcount.csv' file in the project path
-	'$project_path'.<br>
-	Please start Trados and generate a file for this folder."
+	[_ intranet-translation.lt_We_have_not_found_a_w]<br>
+        [_ intranet-translation.lt_Please_start_Trados_a]"
     return
 }
 
 set trados_wordcount_file [lindex $files 0]
 
 if {![file readable $trados_wordcount_file]} {
-    set err_msg "Unable to read the file '$trados_wordcount_file'. 
-Please check the file permissions or contact your system administrator.\n"
-    append page_body "\n$err_msg\n"
-    doc_return  200 text/html [im_return_template]
+    set err_msg "[_ intranet-translation.lt_Unable_to_read_the_fi]
+[_ intranet-translation.lt_Please_check_the_file]"
+    ad_return_complaint 1 $err_msg
     return
 }
 
