@@ -123,8 +123,6 @@ begin
 	'im_task_status_component \
 		$user_id \
 		$project_id \
-		$user_admin_p \
-		$user_is_employee_p \
 		$return_url'
     );
 
