@@ -86,22 +86,25 @@ db_transaction {
 # Create the directory structure necessary for the project
 # ---------------------------------------------------------------------
 
-set create_err ""
-set err_msg ""
-if { [catch {
-    set create_err [im_filestorage_create_directories $project_id]
-} err_msg] } {
-    # Nothing - Filestorage may not be enabled...
+if {[db_table_exists im_fs_folders]} {
+
+	# If the filestorage module is installed...
+	set create_err ""
+	set err_msg ""
+	if { [catch {
+	    set create_err [im_filestorage_create_directories $project_id]
+	} err_msg] } {
+	    # Nothing - Filestorage may not be enabled...
+	}
+	ns_log Notice "/project/edit-trans-data-2: err_msg=$err_msg"
+	ns_log Notice "/project/edit-trans-data-2: create_err=$create_err"
+	
+	if {"" != $create_err || "" != $err_msg} {
+	    ad_return_complaint 1 "<li>err_msg: $err_msg<br>create_err: $create_err<br>"
+	    return
+	}
+
 }
-ns_log Notice "/project/edit-trans-data-2: err_msg=$err_msg"
-ns_log Notice "/project/edit-trans-data-2: create_err=$create_err"
-
-if {"" != $create_err || "" != $err_msg} {
-    ad_return_complaint 1 "<li>err_msg: $err_msg<br>create_err: $create_err<br>"
-    return
-}
-
-
 
 # ---------------------------------------------------------------------
 # Create Subprojects - one for each language
