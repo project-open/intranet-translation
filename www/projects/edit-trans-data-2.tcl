@@ -1,4 +1,9 @@
-# /www/intranet/projects/edit-customer-data-2.tcl
+# /packages/intranet-translation/projects/edit-customer-data-2.tcl
+#
+# Copyright (C) 2003-2004 Project/Open
+#
+# All rights reserved. Please check
+# http://www.project-open.com/license/ for details.
 
 ad_page_contract {
     Purpose: verifies and stores project information to db

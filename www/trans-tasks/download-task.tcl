@@ -1,4 +1,4 @@
-# /packages/intranet-translation/www/download-task.tcl
+# /packages/intranet-translation/www/trans-tasks/download-task.tcl
 #
 # Copyright (C) 2004 Project/Open
 # All rights reserved (this is not GPLed software!).
@@ -10,7 +10,7 @@ ad_page_contract {
     guess the MIME type from the original client filename and
     write the binary file to the connection
 
-    @author fraber@fraber.de
+    @author frank.bergmann@project-open.com
     @creation-date 030910
 } {
     project_id:integer

@@ -1,4 +1,9 @@
-# /www/intranet/trans-tasks/task-assignments.tcl
+# /packages/intranet-translation/www/trans-tasks/task-assignments.tcl
+#
+# Copyright (C) 2003-2004 Project/Open
+#
+# All rights reserved. Please check
+# http://www.project-open.com/license/ for details.
 
 ad_page_contract {
     Assign translators, editors and proof readers to every task
@@ -8,8 +13,7 @@ ad_page_contract {
     @param show_all_comments whether to show all comments
 
     @author Guillermo Belcic
-    @creation-date 2003/11/17
-
+    @author frank.bergmann@project-open.com
 } {
     project_id:integer
     { return_url "" }

@@ -1,14 +1,17 @@
-# /www/intranet/projects/edit-customer-data.tcl
+# /packages/intranet-translation/www/projects/edit-trans-data.tcl
+#
+# Copyright (C) 2003-2004 Project/Open
+#
+# All rights reserved. Please check
+# http://www.project-open.com/license/ for details.
 
 ad_page_contract {
     Purpose: form to add a new project or edit an existing one
     
     @param project_id group id
     @param return_url the url to return to
-    @author mbryzek@arsdigita.com
-    @creation-date Jan 2000
 
-    @cvs-id edit-customer-data.tcl,v 3.15.2.12 2000/09/22 01:38:44 kevin Exp
+    @author frank.bergmann@project-open.com
 } {
     project_id:integer
     return_url

@@ -1,4 +1,4 @@
-# /packages/intranet-filestorage/www/index.tcl
+# /packages/intranet-translation/www/index.tcl
 #
 # Copyright (C) 2003-2004 Project/Open
 #
@@ -9,8 +9,7 @@ ad_page_contract {
     Show the list of current task and allow the project
     manager to create new tasks.
 
-    @author fraber@project-open.com
-    @creation-date Nov 2003
+    @author frank.bergmann@project-open.com
 } {
 
 }

@@ -1,4 +1,9 @@
-# /www/intranet/projects/task-save.tcl
+# /packages/intranet-translation/www/trans-tasks/task-save.tcl
+#
+# Copyright (C) 2003-2004 Project/Open
+#
+# All rights reserved. Please check
+# http://www.project-open.com/license/ for details.
 
 ad_page_contract {
     Purpose: Takes commands from the /intranet/projects/view
@@ -53,7 +58,11 @@ ad_proc im_task_insert {project_id task_name task_units task_uom task_type targe
 	doc_return  200 text/html [im_return_template]
 	return
     }
-
+    
+    if {"" == $source_language_id} {
+	ad_return_complaint 1 "<li>You haven't defined the source language of your project.<br>Please edit your project and add a source language."
+	return
+    }
 
     # Task just _created_
     set task_status_id 340

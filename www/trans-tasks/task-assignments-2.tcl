@@ -1,4 +1,9 @@
-# /www/intranet/trans-tasks/task-assignments-2.tcl
+# /packages/intranet-translation/www/trans-tasks/task-assignments-2.tcl
+#
+# Copyright (C) 2003-2004 Project/Open
+#
+# All rights reserved. Please check
+# http://www.project-open.com/license/ for details.
 
 ad_page_contract {
     Purpose: Takes commands from the /intranet/projects/view

@@ -1,17 +1,19 @@
-# /www/intranet/trans-tasks/task-list.tcl
+# /packages/intranet-translation/www/trans-tasks/index.tcl
+#
+# Copyright (C) 2003-2004 Project/Open
+#
+# All rights reserved. Please check
+# http://www.project-open.com/license/ for details.
+
 
 ad_page_contract {
     Show the list of current task and allow the project
     manager to create new tasks.
 
-    @author fraber@project-open.com
-    @creation-date Nov 2003
+    @author frank.bergmann@project-open.com
 } {
     group_id:optional
 }
-set group_id 1087
-
-
 set user_id [ad_maybe_redirect_for_registration]
 set return_url [im_url_with_query]
 set page_title "Project Tasks"

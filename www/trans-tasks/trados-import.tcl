@@ -1,4 +1,9 @@
-# /www/intranet/projects/task-save.tcl
+# /packages/intranet-translation/www/trans-tasks/trados-import.tcl
+#
+# Copyright (C) 2003-2004 Project/Open
+#
+# All rights reserved. Please check
+# http://www.project-open.com/license/ for details.
 
 ad_page_contract {
     Purpose: Import the contents of a wordcount.csv file

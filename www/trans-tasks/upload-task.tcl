@@ -1,4 +1,9 @@
-# /intranet/filestorage/upload-task.tcl
+# /packages/intranet-translation/www/trans-tasks/upload-task.tcl
+#
+# Copyright (C) 2003-2004 Project/Open
+#
+# All rights reserved. Please check
+# http://www.project-open.com/license/ for details.
 
 ad_page_contract {
     Serve the user a form to upload a new file or URL

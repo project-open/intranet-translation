@@ -1,3 +1,12 @@
+-- /packages/intranet-translation/sql/oracle/intranet-translation-create.sql
+--
+-- Copyright (c) 2003-2004 Project/Open
+--
+-- All rights reserved. Please check
+-- http://www.project-open.com/license/ for details.
+--
+-- @author frank.bergmann@project-open.com
+
 -----------------------------------------------------------
 -- Translation Sector Specific Extensions
 --
@@ -69,10 +78,9 @@ create table im_trans_tasks (
 	task_uom_id		integer not null 
 				constraint im_trans_tasks_uom_fk
 				references im_categories,
-				--  added later to avoid a cyclical reference:
-	-- invoice_id		integer 
-	--			constraint im_trans_tasks_invoice_fk
-	--			references im_invoices,
+	invoice_id		integer 
+				constraint im_trans_tasks_invoice_fk
+				references im_invoices,
 				-- "Trados Matrix" determine duplicated words
 	match100		number(12,0),
 	match95			number(12,0),

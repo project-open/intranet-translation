@@ -1,9 +1,18 @@
+# /packages/intranet-translation/www/trans-tasks/trados-upload.tcl
+#
+# Copyright (C) 2003-2004 Project/Open
+#
+# All rights reserved. Please check
+# http://www.project-open.com/license/ for details.
+
 ad_page_contract {
     Upload a Trados wordcount (.CSV) file and convert
     every line of it into an im_task for the Translation
     Workflow.
     The main work is done by "trados-import.tcl", so we
     basicly only have to provide the trados file.
+
+    @author frank.bergmann@project-open.com
 } {
     project_id:integer
     return_url
