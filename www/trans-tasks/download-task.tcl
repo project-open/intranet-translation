@@ -1,4 +1,9 @@
-# /file-storage/download-task.tcl
+# /packages/intranet-translation/www/download-task.tcl
+#
+# Copyright (C) 2004 Project/Open
+# All rights reserved (this is not GPLed software!).
+# Please check http://www.project-open.com/ for licensing
+# details.
 
 ad_page_contract {
     See if this person is authorized to read the task file,
@@ -17,12 +22,6 @@ ad_page_contract {
 }
 
 set user_id [ad_maybe_redirect_for_registration]
-
-set user_is_admin_p [im_is_user_site_wide_or_intranet_admin $user_id]
-set user_is_group_admin_p [im_can_user_administer_group $project_id $user_id]
-set user_is_employee_p [im_user_is_employee_p $user_id]
-set user_admin_p [expr $user_is_admin_p || $user_is_group_admin_p]
-
 set project_path [im_filestorage_project_path $project_id]
 
 # get everything about the specified task
@@ -42,19 +41,14 @@ if {![db_0or1row task_info_query $task_sql] } {
     return
 }
 
-set upload_list [im_task_component_upload $user_id $user_admin_p $task_status_id $source_language $target_language $trans_id $edit_id $proof_id $other_id]
+# Get the overall permissions
+im_translation_task_permissions $user_id $task_id view read write admin
+
+set upload_list [im_task_component_upload $user_id $admin $task_status_id $source_language $target_language $trans_id $edit_id $proof_id $other_id]
 set upload [lindex $upload_list 0]
 set folder [lindex $upload_list 1]
 
-# Allow to download the file if the user is an admin, a project admin
-# or an employee of the company. Or if the user is an translator, editor,
-# proofer or "other" of the specified task.
-set allow 0
-if {$user_admin_p} { set allow 1}
-if {$user_is_employee_p} { set allow 1}
-if {$upload == 2} {set allow 1}
-
-if {!$allow} {
+if {!$read} {
     ad_return_complaint 1 "<li>You have insufficient access rights to download this file."
     return
 }

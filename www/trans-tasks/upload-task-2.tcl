@@ -1,4 +1,9 @@
-# /intranet/filestorage/upload-task-2.tcl
+# /packages/intranet-translation/www/upload-task-2.tcl
+#
+# Copyright (C) 2004 Project/Open
+# All rights reserved (this is not GPLed software!).
+# Please check http://www.project-open.com/ for licensing
+# details.
 
 ad_page_contract {
     insert a file into the file system
@@ -15,23 +20,16 @@ ad_page_contract {
 # ---------------------------------------------------------------------
 
 set user_id [ad_maybe_redirect_for_registration]
-
-set user_is_admin_p [im_is_user_site_wide_or_intranet_admin $user_id]
-set user_is_group_admin_p [im_can_user_administer_group $project_id $user_id]
-set user_is_employee_p [im_user_is_employee_p $user_id]
-set user_admin_p [expr $user_is_admin_p || $user_is_group_admin_p]
+set project_path [im_filestorage_project_path $project_id]
 
 set page_title "Upload Successful"
-
 # Set the context bar as a function on whether this is a subproject or not:
-#
 if {[im_permission $user_id view_projects]} {
     set context_bar [ad_context_bar [list /intranet/projects/ "Projects"] [list "/intranet/projects/view?group_id=$project_id" "One project"] $page_title]
 } else {
     set context_bar [ad_context_bar [list /intranet/projects/ "Projects"] $page_title]
 }
 
-set project_path [im_filestorage_project_path $project_id]
 
 # ---------------------------------------------------------------------
 # SQL
@@ -55,12 +53,15 @@ if {![db_0or1row task_info_query $task_sql] } {
     return
 }
 
+# Get the overall permissions
+im_translation_task_permissions $user_id $task_id view read write admin
+
 # Check for permissions according to the im_tasks state engine:
 # Check if the user is a freelance who is allowed to
 # upload a file for this task, depending on the task
 # status (engine) and the assignment to a specific phase.
 #
-set upload_list [im_task_component_upload $user_id $user_admin_p $task_status_id $source_language $target_language $trans_id $edit_id $proof_id $other_id]
+set upload_list [im_task_component_upload $user_id $admin $task_status_id $source_language $target_language $trans_id $edit_id $proof_id $other_id]
 set download_folder [lindex $upload_list 0]
 set upload_folder [lindex $upload_list 1]
 if {"" == $upload_folder} {
@@ -157,16 +158,10 @@ im_trans_upload_action $task_id $task_status_id $task_type_id $user_id
 
 set page_body "
 <H2>Upload Successful</H2>
-
 Your have successfully uploaded $filesize bytes of file '$task_name'.
-
 <P><A href=\"$return_url\">Return to Project Page</A></P>
-
 "
 
 doc_return 200 text/html [im_return_template]
-return
-
-ad_returnredirect $return_url
 return
 
