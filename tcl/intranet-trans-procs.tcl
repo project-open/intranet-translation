@@ -169,6 +169,11 @@ ad_proc -public im_trans_trados_matrix_component { user_id object_id return_url 
     Return a formatted HTML table showing the trados matrix
     related to the current object
 } {
+
+    if {![im_permission $user_id view_costs]} {
+        return ""
+    }
+
     array set matrix [im_trans_trados_matrix $object_id]
     set header_html "
 <td class=rowtitle align=center>[_ intranet-translation.XTr]</td>
@@ -1407,6 +1412,8 @@ ad_proc im_task_error_component { user_id project_id return_url } {
 	return ""
     }
 
+    if {![im_permission $user_id view_trans_proj_detail]} { return "" }
+
     set missing_task_list [im_task_missing_file_list $project_id]
     ns_log Notice "im_task_error_component: missing_task_list=$missing_task_list"
 
@@ -1518,6 +1525,9 @@ $task_table_rows
 ad_proc im_new_task_component { user_id project_id return_url } {
     Return a piece of HTML to allow to add new tasks
 } {
+
+    if {![im_permission $user_id view_trans_proj_detail]} { return "" }
+
     set bgcolor(0) " class=roweven"
     set bgcolor(1) " class=rowodd"
 
