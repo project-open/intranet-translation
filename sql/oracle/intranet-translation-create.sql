@@ -409,24 +409,78 @@ INSERT INTO im_categories VALUES (113,'Draft Quality','Draft Quality','Intranet 
 
 -- Setup the most frequently used language (lang, sort_key, name)
 INSERT INTO im_categories VALUES (250,'es','Spanish','Intranet Translation Language','category','t','f');
-INSERT INTO im_categories VALUES (251,'es_ES','Castilian Spanish','Intranet Translation Language','category','t','f');
-INSERT INTO im_categories VALUES (252,'es_LA','Latin Americal Spanish','Intranet Translation Language','category','t','f');
-INSERT INTO im_categories VALUES (253,'es_US','US Spanish','Intranet Translation Language','category','t','f');
-INSERT INTO im_categories VALUES (254,'es_MX','Mexican Spanish','Intranet Translation Language','category','t','f');
+INSERT INTO im_categories VALUES (251,'es_ES','Spanish (Spain)','Intranet Translation Language','category','t','f');
+INSERT INTO im_categories VALUES (252,'es_LA','Spanish (Latin America)','Intranet Translation Language','category','t','f');
+INSERT INTO im_categories VALUES (253,'es_US','Spanish (US)','Intranet Translation Language','category','t','f');
+INSERT INTO im_categories VALUES (254,'es_MX','Spanish (Mexico)','Intranet Translation Language','category','t','f');
+INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
+(255,'es_VE','Intranet Translation Language','Spanish (Venezuea)');
+INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
+(256,'es_PE','Intranet Translation Language','Spanish (Peru)');
+INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
+(257,'es_AR','Intranet Translation Language','Spanish (Argentina)');
+INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
+(258,'es_UY','Intranet Translation Language','Spanish (Uruguay)');
+
 INSERT INTO im_categories VALUES (261,'en','English','Intranet Translation Language','category','t','f');
-INSERT INTO im_categories VALUES (262,'en_US','US English','Intranet Translation Language','category','t','f');
-INSERT INTO im_categories VALUES (263,'en_UK','UK English','Intranet Translation Language','category','t','f');
+INSERT INTO im_categories VALUES (262,'en_US','English (US)','Intranet Translation Language','category','t','f');
+INSERT INTO im_categories VALUES (263,'en_UK','English (UK)','Intranet Translation Language','category','t','f');
+INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
+(264,'en_CA','Intranet Translation Language','English (Canada)');
+INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
+(265,'en_IE','Intranet Translation Language','English (Ireland)');
+INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
+(266,'en_AU','Intranet Translation Language','English (Australia)');
+
+
+INSERT INTO im_categories (category_id, category, category_type, category_description) VALUES
+(268,'it','Intranet Translation Language','Italian');
+INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
+(269,'it_IT','Intranet Translation Language','Italian Italy');
+
 INSERT INTO im_categories VALUES (271,'fr','French','Intranet Translation Language','category','t','f');
-INSERT INTO im_categories VALUES (272,'fr_FR','French French','Intranet Translation Language','category','t','f');
-INSERT INTO im_categories VALUES (273,'fr_BE','Belgian French','Intranet Translation Language','category','t','f');
-INSERT INTO im_categories VALUES (274,'fr_CH','Swiss French','Intranet Translation Language','category','t','f');
+INSERT INTO im_categories VALUES (272,'fr_FR','French (France)','Intranet Translation Language','category','t','f');
+INSERT INTO im_categories VALUES (273,'fr_BE','French (Belgium)','Intranet Translation Language','category','t','f');
+INSERT INTO im_categories VALUES (274,'fr_CH','French (Switzerland)','Intranet Translation Language','category','t','f');
+
+INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
+(276,'pt','Intranet Translation Language','Portuguese');
+INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
+(277,'pt_PT','Intranet Translation Language','Portuguese (Portugal)');
+INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
+(278,'pt_BR','Intranet Translation Language','Portuguese (Brazil)');
+
 INSERT INTO im_categories VALUES (281,'de','German','Intranet Translation Language','category','t','f');
 INSERT INTO im_categories VALUES (282,'de_DE','German German','Intranet Translation Language','category','t','f');
 INSERT INTO im_categories VALUES (283,'de_CH','Swiss German','Intranet Translation Language','category','t','f');
-INSERT INTO im_categories VALUES (290,'none','No Language','Intranet Translation Language','category','t','f');
+
+INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
+(285,'ru','Intranet Translation Language','Russian');
+INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
+(286,'ru_RU','Intranet Translation Language','Russian (Russian Federation)');
+INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
+(287,'ru_UA','Intranet Translation Language','Russian (Ukrainia)');
+INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
+(288,'da','Intranet Translation Language','Danish');
 
 
+INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
+(290,'nl','Intranet Translation Language','Dutch');
+INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
+(291,'nl_NL','Intranet Translation Language','Duch (The Netherlands)');
+INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
+(292,'nl_BE','Intranet Translation Language','Duch (Belgium)');
 
+INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
+(294,'ca_ES','Intranet Translation Language','Catalan (Spain)');
+INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
+(295,'gr','Intranet Translation Language','Greek');
+INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
+(296,'gl','Intranet Translation Language','Galician');
+INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
+(297,'eu','Intranet Translation Language','Euskera');
+
+INSERT INTO im_categories VALUES (299,'none','No Language','Intranet Translation Language','category','t','f');
 
 
 -- Unit or Mesurement
