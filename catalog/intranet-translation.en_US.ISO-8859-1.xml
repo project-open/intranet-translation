@@ -2,6 +2,12 @@
 <message_catalog package_key="intranet-translation" package_version="2.0.0" locale="en_US" charset="ISO-8859-1">
 
   <msg key="--_Please_Select_--">-- Please Select --</msg>
+  <msg key="0_">0%</msg>
+  <msg key="50_">50%</msg>
+  <msg key="75_">75%</msg>
+  <msg key="85_">85%</msg>
+  <msg key="95_">95%</msg>
+  <msg key="100_">100%</msg>
   <msg key="Add">Add</msg>
   <msg key="Add_a_New_Task">Add a New Task</msg>
   <msg key="Add_File">Add File</msg>
@@ -9,9 +15,11 @@
   <msg key="Ass">Ass</msg>
   <msg key="Assign">Assign</msg>
   <msg key="Assign_Tasks">Assign Tasks</msg>
+  <msg key="Assigned">Assigned</msg>
   <msg key="Assignments">Assignments</msg>
   <msg key="Auto_Assigment">Auto Assigment</msg>
   <msg key="Auto_Assignment">Auto Assignment</msg>
+  <msg key="Bill_Units">Bill Units</msg>
   <msg key="Client_contact">Client contact</msg>
   <msg key="Client_Project">Client Project#</msg>
   <msg key="Client_project_">Client project #</msg>
@@ -48,6 +56,7 @@
   <msg key="lt_Error_writing_upload_">Error writing upload file</msg>
   <msg key="lt_Expected_file_task_na">Expected file: %task_name%</msg>
   <msg key="lt_File_is_missing_in_pr">File is missing in project #%project_nr%: %file_name%</msg>
+  <msg key="lt_img_srcintranetimages">_</msg>
   <msg key="lt_Missing_Translation_F">Missing Translation Files</msg>
   <msg key="lt_New_files_need_to_be_">New files need to be located in the \&quot;source_xx\&quot; folder to appear in the drop-down box on the left.</msg>
   <msg key="lt_New_Trados_Matrix_of_">New Trados Matrix of '%object_name%'</msg>
@@ -106,6 +115,7 @@ system meanwhile.)</msg>
   <msg key="lt_Your_file_trados_word">Your file '%trados_wordcount_file%' has not been created with one of the supported Trados versions (3.0 and 5.5).</msg>
   <msg key="lt_Your_file_upload_file">Your file: %upload_file%</msg>
   <msg key="lt_Your_have_successfull">Your have successfully uploaded $filesize bytes of file '%task_name%'.</msg>
+  <msg key="Message">Message</msg>
   <msg key="Name">Name</msg>
   <msg key="No_tasks_found">No tasks found</msg>
   <msg key="One_Project">One Project</msg>
@@ -122,11 +132,13 @@ system meanwhile.)</msg>
   <msg key="Save">Save</msg>
   <msg key="Size">Size</msg>
   <msg key="Source_Language">Source Language</msg>
+  <msg key="Status">Status</msg>
   <msg key="Subject_Area">Subject Area</msg>
   <msg key="Submit_and_Upload">Submit and Upload</msg>
   <msg key="Target_Lang">Target Lang</msg>
   <msg key="Target_Languages">Target Language(s)</msg>
   <msg key="Target_Languages_1">Target Languages</msg>
+  <msg key="Task">Task</msg>
   <msg key="Task_Assignments">Task Assignments</msg>
   <msg key="Task_Name">Task Name</msg>
   <msg key="Task_Type">Task Type</msg>

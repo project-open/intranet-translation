@@ -473,7 +473,7 @@ where
 	project_id=:project_id
 "
     db_foreach select_target_languages $sql {
-	lappend result $target_language
+	lappend result [_ intranet-core.$target_language]
     }
     return $result
 }
