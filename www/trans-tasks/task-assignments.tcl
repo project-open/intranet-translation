@@ -40,7 +40,7 @@ if {![im_permission $user_id view_trans_proj_detail]} {
 set page_title "[_ intranet-translation.Assignments]"
 set context_bar [ad_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] [list "/intranet/projects/view?project_id=$project_id" "[_ intranet-translation.One_project]"] $page_title]
 
-if {"" == $return_url} { set return_url "/intranet/projects/view?project_id=$project_id" }
+if {"" == $return_url} { set return_url [im_url_with_query] }
 
 set bgcolor(0) " class=roweven"
 set bgcolor(1) " class=rowodd"
