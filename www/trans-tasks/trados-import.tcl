@@ -107,7 +107,9 @@ set trados_headers [split $trados_header ";"]
 #
 set line2 [lindex $trados_files 2]
 set line2_len [llength [split $line2 ";"]]
+
 switch $line2_len {
+    40 { set trados_version "6.5" }
     39 { set trados_version "5.5" }
     38 { set trados_version "5.0" }
     25 { set trados_version "3" }
@@ -234,7 +236,8 @@ ns_log Notice "common_filename_comps=$common_filename_comps"
 	    set p0_words	[lindex $trados_fields 22]
 	    set p0_placeables	[lindex $trados_fields 23]
 	}
-	if {[string equal $trados_version "5.5"] || [string equal $trados_version "5.0"]} {
+
+	if {[string equal $trados_version "5.5"] || [string equal $trados_version "5.0"] || [string equal $trados_version "6.5"]} {
 	    set px_segments	[lindex $trados_fields 3]
 	    set px_words	[lindex $trados_fields 4]
 	    set px_placeables	[lindex $trados_fields 5]
@@ -267,7 +270,6 @@ ns_log Notice "common_filename_comps=$common_filename_comps"
 	    set p0_words	[lindex $trados_fields 32]
 	    set p0_placeables	[lindex $trados_fields 33]
 	}
-
 
 	switch $import_method {
 

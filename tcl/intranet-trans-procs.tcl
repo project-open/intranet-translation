@@ -1235,8 +1235,8 @@ where
     append task_status_html "
 <tr>
   <td colspan=12 align=left>
-    <input type=submit value='[_ intranet-translation.View_Tasks]' name=submit>
-    <input type=submit value='[_ intranet-translation.Assign_Tasks]' name=submit>
+    <input type=submit value='[_ intranet-translation.View_Tasks]' name=submit_view>
+    <input type=submit value='[_ intranet-translation.Assign_Tasks]' name=submit_assign>
   </td>
 </tr>
 "
@@ -1686,7 +1686,7 @@ ad_proc im_new_task_component { user_id project_id return_url } {
     <form enctype=multipart/form-data method=POST action=/intranet-translation/trans-tasks/trados-upload>
     [export_form_vars project_id return_url]
     <input type=file name=upload_file size=30 value='*.csv'>
-    <input type=submit value='[_ intranet-translation.Add_Trados_Wordcount]' name=submit>
+    <input type=submit value='[_ intranet-translation.Add_Trados_Wordcount]' name=submit_trados>
     </form>
   </td>
   <td>
@@ -1695,7 +1695,6 @@ ad_proc im_new_task_component { user_id project_id return_url } {
 </tr>
 "
     }
-
 
 
     # -------------------- Add an Intermediate Header -----------------------
@@ -1722,8 +1721,6 @@ ad_proc im_new_task_component { user_id project_id return_url } {
 "
 
 
-
-
     # -------------------- Add a new File  --------------------------
 
     if {0 < [llength $task_list]} {
@@ -1736,7 +1733,7 @@ ad_proc im_new_task_component { user_id project_id return_url } {
     <td><input type=text size=2 value=0 name=task_units_file></td>
     <td>[im_category_select "Intranet UoM" "task_uom_file" 324]</td>
     <td>[im_category_select "Intranet Project Type" task_type_file 86]</td>
-    <td><input type=submit value=\"[_ intranet-translation.Add_File]\" name=submit></td>
+    <td><input type=submit value=\"[_ intranet-translation.Add_File]\" name=submit_add_file></td>
     <td>[im_gif help "Add a new file to the list of tasks. \n New files need to be located in the \"source_xx\" folder to appear in the drop-down box on the left."]</td>
   </tr>
 </form>
@@ -1753,7 +1750,7 @@ ad_proc im_new_task_component { user_id project_id return_url } {
     <td><input type=text size=2 value=0 name=task_units_manual></td>
     <td>[im_category_select "Intranet UoM" "task_uom_manual" 324]</td>
     <td>[im_category_select "Intranet Project Type" task_type_manual 86]</td>
-    <td><input type=submit value=\"[_ intranet-translation.Add]\" name=submit></td>
+    <td><input type=submit value=\"[_ intranet-translation.Add]\" name=submit_add_manual></td>
     <td>[im_gif help "Add a \"manual\" task to the project. \n This task is not going to controled by the translation workflow."]</td>
   </tr>
 </form>"

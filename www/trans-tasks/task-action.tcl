@@ -27,7 +27,12 @@ ad_page_contract {
     { task_units_manual ""}
     { task_uom_manual "" }
     { task_type_manual "" }
-    submit
+    { submit "" }
+    { submit_view ""}
+    { submit_assign "" }
+    { submit_trados "" }
+    { submit_add_manual "" }
+    { submit_add_file "" }
 }
 
 # Get the list of target languages of the current project.
@@ -43,7 +48,11 @@ if {0 == [llength $target_language_ids]} {
     set target_language_ids [list ""]
 }
 
-
+if {"" != $submit_view} { set submit "View Tasks" }
+if {"" != $submit_assign} { set submit "Assign Tasks" }
+if {"" != $submit_trados} { set submit "Trados Import" }
+if {"" != $submit_add_manual} { set submit "Add" }
+if {"" != $submit_add_file} { set submit "Add File" }
 
 set user_id [ad_maybe_redirect_for_registration]
 set page_body "<PRE>\n"
