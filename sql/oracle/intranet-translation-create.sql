@@ -183,8 +183,9 @@ extra_select, extra_where, sort_order, visible_for) values (2023,20,NULL,'Appr. 
 
 
 
-
-insert into im_views (view_id, view_name, visible_for) values (90, 'trans_task_list', 'view_trans_tasks');
+-- trans_task_list
+insert into im_views (view_id, view_name, visible_for) 
+values (90, 'trans_task_list', 'view_trans_tasks');
 
 
 -- Translation TasksListPage columns
