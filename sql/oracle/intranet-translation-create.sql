@@ -96,7 +96,7 @@ create table im_trans_tasks (
 create unique index im_trans_tasks_unique_idx on im_trans_tasks 
 (task_name, project_id, target_language_id);
 
-# Speedup lookups by project
+-- Speedup lookups by project
 create index im_trans_tasks_project_id_idx on im_trans_tasks(project_id);
 
 
