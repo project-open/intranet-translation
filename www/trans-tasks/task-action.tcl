@@ -18,6 +18,7 @@ ad_page_contract {
     { delete_task:multiple "" }
     billable_units:array,optional
     task_status:array,optional
+    task_type:array,optional
     { task_name_file "" }
     { task_units_file ""}
     { task_uom_file "" }
@@ -42,62 +43,6 @@ if {0 == [llength $target_language_ids]} {
     set target_language_ids [list ""]
 }
 
-
-ad_proc im_task_insert {project_id task_name task_filename task_units task_uom task_type target_language_ids} {
-    Add a new task into the DB
-} {
-
-    # Get some variable of the project:
-    set query "
-		select p.source_language_id
-		from im_projects p
-		where p.project_id=:project_id"
-
-    if { ![db_0or1row projects_info_query $query] } {
-	append page_body "Can't find the project $project_id"
-	doc_return  200 text/html [im_return_template]
-	return
-    }
-    
-    if {"" == $source_language_id} {
-	ad_return_complaint 1 "<li>[_ intranet-translation.lt_You_havent_defined_th]<br>[_ intranet-translation.lt_Please_edit_your_proj]"
-	return
-    }
-
-    # Task just _created_
-    set task_status_id 340
-    set task_description ""
-    set invoice_id ""
-    set match100 ""
-    set match95 ""
-    set match85 ""
-    set match0 ""
-
-
-    set sql "
-INSERT INTO im_trans_tasks 
-(task_id, task_name, task_filename, project_id, task_type_id, 
- task_status_id, 
- description, source_language_id, target_language_id, task_units, 
- billable_units, task_uom_id, match100, match95, match85, match0)
-VALUES
-(:new_task_id, :task_name, :task_filename, :project_id, :task_type, 
- :task_status_id, 
- :task_description, :source_language_id, :target_language_id, :task_units, 
- :task_units, :task_uom, :match100, :match95, :match85, :match0)"
-
-    # Add a new task for every project target language
-    foreach target_language_id $target_language_ids {
-
-	set new_task_id [db_nextval im_trans_tasks_seq]
-        if { [catch {
-	    db_dml insert_tasks $sql
-        } err_msg] } {
-	    ad_return_complaint "[_ intranet-translation.Database_Error]" "[_ intranet-translation.lt_Did_you_enter_the_sam]<BR>
-            Here is the error:<BR> <P>$err_msg"
-        }
-    }
-}
 
 
 set user_id [ad_maybe_redirect_for_registration]
@@ -143,12 +88,15 @@ switch -glob $submit {
 
 	foreach task_id $task_list {
 	    regsub {\,} $task_status($task_id) {.} task_status($task_id)
+	    regsub {\,} $task_type($task_id) {.} task_type($task_id)
 	    regsub {\,} $billable_units($task_id) {.} billable_units($task_id)
 	    append page_body "task_status($task_id)=$task_status($task_id)\n"
+	    append page_body "task_type($task_id)=$task_type($task_id)\n"
 	    append page_body "b._units($task_id)=$billable_units($task_id)\n"
 	    set sql "
-                update im_trans_tasks
-                set task_status_id= '$task_status($task_id)'
+                update im_trans_tasks set
+                	task_status_id= '$task_status($task_id)',
+                	task_type_id= '$task_type($task_id)'
                 where project_id=:project_id
                 and task_id=:task_id"
 	    db_dml update_task_status $sql

@@ -84,10 +84,10 @@ insert into im_view_columns (column_id, view_id, group_id, column_name, column_r
 extra_select, extra_where, sort_order, visible_for) values (9015,90,NULL,'Bill. Units','$billable_items_input',
 '','',15,'expr $project_write');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (9017,90,NULL,'Task','$type_name',
+extra_select, extra_where, sort_order, visible_for) values (9017,90,NULL,'Task Type','$type_select',
 '','',17,'expr $project_write');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (9019,90,NULL,'Status','$status_select',
+extra_select, extra_where, sort_order, visible_for) values (9019,90,NULL,'Task Status','$status_select',
 '','',19,'expr $project_write');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (9021,90,NULL,'[im_gif delete "Delete the Task"]','$del_checkbox',

@@ -236,7 +236,7 @@ select im_component_plugin__new (
         'Project Freelance Tasks',      -- plugin_name
         'intranet-translation',         -- package_name
         'left',                         -- location
-        '/intranet/project/view',       -- page_url
+        '/intranet/projects/view',       -- page_url
         null,                           -- view_name
         70,                             -- sort_order
         'im_task_freelance_component $user_id $project_id $return_url'
@@ -255,7 +255,7 @@ select im_component_plugin__new (
         'Project Translation Task Status',  -- plugin_name
         'intranet-translation',         -- package_name
         'bottom',                       -- location
-        '/intranet/project/view',       -- page_url
+        '/intranet/projects/view',       -- page_url
         null,                           -- view_name
         10,                             -- sort_order
 	'im_task_status_component $user_id $project_id $return_url'
@@ -373,7 +373,7 @@ begin
         ''/intranet-translation/trans-tasks/task-list?view_name=trans_tasks'', -- url
         50,                     -- sort_order
         v_project_menu,         -- parent_menu_id
-        null                    -- p_visible_tcl
+        '[im_project_has_type [ns_set get $bind_vars project_id] "Translation Project"]' -- p_visible_tcl
     );
 
     PERFORM acs_permission__grant_permission(v_menu, v_admins, ''read'');
@@ -398,7 +398,7 @@ begin
         ''/intranet-translation/trans-tasks/task-assignments?view=standard'', -- url
         60,                     -- sort_order
         v_project_menu,         -- parent_menu_id
-        null                    -- p_visible_tcl
+        '[im_project_has_type [ns_set get $bind_vars project_id] "Translation Project"]'  -- p_visible_tcl
     );
 
     PERFORM acs_permission__grant_permission(v_menu, v_admins, ''read'');

@@ -160,6 +160,79 @@ where
 }
 
 
+ad_proc im_task_insert {project_id task_name task_filename task_units task_uom task_type target_language_ids} {
+    Add a new task into the DB
+} {
+
+    # Get some variable of the project:
+    set query "
+		select p.source_language_id
+		from im_projects p
+		where p.project_id=:project_id"
+
+    if { ![db_0or1row projects_info_query $query] } {
+	append page_body "Can't find the project $project_id"
+	doc_return  200 text/html [im_return_template]
+	return
+    }
+    
+    if {"" == $source_language_id} {
+	ad_return_complaint 1 "<li>[_ intranet-translation.lt_You_havent_defined_th]<br>[_ intranet-translation.lt_Please_edit_your_proj]"
+	return
+    }
+
+    # Task just _created_
+    set task_status_id 340
+    set task_description ""
+    set invoice_id ""
+    set match100 ""
+    set match95 ""
+    set match85 ""
+    set match0 ""
+
+
+    set sql "
+	INSERT INTO im_trans_tasks (
+		task_id, task_name, task_filename, project_id, task_type_id, 
+		task_status_id, description, source_language_id, target_language_id, 
+		task_units, billable_units, task_uom_id, match100, match95, match85, 
+		match0
+	) VALUES (:
+		new_task_id, :task_name, :task_filename, :project_id, :task_type, 
+ 		:task_status_id, :task_description, :source_language_id, :target_language_id, 
+ 		:task_units, :task_units, :task_uom, :match100, :match95, :match85, :match0
+ 	)"
+
+    # Add a new task for every project target language
+    foreach target_language_id $target_language_ids {
+
+	# Check for duplicated task names
+	set task_name_count [db_string task_name_count "
+		select count(*) 
+		from im_trans_tasks 
+		where 
+			lower(task_name) = lower(:task_name)
+			and project_id = :project_id
+			and target_language_id = :target_language_id
+	"]
+	if {$task_name_count > 0} {
+	    ad_return_complaint "[_ intranet-translation.Database_Error]" "[_ intranet-translation.lt_Did_you_enter_the_sam]"
+	    return
+	}
+
+	set new_task_id [db_nextval im_trans_tasks_seq]
+        if { [catch {
+	    db_dml insert_tasks $sql
+        } err_msg] } {
+	    ad_return_complaint "[_ intranet-translation.Database_Error]" "[_ intranet-translation.lt_Did_you_enter_the_sam]<BR>
+            Here is the error:<BR> <P>$err_msg"
+        }
+    }
+}
+
+
+
+
 # -------------------------------------------------------------------
 # Trados Matrix
 # -------------------------------------------------------------------
@@ -507,7 +580,11 @@ ad_proc -public im_trans_project_details_component { user_id project_id return_u
     Return a formatted HTML widget showing the translation
     specific fields of a translation project.
 } {
-
+    # Is this a translation project?
+    if {![im_project_has_type $project_id "Translation Project"]} {
+	return ""
+    }
+ 
     set query "
 select
         p.*,
@@ -673,6 +750,8 @@ ad_proc im_trans_upload_action {task_id task_status_id task_type_id user_id} {
 
     # Always register the user-action
     set upload_action_id [db_string upload_action_id "select category_id from im_categories where category_type='Intranet File Action Type' and lower(category)='upload'" -default ""]
+    set action_id [db_nextval im_task_actions_seq]
+    set sysdate [db_string sysdate "select sysdate from dual"]
     db_dml register_action "insert into im_task_actions (
 	        action_id,
 	        action_type_id,
@@ -682,11 +761,11 @@ ad_proc im_trans_upload_action {task_id task_status_id task_type_id user_id} {
 	        old_status_id,
 	        new_status_id
 	    ) values (
-		im_task_actions_seq.nextval,
+		:action_id,
 		$upload_action_id,
 		:user_id,
 		:task_id,
-		sysdate,
+		:sysdate,
 		:task_status_id,
 		:new_status_id
     )"
@@ -1293,10 +1372,10 @@ and t.task_type_id=type_c.category_id(+)
 
 	# Build a string with the user short names for the assignations
         set assignments ""
-        if {$trans_name != ""} { append assignments "T: <A HREF=/intranet/users/view?user_id=$trans_id>$trans_name</A>" }
-        if {$edit_name != ""} { append assignments "E: <A HREF=/intranet/users/view?user_id=$edit_id>$edit_name</A>" }
-        if {$proof_name != ""} { append assignments "P: <A HREF=/intranet/users/view?user_id=$proof_id>$proof_name</A>" }
-        if {$other_name != ""} { append assignments "<A HREF=/intranet/users/view?user_id=$other_id>$other_name</A>" }
+        if {$trans_name != ""} { append assignments "T: <A HREF=/intranet/users/view?user_id=$trans_id>$trans_name</A> " }
+        if {$edit_name != ""} { append assignments "E: <A HREF=/intranet/users/view?user_id=$edit_id>$edit_name</A> " }
+        if {$proof_name != ""} { append assignments "P: <A HREF=/intranet/users/view?user_id=$proof_id>$proof_name</A> " }
+        if {$other_name != ""} { append assignments "<A HREF=/intranet/users/view?user_id=$other_id>$other_name</A> " }
 
 	# Replace "/" characters in the Task Name (filename) by "/ ",
 	# to allow the line to break more smoothely
@@ -1312,6 +1391,10 @@ and t.task_type_id=type_c.category_id(+)
 
 	# Status Select Box
 	set status_select [im_category_select "Intranet Translation Task Status" task_status.$task_id $task_status_id]
+
+	# Type Select Box
+	# ToDo: Introduce its own "Intranet Translation Task Type".
+	set type_select [im_category_select "Intranet Project Type" task_type.$task_id $task_type_id]
 
 	# Message - Tell the freelancer what to do...
 	# Check if the user is a freelance who is allowed to
@@ -1592,27 +1675,6 @@ ad_proc im_new_task_component { user_id project_id return_url } {
 </tr>
 "
 
-    # -------------- Upload a local Trados Wordcount File  ----------------
-
-    if {[ad_parameter -package_id [im_package_translation_id] EnableLocalTradosImport "" 0]} {
-	append task_table "
-<tr $bgcolor([expr $ctr % 2])> 
-  <td>
-
-    <form action=/intranet-translation/trans-tasks/task-action method=POST>
-    [export_form_vars project_id return_url]
-    <input type=submit value='[_ intranet-translation.Trados_Import]' name=submit>
-    [_ intranet-translation.lt_Classical_Trados_impo]
-    </form>
-
-  </td>
-  <td>
-    [im_gif help "Add the content of a local Trados 'wordcount.csv' file to the list of tasks. \nThe file needs to be called 'wordcount.csv' (lowercase letters), it needs to reside in the project folder, and there may not be more then one file with this name."]
-  </td>
-</tr>
-"
-    }
-
     # -------------------- Add an Asp Wordcount -----------------------
 
     if {[ad_parameter -package_id [im_package_translation_id] EnableAspTradosImport "" 0]} {
@@ -1632,61 +1694,70 @@ ad_proc im_new_task_component { user_id project_id return_url } {
 "
     }
 
+
+
+    # -------------------- Add an Intermediate Header -----------------------
+    append task_table "
+</table>
+<table border=0>
+<tr>
+  <td class=rowtitle align=center>
+    [_ intranet-translation.Task_Name]
+  </td>
+  <td class=rowtitle align=center>
+    [_ intranet-translation.Units]
+  </td>
+  <td class=rowtitle align=center>
+    [_ intranet-translation.UoM]
+  </td>
+  <td class=rowtitle align=center>
+    [_ intranet-translation.Task_Type]
+  </td>
+  <td class=rowtitle align=center>
+    [_ intranet-translation.Task_Action]
+  </td>
+</tr>
+"
+
+
+
+
     # -------------------- Add a new File  --------------------------
 
     if {0 < [llength $task_list]} {
         append task_table "
-<tr $bgcolor(0)> 
-  <td>
+<form action=/intranet-translation/trans-tasks/task-action method=POST>
+[export_form_vars project_id return_url]
+  <tr $bgcolor(0)> 
 
-    <form action=/intranet-translation/trans-tasks/task-action method=POST>
-    [export_form_vars project_id return_url]
-    <table border=0>
-      <tr>
-        <td>[im_select -translate_p 0 "task_name_file" $task_list]</td>
-        <td><input type=text size=2 value='0' name=task_units_file></td>
-        <td>[im_category_select "Intranet UoM" "task_uom_file" 324]</td>
-        <td>[im_category_select "Intranet Project Type" task_type_file 86]</td>
-        <td><input type=submit value='[_ intranet-translation.Add_File]' name=submit></td>
-      </tr>
-    </table>
-    </form>
-
-  </td>
-  <td>
-    [im_gif help "Add a new file to the list of tasks. \n New files need to be located in the \"source_xx\" folder to appear in the drop-down box on the left."]
-  </td>
-</tr>
+    <td>[im_select -translate_p 0 "task_name_file" $task_list]</td>
+    <td><input type=text size=2 value='0' name=task_units_file></td>
+    <td>[im_category_select "Intranet UoM" "task_uom_file" 324]</td>
+    <td>[im_category_select "Intranet Project Type" task_type_file 86]</td>
+    <td><input type=submit value='[_ intranet-translation.Add_File]' name=submit></td>
+    <td>[im_gif help "Add a new file to the list of tasks. \n New files need to be located in the \"source_xx\" folder to appear in the drop-down box on the left."]</td>
+  </tr>
+</form>
 "
     }
 
     # -------------------- Add Task Manually --------------------------
     append task_table "
-<tr $bgcolor(0)> 
-  <td>
-    <form action=/intranet-translation/trans-tasks/task-action method=POST>
-    [export_form_vars project_id return_url]
+<form action=/intranet-translation/trans-tasks/task-action method=POST>
+[export_form_vars project_id return_url]
+  <tr $bgcolor(0)> 
 
-    <table border=0>
-    <tr>
-      <td><input type=text size=20 value='' name=task_name_manual></td>
-      <td><input type=text size=2 value='0' name=task_units_manual></td>
-      <td>[im_category_select "Intranet UoM" "task_uom_manual" 324]</td>
-      <td>[im_category_select "Intranet Project Type" task_type_manual 86]</td>
-      <td><input type=submit value='[_ intranet-translation.Add]' name=submit></td>
-    </tr>
-    </table>
-    </form>
-
-  </td>
-  <td>
-    [im_gif help "Add a \"manual\" task to the project. \n This task is not going to controled by the translation workflow."]
-  </td>
-</tr>"
+    <td><input type=text size=20 value='' name=task_name_manual></td>
+    <td><input type=text size=2 value='0' name=task_units_manual></td>
+    <td>[im_category_select "Intranet UoM" "task_uom_manual" 324]</td>
+    <td>[im_category_select "Intranet Project Type" task_type_manual 86]</td>
+    <td><input type=submit value='[_ intranet-translation.Add]' name=submit></td>
+    <td>[im_gif help "Add a \"manual\" task to the project. \n This task is not going to controled by the translation workflow."]</td>
+  </tr>
+</form>"
 
     append task_table "
 </table>
-</form>
 "
     return $task_table
 }
