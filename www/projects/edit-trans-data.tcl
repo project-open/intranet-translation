@@ -32,17 +32,31 @@ if {!$write} {
 
 set target_language_ids [im_target_language_ids $project_id]
 
+#db_1row projects_info_query { 
+#select 
+#        p.*,
+#        p.company_project_nr,
+#        c.company_name
+#from
+#	im_projects p,
+#	im_companies c
+#where 
+#	p.project_id=:project_id 
+#        and p.project_id=c.company_id(+)
+#}
+
 db_1row projects_info_query { 
 select 
         p.*,
-        p.company_project_nr,
-        c.company_name
+        p.company_project_nr
 from
-	im_projects p,
-	im_companies c
+	im_projects p
 where 
 	p.project_id=:project_id 
-        and p.project_id=c.company_id(+)
+}
+
+if {![db_0or1row "get company info" "select  c.company_name from im_companies c where c.company_id = :company_id"]} {
+    set company_name ""
 }
 
 set page_body "
