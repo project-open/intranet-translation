@@ -34,6 +34,12 @@ ad_page_contract {
 set user_id [ad_maybe_redirect_for_registration]
 # set user_in_project_group_p [db_string user_belongs_to_project "select decode ( ad_group_member_p ( :user_id, $project_id ), 'f', 0, 1 ) from dual" ]
 
+if {![im_permission $user_id view_trans_proj_detail]} { 
+    ad_return_complaint 1 "<li>You don't have sufficient privileges to view this page"
+    return
+}
+
+
 set page_title "Assignments"
 set context_bar [ad_context_bar [list /intranet/projects/ "Projects"] [list "/intranet/projects/view?project_id=$project_id" "One project"] $page_title]
 
