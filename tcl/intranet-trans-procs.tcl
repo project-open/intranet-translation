@@ -134,6 +134,8 @@ ad_proc -public im_translation_task_permissions {user_id task_id view_var read_v
     set write 0
     set admin 0
 
+    set project_id [db_string project_id "select project_id from im_trans_tasks where task_id = :task_id"]
+
     set user_is_admin_p [im_is_user_site_wide_or_intranet_admin $user_id]
     set user_is_wheel_p [ad_user_group_member [im_wheel_group_id] $user_id]
     set user_is_group_member_p [ad_user_group_member $project_id $user_id]
@@ -142,7 +144,6 @@ ad_proc -public im_translation_task_permissions {user_id task_id view_var read_v
     if {$user_is_admin_p} { set admin 1}
     if {$user_is_wheel_p} { set admin 1}
     if {$user_is_group_member_p} { set read 1}
-    if {$upload == 2} {set read 1}
 
     if {$admin} {
 	set read 1
