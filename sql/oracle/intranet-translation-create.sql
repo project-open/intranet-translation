@@ -123,7 +123,7 @@ begin
 
 	package_name =>	'intranet-translation',
         page_url =>     '/intranet/projects/view',
-        bay_name =>     'bottom',
+        location =>     'bottom',
         sort_order =>   10,
         component_tcl => 
 
@@ -147,7 +147,7 @@ begin
 
 	package_name =>	'intranet-translation',
         page_url =>     '/intranet/projects/view',
-        bay_name =>     'bottom',
+        location =>     'bottom',
         sort_order =>   20,
         component_tcl => 
 
