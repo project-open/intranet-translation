@@ -73,12 +73,12 @@ create table im_trans_tasks (
 	-- invoice_id		integer 
 	--			constraint im_trans_tasks_invoice_fk
 	--			references im_invoices,
-				-- SLS user fields to determine the work effort
+				-- "Trados Matrix" determine duplicated words
 	match100		number(12,0),
 	match95			number(12,0),
 	match85			number(12,0),
 	match0			number(12,0),
-				-- SLS Workflow
+				-- Translation Workflow
 	trans_id		integer 
 				constraint im_trans_tasks_trans_fk
 				references users,
