@@ -189,10 +189,10 @@ extra_select, extra_where, sort_order, visible_for) values (15039,150,NULL,'othe
 -- Backup Translation Languages
 --
 
-delete from im_view_columns where view_id = 181;
-delete from im_views where view_id = 181;
+delete from im_view_columns where view_id = 151;
+delete from im_views where view_id = 151;
 insert into im_views (view_id, view_name, view_type_id, view_sql
-) values (181, 'im_target_languages', 1410, '
+) values (151, 'im_target_languages', 1410, '
 SELECT
 	t.*,
 	p.project_name,
