@@ -1269,7 +1269,7 @@ ad_proc im_task_freelance_component { user_id project_id return_url } {
 }
 
 
-ad_proc im_task_component { user_id project_id return_url } {
+ad_proc im_task_component { user_id project_id return_url {view_name "trans_task_list"} } {
     Return a piece of HTML for the project view page,
     containing the list of tasks of a project.
 } {
@@ -1287,7 +1287,6 @@ ad_proc im_task_component { user_id project_id return_url } {
     # Define the column headers and column contents that
     # we want to show:
     #
-    set view_name "trans_task_list"
     set view_id [db_string get_view_id "select view_id from im_views where view_name=:view_name"]
     set column_headers [list]
     set column_vars [list]
