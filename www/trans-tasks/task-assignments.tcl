@@ -12,14 +12,14 @@ ad_page_contract {
 
 } {
     project_id:integer
-    return_url
-    {orderby "subproject_name"}
-    {auto_assigment ""}
-    {auto_assigned_words 0}
-    {trans_auto_id 0}
-    {edit_auto_id 0}
-    {proof_auto_id 0}
-    {other_auto_id 0}
+    { return_url "" }
+    { orderby "subproject_name" }
+    { auto_assigment "" }
+    { auto_assigned_words 0 }
+    { trans_auto_id 0 }
+    { edit_auto_id 0 }
+    { proof_auto_id 0 }
+    { other_auto_id 0 }
 }
 
 
@@ -32,6 +32,8 @@ set user_id [ad_maybe_redirect_for_registration]
 
 set page_title "Assignments"
 set context_bar [ad_context_bar [list /intranet/projects/ "Projects"] [list "/intranet/projects/view?project_id=$project_id" "One project"] $page_title]
+
+if {"" == $return_url} { set return_url "/intranet/projects/view?project_id=$project_id" }
 
 set bgcolor(0) " class=roweven"
 set bgcolor(1) " class=rowodd"
@@ -307,22 +309,13 @@ append autoassignment_html "</tr>\n
 
 
 # -------------------------------------------------------------------
-# Join the components together
+# Project Subnavbar
 # -------------------------------------------------------------------
 
-set page_body "
-<form action=task-assignments method=POST>
-[export_form_vars project_id return_url]
-$autoassignment_html<br>
-</form>
+set bind_vars [ns_set create]
+ns_set put $bind_vars project_id $project_id
+set parent_menu_id [db_string parent_menu "select menu_id from im_menus where label='project'" -default 0]
+set project_menu [im_sub_navbar $parent_menu_id $bind_vars]
 
-<form action=task-assignments-2 method=POST>
-[export_form_vars project_id return_url]
-$task_html
-<input type=submit value='Save Assigments'>
-</form>
-"
 
-db_release_unused_handles
-doc_return  200 text/html [im_return_template]
 

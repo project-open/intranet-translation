@@ -8,7 +8,7 @@ ad_page_contract {
     @param return_url the url to return to
     @param project_id group id
 } {
-    return_url:optional
+    return_url
     project_id:integer
 
     task_status_id:array

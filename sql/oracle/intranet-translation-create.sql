@@ -292,8 +292,26 @@ begin
 	package_name =>	'intranet',
 	label =>	'project_trans_tasks',
 	name =>		'Tasks',
-	url =>	'/intranet-translation/trans-tasks/task-list?view_name=trans_tasks',
+	url => '/intranet-translation/trans-tasks/task-list?view_name=trans_tasks',
 	sort_order =>	50,
+	parent_menu_id => v_project_menu
+    );
+
+    acs_permission.grant_permission(v_menu, v_admins, 'read');
+    acs_permission.grant_permission(v_menu, v_senman, 'read');
+    acs_permission.grant_permission(v_menu, v_proman, 'read');
+    acs_permission.grant_permission(v_menu, v_accounting, 'read');
+    acs_permission.grant_permission(v_menu, v_employees, 'read');
+    acs_permission.grant_permission(v_menu, v_customers, 'read');
+    -- no freelancers!
+
+
+    v_menu := im_menu.new (
+	package_name =>	'intranet',
+	label =>	'project_trans_task_assignments',
+	name =>		'Assignments',
+	url =>	'/intranet-translation/trans-tasks/task-assignments?view=standard',
+	sort_order =>	60,
 	parent_menu_id => v_project_menu
     );
 
