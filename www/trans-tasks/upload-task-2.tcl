@@ -43,7 +43,7 @@ select
 	im_category_from_id(t.source_language_id) as source_language,
 	im_category_from_id(t.target_language_id) as target_language
 from
-	im_tasks t
+	im_trans_tasks t
 where
 	t.task_id=:task_id
 	and t.project_id=:project_id"
@@ -56,7 +56,7 @@ if {![db_0or1row task_info_query $task_sql] } {
 # Get the overall permissions
 im_translation_task_permissions $user_id $task_id view read write admin
 
-# Check for permissions according to the im_tasks state engine:
+# Check for permissions according to the im_trans_tasks state engine:
 # Check if the user is a freelance who is allowed to
 # upload a file for this task, depending on the task
 # status (engine) and the assignment to a specific phase.

@@ -18,10 +18,10 @@ ad_page_contract {
 	  a large project in several smaller project according
 	  to subdirectories.
     @param return_url the url to return to
-    @param group_id group id
+    @param project_id group id
 } {
     return_url
-    group_id:integer
+    project_id:integer
     trados_wordcount_file
     {import_method "Asp"}
 }
@@ -31,17 +31,13 @@ ad_page_contract {
 # ---------------------------------------------------------------------
 
 set user_id [ad_maybe_redirect_for_registration]
-set user_is_admin_p [im_is_user_site_wide_or_intranet_admin $user_id]
-set user_is_wheel_p [ad_user_group_member [im_wheel_group_id] $user_id]
-set user_is_group_admin_p [im_can_user_administer_group $group_id $user_id]
-set user_admin_p [expr $user_is_admin_p || $user_is_wheel_p]
-
-if {!$user_admin_p && !$user_is_group_admin_p} {
-    ad_return_complaint 1 "You have insufficient permissions to view this page"
+im_project_permissions $user_id $project_id view read write admin
+if {!$write} {
+    append 1 "<li>You have insufficient privileges to view this page.\n"
     return
 }
 
-set target_language_ids [im_target_language_ids $group_id im_projects]
+set target_language_ids [im_target_language_ids $project_id im_projects]
 if {0 == [llength $target_language_ids]} {
     ad_return_complaint 1 "<li>The project has no target language defined,
         so we are unable to add translation tasks to the project.<BR>
@@ -50,7 +46,7 @@ if {0 == [llength $target_language_ids]} {
     return
 }
 
-set project_path [im_filestorage_project_path $group_id]
+set project_path [im_filestorage_project_path $project_id]
 
 set page_title "Trados Upload"
 set context_bar [ad_context_bar [list /intranet/projects/ "Projects"] $page_title]
@@ -75,7 +71,7 @@ from
         im_projects p,
         im_customers c
 where
-        p.project_id=:group_id
+        p.project_id=:project_id
         and p.customer_id=c.customer_id(+)"
 
 
@@ -335,20 +331,23 @@ db_transaction {
 	set insert_sql ""
 	foreach target_language_id $target_language_ids {
 
-	    set insert_sql "<tr><td colspan=10>INSERT INTO im_tasks VALUES
-(im_tasks_seq.nextval, $task_name, $group_id, $task_type_id, 
+	    set insert_sql "<tr><td colspan=10>INSERT INTO im_trans_tasks VALUES
+(im_trans_tasks_seq.nextval, $task_name, $project_id, $task_type_id, 
 $task_status_id, $task_description, $source_language_id, $target_language_id, 
 $task_units, $billable_units, $task_uom_id)</td></tr>\n"
 
 	    set sql "
-INSERT INTO im_tasks 
-(task_id, task_name, project_id, task_type_id, task_status_id, 
- description, source_language_id, target_language_id, task_units, billable_units, task_uom_id,
- match100, match95, match85, match0)
-VALUES
-(im_tasks_seq.nextval, :task_name, :group_id, :task_type_id, :task_status_id, 
- :task_description, :source_language_id, :target_language_id, :task_units, :billable_units, :task_uom_id, 
- :p100_words, :p95_words, :p85_words, :nomatch_words)"
+INSERT INTO im_trans_tasks (
+	task_id, task_name, project_id, task_type_id, 
+	task_status_id, description, source_language_id, target_language_id, 
+	task_units, billable_units, task_uom_id,
+	match100, match95, match85, match0
+) VALUES (
+	im_trans_tasks_seq.nextval, :task_name, :project_id, :task_type_id, 
+	:task_status_id, :task_description, :source_language_id, :target_language_id, 
+	:task_units, :billable_units, :task_uom_id, 
+	:p100_words, :p95_words, :p85_words, :nomatch_words
+)"
 
             if { [catch {
 	        db_dml insert_tasks $sql

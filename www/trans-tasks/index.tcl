@@ -48,7 +48,7 @@ doc_return  200 text/html [im_return_template]
 
 set sql_task "
 select task_id, task_name
-from im_tasks
+from im_trans_tasks
 where project_id = :group_id"
 
 set list_task ""

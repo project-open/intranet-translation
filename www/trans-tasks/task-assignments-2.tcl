@@ -33,7 +33,7 @@ foreach task_id $task_list {
 trans=$trans, edit=$edit, proof=$proof, other=$other"
 
     set task_workflow_update_sql "
-update im_tasks set
+update im_trans_tasks set
 	trans_id=:trans,
 	edit_id=:edit,
 	proof_id=:proof,

@@ -8,7 +8,7 @@
     <singleton-p>t</singleton-p>
     <auto-mount>intranet-translation</auto-mount>
 
-    <version name="0.0.1d" url="http://openacs.org/repository/download/apm/intranet-translation-0.0.1d.apm">
+    <version name="0.5d" url="http://openacs.org/repository/download/apm/intranet-translation-0.5d.apm">
         <owner url="mailto:fraber@fraber.de">Frank Bergmann</owner>
         <vendor url="http://www.project-open.com/">Project/Open</vendor>
 
@@ -17,7 +17,8 @@
         <callbacks>
         </callbacks>
         <parameters>
-        <!-- No version parameters -->
+            <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="EnableLocalTradosImport"  default="0" description="Enable the import of Trados wordcount files from the local projects filestorage? (default no)"/>
+            <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="EnableAspTradosImport"  default="1" description="Enable the import of Trados wordcount files via web upload? (default yes)"/>
         </parameters>
 
     </version>

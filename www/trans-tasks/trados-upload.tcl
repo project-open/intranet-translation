@@ -5,7 +5,7 @@ ad_page_contract {
     The main work is done by "trados-import.tcl", so we
     basicly only have to provide the trados file.
 } {
-    group_id:integer
+    project_id:integer
     return_url
     upload_file
 } 
@@ -15,25 +15,10 @@ ad_page_contract {
 # ---------------------------------------------------------------------
 
 set user_id [ad_maybe_redirect_for_registration]
-set user_is_admin_p [im_is_user_site_wide_or_intranet_admin $user_id]
-set user_is_group_admin_p [im_can_user_administer_group $group_id $user_id]
-set user_is_wheel_p [ad_user_group_member [im_wheel_group_id] $user_id]
-set user_admin_p [|| $user_is_admin_p $user_is_group_admin_p]
-set user_admin_p [|| $user_admin_p $user_is_wheel_p]
-
-set project_id $group_id
-
-# check the user input first
-#
-set exception_text ""
-set exception_count 0
-if {!$user_admin_p} {
-    append exception_text "<li>You are not a member of this project.\n"
-    incr exception_count
-}
-if { $exception_count > 0 } {
-    ad_return_complaint $exception_count $exception_text
-    return 0
+im_project_permissions $user_id $project_id view read write admin
+if {!$write} {
+    append 1 "<li>You have insufficient privileges to view this page.\n"
+    return
 }
 
 # ---------------------------------------------------------------------
@@ -61,4 +46,4 @@ if {![string equal $file_extension ".csv"]} {
 set trados_wordcount_file $tmp_filename
 set import_method "Asp"
 
-ad_returnredirect trados-import?[export_url_vars group_id return_url trados_wordcount_file import_method]
+ad_returnredirect trados-import?[export_url_vars project_id return_url trados_wordcount_file import_method]

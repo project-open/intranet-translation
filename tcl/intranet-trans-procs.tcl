@@ -13,67 +13,8 @@ ad_library {
 }
 
 
-
-
-ad_proc -public im_translation_task_permissions {user_id task_id view_var read_var write_var admin_var} {
-    Fill the "by-reference" variables read, write and admin
-    with the permissions of $user_id on $project_id
-
-    Allow to download the file if the user is an admin, a project admin
-    or an employee of the company. Or if the user is an translator, editor,
-    proofer or "other" of the specified task.
-} {
-    upvar $view_var view
-    upvar $read_var read
-    upvar $write_var write
-    upvar $admin_var admin
-
-    set view 0
-    set read 0
-    set write 0
-    set admin 0
-
-    set user_is_admin_p [im_is_user_site_wide_or_intranet_admin $user_id]
-    set user_is_wheel_p [ad_user_group_member [im_wheel_group_id] $user_id]
-    set user_is_group_member_p [ad_user_group_member $project_id $user_id]
-    set user_is_employee_p [im_user_is_employee_p $user_id]
-
-    if {$user_is_admin_p} { set admin 1}
-    if {$user_is_wheel_p} { set admin 1}
-    if {$user_is_group_member_p} { set read 1}
-    if {$upload == 2} {set read 1}
-
-    if {$admin} {
-	set read 1
-	set write 1
-    }
-    if ($read) { set view 1 }
-}
-
-
-ad_proc -public im_target_language_ids { on_what_id on_which_table} {
-    Returns a (possibly empty list) of target language IDs used
-    for a specific project or task (on_which_table=im_projects or im_tasks).
-} {
-    set result [list]
-    set sql "
-select
-	language_id
-from 
-	im_target_languages
-where 
-	on_what_id=:on_what_id
-	and on_which_table=:on_which_table
-"
-    db_foreach select_target_languages $sql {
-	lappend result $language_id
-    }
-    return $result
-}
-
-
 # -------------------------------------------------------------------
-# Serve the abstract URLs to download im_tasks files and
+# Serve the abstract URLs to download im_trans_tasks files and
 # to advance the task status.
 # -------------------------------------------------------------------
 
@@ -105,7 +46,7 @@ select
 	im_category_from_id(t.source_language_id) as source_language,
 	im_category_from_id(t.target_language_id) as target_language
 from
-	im_tasks t
+	im_trans_tasks t
 where
 	t.task_id = :task_id"
 
@@ -119,7 +60,7 @@ where
     set user_is_admin_p [im_is_user_site_wide_or_intranet_admin $user_id]
     set user_is_group_admin_p [im_can_user_administer_group $project_id $user_id]
     set user_is_employee_p [im_user_is_employee_p $user_id]
-    set user_admin_p [|| $user_is_admin_p $user_is_group_admin_p]
+    set user_admin_p [expr $user_is_admin_p || $user_is_group_admin_p]
 
     # Dependency with Project/Open Filestorage module:
     # We need to know where the task-files are stored in the filesystem
@@ -167,6 +108,48 @@ where
     }
 }
 
+
+# -------------------------------------------------------------------
+# Permissions
+# -------------------------------------------------------------------
+
+
+ad_proc -public im_translation_task_permissions {user_id task_id view_var read_var write_var admin_var} {
+    Fill the "by-reference" variables read, write and admin
+    with the permissions of $user_id on $project_id
+
+    Allow to download the file if the user is an admin, a project admin
+    or an employee of the company. Or if the user is an translator, editor,
+    proofer or "other" of the specified task.
+} {
+    upvar $view_var view
+    upvar $read_var read
+    upvar $write_var write
+    upvar $admin_var admin
+
+    set view 0
+    set read 0
+    set write 0
+    set admin 0
+
+    set user_is_admin_p [im_is_user_site_wide_or_intranet_admin $user_id]
+    set user_is_wheel_p [ad_user_group_member [im_wheel_group_id] $user_id]
+    set user_is_group_member_p [ad_user_group_member $project_id $user_id]
+    set user_is_employee_p [im_user_is_employee_p $user_id]
+
+    if {$user_is_admin_p} { set admin 1}
+    if {$user_is_wheel_p} { set admin 1}
+    if {$user_is_group_member_p} { set read 1}
+    if {$upload == 2} {set read 1}
+
+    if {$admin} {
+	set read 1
+	set write 1
+    }
+    if ($read) { set view 1 }
+}
+
+
 # -------------------------------------------------------------------
 # Drop-Down Components
 # -------------------------------------------------------------------
@@ -200,7 +183,7 @@ ad_proc im_task_user_select {select_name user_list default_user_id {role ""}} {
 ad_proc -public im_target_languages { on_what_id on_which_table} {
     Returns a (possibly empty list) of target languages 
     (i.e. "en_ES", ...) used for a specific project or task
-    (on_which_table=im_projects or im_tasks).
+    (on_which_table=im_projects or im_trans_tasks).
 } {
     set result [list]
     set sql "
@@ -219,12 +202,29 @@ where
 }
 
 
-
-
+ad_proc -public im_target_language_ids { on_what_id on_which_table} {
+    Returns a (possibly empty list) of target language IDs used
+    for a specific project or task (on_which_table=im_projects or im_trans_tasks).
+} {
+    set result [list]
+    set sql "
+select
+	language_id
+from 
+	im_target_languages
+where 
+	on_what_id=:on_what_id
+	and on_which_table=:on_which_table
+"
+    db_foreach select_target_languages $sql {
+	lappend result $language_id
+    }
+    return $result
+}
 
 
 # -------------------------------------------------------------------
-# Status Engine for im_tasks
+# Status Engine for im_trans_tasks
 #
 #    340 Created  
 #    342 for Trans
@@ -300,7 +300,7 @@ ad_proc im_trans_upload_action {task_id task_status_id task_type_id user_id} {
     if {$new_status_id != $task_status_id} {
 
 	db_dml advance_status "
-		update im_tasks 
+		update im_trans_tasks 
 		set task_status_id=:new_status_id 
 		where task_id=:task_id
 	"
@@ -364,7 +364,7 @@ ad_proc im_trans_download_action {task_id task_status_id task_type_id user_id} {
     if {$new_status_id != $task_status_id} {
 
 	db_dml advance_status "
-		update im_tasks 
+		update im_trans_tasks 
 		set task_status_id=:new_status_id 
 		where task_id=:task_id
 	"
@@ -562,7 +562,7 @@ from
 		CASE WHEN t.task_type_id in (88,95) THEN t.task_units  END as proof,
 		CASE WHEN t.task_type_id in (89,90,91,92,93,96) THEN t.task_units END as other
 	from
-		im_tasks t
+		im_trans_tasks t
 	where
 		t.project_id = :project_id
 	) t
@@ -603,7 +603,7 @@ from
 	from
 		users u,
 		group_member_map m,
-		im_tasks t,
+		im_trans_tasks t,
 		im_task_actions a
 	where
 		m.group_id = :project_id
@@ -648,7 +648,7 @@ from
 	from
 		users u,
 		group_member_map m,
-		im_tasks t
+		im_trans_tasks t
 	where
 		m.group_id = :project_id
 		and m.group_id = t.project_id
@@ -789,56 +789,58 @@ where
 
 # -------------------------------------------------------------------
 # Task Component
+# Show the list of tasks for one project
 # -------------------------------------------------------------------
 
 ad_proc im_task_component { user_id project_id return_url } {
     Return a piece of HTML for the project view page,
     containing the list of tasks of a project.
 } {
-    im_project_permissions $user_id $project_id view read write admin
+    # Get the permissions for the current _project_
+    im_project_permissions $user_id $project_id project_view project_read project_write project_admin
 
-    # -------------------- Header -----------------------------------------------
+    set customer_view_page "/intranet/customers/view"
+
+    # -------------------- Column Selection ---------------------------------
+    # Define the column headers and column contents that
+    # we want to show:
+    #
+    set view_name "trans_task_list"
+    set view_id [db_string get_view_id "select view_id from im_views where view_name=:view_name"]
+    set column_headers [list]
+    set column_vars [list]
+
+    set column_sql "
+select  column_name,
+        column_render_tcl,
+        visible_for
+from    im_view_columns
+where   view_id=:view_id
+        and group_id is null
+order by sort_order"
+
+    db_foreach column_list_sql $column_sql {
+	if {"" == $visible_for || [eval $visible_for]} {
+	    lappend column_headers "$column_name"
+	    lappend column_vars "$column_render_tcl"
+	}
+    }
+
+    # -------------------- Header ---------------------------------
     set task_table "
 <form action=/intranet-translation/trans-tasks/task-action method=POST>
 [export_form_vars project_id return_url]
-<table border=0>\n"
+<table border=0>
+<tr>\n"
 
-    append task_table "
-<tr> 
-  <td class=rowtitle>Task Name</td>
-  <td class=rowtitle>Target Lang</td>\n"
-
-    if {$admin} { append task_table "
-  <td class=rowtitle>100 %</td>
-  <td class=rowtitle>95 %</td>
-  <td class=rowtitle>85 %</td>
-  <td class=rowtitle>0 %</td>\n"
-    }
-    append task_table "
-<td class=rowtitle>&nbsp;Units&nbsp;</td>"
-
-    if {$admin} { 
-        append task_table "\n<td class=rowtitle>Billable Units </td>\n"
-    }
-    if {$admin} { append task_table "
-  <td class=rowtitle>Task</td>
-  <td class=rowtitle>Status</td>\n"
-    }
-    if {$admin} { append task_table "
-  <td class=rowtitle align=middle>[im_gif delete "Delete the Task"]</td>\n"
-    }
-
-    if {$admin} { 
-        append task_table "\n<td class=rowtitle>Assigned</td>"
-    }
-
-    append task_table "
-  <td class=rowtitle>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Message&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-  <td class=rowtitle>[im_gif save "Download files"]</td>\n"
-
-    append task_table "\n<td class=rowtitle>[im_gif open "Upload files"]</td>\n"
-    append task_table "</tr>"
-
+foreach col $column_headers {
+    set header ""
+    set header_cmd "set header \"$col\""
+    eval $header_cmd
+    append task_table "<td class=rowtitle>$header</td>\n"
+}
+append task_table "
+</tr>\n"
 
     # -------------------- SQL -----------------------------------
 
@@ -855,11 +857,11 @@ select
         im_initials_from_user_id (t.proof_id) as proof_name,
         im_initials_from_user_id (t.other_id) as other_name
 from 
-	im_tasks t,
+	im_trans_tasks t,
 	im_categories uom_c,
 	im_categories type_c
 where
-	project_id=:project_id
+	t.project_id=:project_id
 	and t.task_status_id <> 372
 	and t.task_uom_id=uom_c.category_id(+)
 	and t.task_type_id=type_c.category_id(+)
@@ -886,116 +888,83 @@ where
 
 	# Build a string with the user short names for the assignations
         set assignments ""
-        if {$trans_name != ""} {
-	    append assignments "T: <A HREF=/intranet/users/view?user_id=$trans_id>$trans_name</A> "
-	}
-        if {$edit_name != ""} {
-	    append assignments "E: <A HREF=/intranet/users/view?user_id=$edit_id>$edit_name</A> "
-	}
-        if {$proof_name != ""} {
-	    append assignments "P: <A HREF=/intranet/users/view?user_id=$proof_id>$proof_name</A> "
-	}
-        if {$other_name != ""} {
-	    append assignments "<A HREF=/intranet/users/view?user_id=$other_id>$other_name</A> "
-	}
+        if {$trans_name != ""} { append assignments "T: <A HREF=/intranet/users/view?user_id=$trans_id>$trans_name</A>" }
+        if {$edit_name != ""} { append assignments "E: <A HREF=/intranet/users/view?user_id=$edit_id>$edit_name</A>" }
+        if {$proof_name != ""} { append assignments "P: <A HREF=/intranet/users/view?user_id=$proof_id>$proof_name</A>" }
+        if {$other_name != ""} { append assignments "<A HREF=/intranet/users/view?user_id=$other_id>$other_name</A>" }
 
 	# Replace "/" characters in the Task Name (filename) by "/ ",
 	# to allow the line to break more smoothely
 	set task_name_list [split $task_name "/"]
 	set task_name_splitted [join $task_name_list "/ "]
 
-        append task_table_rows "
-<tr $bgcolor([expr $ctr % 2])> 
-  <td align=left>$task_name_splitted</td>
-  <td align=left>$target_language</td>\n"
+	# Add a " " at the beginning of uom_name in order to separate
+	# it from the number of units:
+	set uom_name " $uom_name"
 
+	# Billable Items 
+	set billable_items_input "<input type=text size=3 name=billable_units.$task_id value=$billable_units>"
 
-	if {$admin} { 
-	    append task_table_rows "
-  <td align=right>$match100</td>
-  <td align=right>$match95</td>
-  <td align=right>$match85</td>
-  <td align=right>$match0</td>\n"
-	}
-	
-	append task_table_rows "
-  <td align=right>$task_units $uom_name</td>\n"
+	# Status Select Box
+	set status_select [im_category_select "Intranet Translation Task Status" task_status.$task_id $task_status_id]
 
-	if {$admin} { 
-	    append task_table_rows "
-  <td align=right>
-    <input type=text size=3 name=billable_units.$task_id value=$billable_units>
-  </td>"
-	}
-
-        if {$admin} { 
-	    append task_table_rows "
-  <td>$type_name</td>
-"
-        }
-        if {$admin} { 
-	    append task_table_rows "
-<td>[im_category_select "Intranet Translation Task Status" task_status.$task_id $task_status_id]</td>\n"
-	}
-
-        if {$admin} {
-	    append task_table_rows "
-<td align=middle><input type=checkbox name=delete_task value=$task_id></td>
-<td>$assignments</td>\n"
-	} else {
-            # do not show the task_status to non-admins.
-            # append task_table_rows "<td>$task_status</td>"
-        }
+	# Message - Tell the freelancer what to do...
 	# Check if the user is a freelance who is allowed to
 	# upload a file for this task, depending on the task
 	# status (engine) and the assignment to a specific phase.
-	set upload_list [im_task_component_upload $user_id $admin $task_status_id $source_language $target_language $trans_id $edit_id $proof_id $other_id]
-
+	set upload_list [im_task_component_upload $user_id $project_admin $task_status_id $source_language $target_language $trans_id $edit_id $proof_id $other_id]
 	set download_folder [lindex $upload_list 0]
 	set upload_folder [lindex $upload_list 1]
 	set message [lindex $upload_list 2]
 	ns_log Notice "download_folder=$download_folder, upload_folder=$upload_folder"
 
-	append task_table_rows "<td>$message</td>\n"
+	# Delete Checkbox
+	set del_checkbox "<input type=checkbox name=delete_task value=$task_id>"
 
-	if {$download_folder == ""} {
-	    append task_table_rows "<td><!-- download --></td>\n"
-	} else {
-	    append task_table_rows "
-<td align=center>
+	# Download Link - where to get the task file
+	set download_link ""
+	if {$download_folder != ""} {
+	    set download_link "
   <A HREF='/intranet-translation/download-task/$task_id/$download_folder/$task_name'>
     [im_gif save "Click right and choose \"Save target as\" to download the file"]
-  </A>
-</td>"
+  </A>\n"
 	}
 
-	if {$upload_folder == ""} {
-	    append task_table_rows "<td><!-- upload --></td>\n"
-	} else {
-	    append task_table_rows "
-<td align=center>
+	# Upload Link
+	set upload_link ""
+	if {$upload_folder != ""} {
+	    set upload_link "
   <A HREF='/intranet-translation/trans-tasks/upload-task?[export_url_vars project_id task_id return_url]'>
     [im_gif open "Upload file"]
-  </A>
-</td>"
+  </A>\n"
 	}
-
-        append task_table_rows "</tr>"
+	
+	# Append together a line of data based on the "column_vars" parameter list
+	append table_body_html "<tr$bgcolor([expr $ctr % 2])>\n"
+	foreach column_var $column_vars {
+	    append task_table "\t<td$bgcolor([expr $ctr % 2]) valign=top>"
+	    set cmd "append task_table $column_var"
+	    eval $cmd
+	    append task_table "</td>\n"
+	}
+        append task_table "</tr>\n"
         incr ctr
     }
-    
+
+    if {$ctr > 0} {
+         append task_table $task_table_rows
+    } else {
+         append task_table "
+<tr><td colspan=7 align=center>No tasks found</td></tr>"
+    }
 
     # -------------------- Action Row -------------------------------
     # End of the task-list loop.
     # Start formatting the the adding new tasks line etc.
 
-    if {![string equal "" $task_table_rows]} {
-         append task_table $task_table_rows
-    } else {
-    append task_table "<tr><td colspan=7 align=center>No tasks found</td></tr>"
-    }
-
-    if {$admin} {
+    # Show "Save, Del, Assign" buttons only for admins and 
+    # only if there is atleast one row to act upon.
+    if {$project_admin && $ctr > 0} {
 	append task_table "
 <tr align=right> 
   <td align=left><font size=-1> 
@@ -1007,7 +976,10 @@ where
   <td align=center><input type=submit value=\"Assign\" name=submit></td>
 </tr>"
     }
-    append task_table "</table>\n</form>\n"
+
+    append task_table "
+</table>
+</form>\n"
 
     return $task_table
 }
@@ -1043,7 +1015,7 @@ select
 	im_initials_from_user_id (t.proof_id) as proof_name,
 	im_initials_from_user_id (t.other_id) as other_name
 from 
-	im_tasks t,
+	im_trans_tasks t,
 	im_categories uom_c,
 	im_categories type_c
 where
@@ -1132,7 +1104,6 @@ $task_table_rows
 ad_proc im_new_task_component { user_id project_id return_url } {
     Return a piece of HTML to allow to add new tasks
 } {
-
     set bgcolor(0) " class=roweven"
     set bgcolor(1) " class=rowodd"
 
@@ -1391,7 +1362,7 @@ where
     }
 
     # We've got now a list of all files in the source folder.
-    # Let's go now through all the im_tasks of this project and
+    # Let's go now through all the im_trans_tasks of this project and
     # check if the filename present in the $file_list
     # Attention!, this is an n^2 algorithm!
     # Any ideas how to speed this up?
@@ -1399,9 +1370,10 @@ where
     set task_sql "
 select
 	task_id,
-	task_name
+	task_name,
+	task_filename
 from
-	im_tasks t
+	im_trans_tasks t
 where
 	t.project_id = :project_id
 "
@@ -1409,11 +1381,14 @@ where
     set missing_file_list [list]
     db_foreach im_task_list $task_sql {
 
-	set res [ns_set get $file_set $task_name]
-	if {"" == $res} {
-	    # We haven't found the file
-	    lappend missing_file_list $task_id
+	if {"" != $task_filename} {
+	    set res [ns_set get $file_set $task_filename]
+	    if {"" == $res} {
+		# We haven't found the file
+		lappend missing_file_list $task_id
+	    }
 	}
+
     }
 
     ns_set free $file_set

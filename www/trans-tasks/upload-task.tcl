@@ -19,7 +19,7 @@ set context_bar [ad_context_bar [list "/intranet/projects/" "Projects"]  [list "
 set bgcolor(0) " class=roweven"
 set bgcolor(1) " class=rowodd"
 
-set filename [db_string get_filename "select task_name from im_tasks where task_id=:task_id"]
+set filename [db_string get_filename "select task_name from im_trans_tasks where task_id=:task_id"]
 
 set page_content "
 <form enctype=multipart/form-data method=POST action=upload-task-2.tcl>

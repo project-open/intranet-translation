@@ -65,12 +65,12 @@ ad_proc im_task_insert {project_id task_name task_units task_uom task_type targe
     set match0 ""
 
     set sql "
-INSERT INTO im_tasks 
+INSERT INTO im_trans_tasks 
 (task_id, task_name, project_id, task_type_id, task_status_id, 
  description, source_language_id, target_language_id, task_units, 
  billable_units, task_uom_id, match100, match95, match85, match0)
 VALUES
-(im_tasks_seq.nextval, :task_name, :project_id, :task_type, :task_status_id, 
+(im_trans_tasks_seq.nextval, :task_name, :project_id, :task_type, :task_status_id, 
 :task_description, :source_language_id, :target_language_id, :task_units, 
  :task_units, :task_uom, :match100, :match95, :match85, :match0)"
 
@@ -134,14 +134,14 @@ switch -glob $submit {
 	    append page_body "task_status($task_id)=$task_status($task_id)\n"
 	    append page_body "b._units($task_id)=$billable_units($task_id)\n"
 	    set sql "
-                update im_tasks
+                update im_trans_tasks
                 set task_status_id= '$task_status($task_id)'
                 where project_id=:project_id
                 and task_id=:task_id"
 	    db_dml update_task_status $sql
 
 	    set sql "
-                update im_tasks
+                update im_trans_tasks
                 set billable_units = '$billable_units($task_id)'
                 where project_id=:project_id
                 and task_id=:task_id"
@@ -158,14 +158,14 @@ switch -glob $submit {
 	#
 	foreach task_id $delete_task {
 	    ns_log Notice "delete task: $task_id"
-	    ns_log Notice "delete from im_tasks where task_id = $task_id and project_id=$project_id"
+	    ns_log Notice "delete from im_trans_tasks where task_id = $task_id and project_id=$project_id"
 
 	    set delete_task_actions_sql "
 		delete	from im_task_actions
 		where	task_id=:task_id"
 
 	    set delete_tasks_sql "
-		delete	from im_tasks
+		delete	from im_trans_tasks
 		where	task_id = :task_id
 			and project_id=:project_id"
 

@@ -68,15 +68,15 @@ if { $error > 0 } {
 
 set resource_sql "
 select
-	u.*,
-	im_name_from_user_id (u.user_id) as user_name,
-	m.rel_type as role
+	r.object_id_two as user_id,
+	im_name_from_user_id (r.object_id_two) as user_name,
+	im_category_from_id(m.object_role_id) as role
 from
-	users u,
-	group_member_map m
+	acs_rels r,
+	im_biz_object_members m
 where
-	m.group_id=:project_id
-	and m.member_id=u.user_id
+	r.object_id_one=:project_id
+	and r.rel_id = m.rel_id
 "
 
 
@@ -105,7 +105,7 @@ select
 	im_email_from_user_id (t.other_id) as other_email,
 	im_name_from_user_id (t.other_id) as other_name
 from
-	im_tasks t
+	im_trans_tasks t
 where
 	t.project_id=:project_id
         and t.task_status_id <> 372

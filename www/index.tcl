@@ -270,9 +270,9 @@ set additional_tables "
 --
 -- task words and hours
 --
-        (select project_id, sum(task_units) as task_words from im_tasks
+        (select project_id, sum(task_units) as task_words from im_trans_tasks
 	 where task_uom_id in (324, 325) group by project_id) w,
-        (select project_id, sum(task_units) as task_hours from im_tasks
+        (select project_id, sum(task_units) as task_hours from im_trans_tasks
 	 where task_uom_id in (320) group by project_id) h,
 --
 -- time spend on the project

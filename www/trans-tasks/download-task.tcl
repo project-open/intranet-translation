@@ -31,7 +31,7 @@ select
 	im_category_from_id(t.source_language_id) as source_language,
 	im_category_from_id(t.target_language_id) as target_language
 from
-	im_tasks t
+	im_trans_tasks t
 where
 	t.task_id = :task_id
 	and t.project_id = :project_id"
@@ -68,7 +68,7 @@ if [file readable $file] {
     # Take advantage that from a "for Xxxx" to "Xxxxx-ing" status
     # there is a difference of 2 in the task_status_id. Ugly but fast!
     db_dml upate_task "
-	update im_tasks 
+	update im_trans_tasks 
 	set task_status_id=(task_status_id+2) 
 	where task_id=1458
     "

@@ -34,50 +34,76 @@ alter table im_projects add	final_customer		varchar(50);
 --   independently and that will appear as a line in
 --   the final invoice to be printed.
 
-create sequence im_tasks_seq start with 1;
-create table im_tasks (
-	task_id			integer primary key,
-	project_id		not null references im_projects,
-	target_language_id	references im_categories,
-				-- task_name will take a filename for the
+create sequence im_trans_tasks_seq start with 1;
+create table im_trans_tasks (
+	task_id			integer 
+				constraint im_trans_tasks_pk
+				primary key,
+	project_id		integer not null 
+				constraint im_trans_tasks_project_fk
+				references im_projects,
+	target_language_id	integer
+				constraint im_trans_tasks_target_lang_fk
+				references im_categories,
+				-- task_name take a filename for the
 				-- language processing application
-	task_name		varchar(200),
-	task_type_id		not null references im_categories,
-	task_status_id		not null references im_categories,
+	task_name		varchar(1000),
+				-- task_filename!=null indicates a file task
+	task_filename		varchar(1000) default null,
+	task_type_id		integer not null 
+				constraint im_trans_tasks_type_fk
+				references im_categories,
+	task_status_id		integer not null 
+				constraint im_trans_tasks_status_fk
+				references im_categories,
 	description		varchar(4000),
-	source_language_id	references im_categories,
-	-- fees: N units of "UoM" (Unit of Measurement)
+	source_language_id	integer not null
+				constraint im_trans_tasks_source_fk
+				references im_categories,
+				-- fees: N units of "UoM" (Unit of Measurement)
 				-- raw units to be delivered to the client
 	task_units		number(12,1),
 				-- sometimes, not all units can be billed...
 	billable_units		number(12,1),
 				-- UoM=Unit of Measure (hours, words, ...)
-	task_uom_id		not null references im_categories,
-	--  added later to avoid a cyclical reference:
-	--  invoice_id			integer references im_invoices,
-	-- SLS user fields to determine the work effort
+	task_uom_id		integer not null 
+				constraint im_trans_tasks_uom_fk
+				references im_categories,
+				--  added later to avoid a cyclical reference:
+	-- invoice_id		integer 
+	--			constraint im_trans_tasks_invoice_fk
+	--			references im_invoices,
+				-- SLS user fields to determine the work effort
 	match100		number(12,0),
 	match95			number(12,0),
 	match85			number(12,0),
 	match0			number(12,0),
-	-- SLS Workflow
-	trans_id		references users,
-	edit_id			references users,
-	proof_id		references users,
-	other_id		references users
+				-- SLS Workflow
+	trans_id		integer 
+				constraint im_trans_tasks_trans_fk
+				references users,
+	edit_id			integer 
+				constraint im_trans_tasks_edit_fk
+				references users,
+	proof_id		integer 
+				constraint im_trans_tasks_proof_fk
+				references users,
+	other_id		integer 
+				constraint im_trans_tasks_other_fk
+				references users
 );
 -- make sure a task doesn't get defined twice for a project:
-create unique index im_tasks_name_project_idx on im_tasks 
+create unique index im_trans_tasks_unique_idx on im_trans_tasks 
 (task_name, project_id, target_language_id);
 
 
--- actions that have occured around im_tasks: upload, download, ...
+-- actions that have occured around im_trans_tasks: upload, download, ...
 create sequence im_task_actions_seq start with 1;
 create table im_task_actions (
 	action_id		integer primary key,
 	action_type_id		references im_categories,
 	user_id			not null references users,
-	task_id			not null references im_tasks,
+	task_id			not null references im_trans_tasks,
 	action_date		date,
 	old_status_id		references im_categories,
 	new_status_id		references im_categories
@@ -89,11 +115,45 @@ create table im_target_languages (
 				-- can refer to several target objects
 	on_what_id		not null references im_projects,
 				-- allow to be used on both im_projects 
-				-- and im_tasks
+				-- and im_trans_tasks
 	on_which_table		varchar(50),
 	language_id		not null references im_categories,
 	primary key (on_what_id, on_which_table, language_id)
 );
+
+
+
+-----------------------------------------------------------
+-- Views
+
+insert into im_views values (90, 'trans_task_list', 'view_trans_tasks', '');
+
+
+-- Tranlation TasksListPage columns
+--
+delete from im_view_columns where column_id >= 9000 and column_id <= 9099;
+--
+insert into im_view_columns values (9001,90,NULL,'Task Name','$task_name_splitted','','',10,'');
+insert into im_view_columns values (9003,90,NULL,'Target Lang','$target_language','','',10,'');
+insert into im_view_columns values (9005,90,NULL,'100 %','$match100','','',10,
+'im_permission $user_id view_trans_task_matrix');
+insert into im_view_columns values (9007,90,NULL,'95 %','$match95','','',10,
+'im_permission $user_id view_trans_task_matrix');
+insert into im_view_columns values (9009,90,NULL,'85 %','$match85','','',10,
+'im_permission $user_id view_trans_task_matrix');
+insert into im_view_columns values (9011,90,NULL,'0 %','$match0','','',10,
+'im_permission $user_id view_trans_task_matrix');
+insert into im_view_columns values (9013,90,NULL,'Units','$task_units $uom_name','','',10,'');
+insert into im_view_columns values (9015,90,NULL,'Bill. Units','$billable_items_input','','',10,'');
+insert into im_view_columns values (9017,90,NULL,'Task','$type_name','','',10,'');
+insert into im_view_columns values (9019,90,NULL,'Status','$status_select','','',10,'');
+insert into im_view_columns values (9021,90,NULL,'[im_gif delete "Delete the Task"]','$del_checkbox','','',10,'');
+insert into im_view_columns values (9023,90,NULL,'Assigned','$assignments','','',10,'');
+insert into im_view_columns values (9025,90,NULL,'Message','$message','','',10,'');
+insert into im_view_columns values (9027,90,NULL,'[im_gif save "Download files"]','$download_link','','',10,'');
+insert into im_view_columns values (9029,90,NULL,'[im_gif open "Upload files"]','$upload_link','','',10,'');
+--
+commit;
 
 
 create or replace view im_task_status as 
@@ -102,10 +162,9 @@ from im_categories
 where category_type = 'Intranet Translation Task Status';
 
 
--- insert into im_categories
-delete from im_categories where category_id >= 2420 and category_id < 2430;
-INSERT INTO im_categories VALUES (2420,'upload','This is the value of im_task_actions.action_type_id when a user uploads a task file.','Intranet Task Action Type','category','t','f');
-INSERT INTO im_categories VALUES (2421,'download','','Intranet Task Action Type','category','t','f');
+-- -------------------------------------------------------------------
+-- Translation Plugins for ProjectViewPage
+-- -------------------------------------------------------------------
 
 
 -- Show the task component in project page
@@ -143,18 +202,104 @@ begin
 end;
 /
 
-
 -- Create Translation specific privileges
 begin
-    acs_privilege.create_privilege('view_trans_tasks','View Trans Tasks','View Trans Tasks');
+    acs_privilege.create_privilege(
+	'view_trans_tasks',
+	'View Trans Tasks',
+	'View Trans Tasks');
+
+    acs_privilege.create_privilege(
+	'view_trans_task_matrix',
+	'View Trans Task Matrix',
+	'View Trans Task Matrix');
 end;
 /
+
 begin
     im_priv_create('view_trans_tasks', 'Employees');
     im_priv_create('view_trans_tasks', 'Project Managers');
     im_priv_create('view_trans_tasks', 'Senior Managers');
+    im_priv_create('view_trans_tasks', 'P/O Admins');
 end;
 /
+
+begin
+    im_priv_create('view_trans_task_matrix', 'Employees');
+    im_priv_create('view_trans_task_matrix', 'Project Managers');
+    im_priv_create('view_trans_task_matrix', 'Senior Managers');
+    im_priv_create('view_trans_task_matrix', 'P/O Admins');
+end;
+/
+
+
+
+
+-- -------------------------------------------------------------------
+-- Translation Menu Extension for Project
+-- -------------------------------------------------------------------
+
+declare
+	-- Menu IDs
+	v_menu			integer;
+	v_project_menu		integer;
+
+	-- Groups
+	v_employees		integer;
+	v_accounting		integer;
+	v_senman		integer;
+	v_customers		integer;
+	v_freelancers		integer;
+	v_proman		integer;
+	v_admins		integer;
+begin
+
+    select group_id into v_admins from groups where group_name = 'P/O Admins';
+    select group_id into v_senman from groups where group_name = 'Senior Managers';
+    select group_id into v_proman from groups where group_name = 'Project Managers';
+    select group_id into v_accounting from groups where group_name = 'Accounting';
+    select group_id into v_employees from groups where group_name = 'Employees';
+    select group_id into v_customers from groups where group_name = 'Customers';
+    select group_id into v_freelancers from groups where group_name = 'Freelancers';
+
+    select menu_id
+    into v_project_menu
+    from im_menus
+    where label='project';
+
+    v_menu := im_menu.new (
+	package_name =>	'intranet',
+	label =>	'project_trans_tasks',
+	name =>		'Trans Tasks',
+	url =>	'/intranet-translation/trans-tasks/task-list?view_name=trans_tasks',
+	sort_order =>	50,
+	parent_menu_id => v_project_menu
+    );
+
+    acs_permission.grant_permission(v_menu, v_admins, 'read');
+    acs_permission.grant_permission(v_menu, v_senman, 'read');
+    acs_permission.grant_permission(v_menu, v_proman, 'read');
+    acs_permission.grant_permission(v_menu, v_accounting, 'read');
+    acs_permission.grant_permission(v_menu, v_employees, 'read');
+    acs_permission.grant_permission(v_menu, v_customers, 'read');
+    -- no freelancers!
+end;
+/
+commit;
+
+
+
+-- -------------------------------------------------------------------
+-- Categories
+-- -------------------------------------------------------------------
+
+
+-- insert into im_categories
+delete from im_categories where category_id >= 2420 and category_id < 2430;
+INSERT INTO im_categories VALUES (2420,'upload','This is the value of im_task_actions.action_type_id when a user uploads a task file.','Intranet Task Action Type','category','t','f');
+INSERT INTO im_categories VALUES (2421,'download','','Intranet Task Action Type','category','t','f');
+
+
 
 
 insert into im_categories values (87,  'Trans + Edit',  
@@ -279,3 +424,90 @@ INSERT INTO im_categories VALUES (565,'Tec-Gen','','Intranet Translation Subject
 INSERT INTO im_categories VALUES (570,'Tec-Mech. eng','','Intranet Translation Subject Area','category','t','f');
 -- reserved until 599
 
+
+prompt Create the "Tigerpond" customer
+DECLARE
+    v_office_id		integer;
+    v_customer_id	integer;
+BEGIN
+    -- First setup the main office
+    v_office_id := im_office.new(
+        object_type     => 'im_office',
+        office_name     => 'Tigerpond Main Office',
+        office_path     => 'tigerpond_main_office'
+    );
+
+    v_customer_id := im_customer.new(
+	object_type	=> 'im_customer',
+	customer_name	=> 'Tigerpond',
+	customer_path	=> 'tigerpond',
+	main_office_id	=> v_office_id,
+	-- Translation Agency
+	customer_type_id => 54,
+	-- 'Active' status
+	customer_status_id => 46
+    );
+end;
+/
+commit;
+
+
+
+prompt Create a "Tigerpond" project
+declare
+	v_project_id		integer;
+	v_customer_id		integer;
+	v_rel_id		integer;
+	v_user_id		integer;
+begin
+	select customer_id
+	into v_customer_id
+	from im_customers
+	where customer_path = 'tigerpond';
+
+	v_project_id := im_project.new(
+		object_type	=> 'im_project',
+		project_name	=> 'Large Translation Project',
+		project_nr	=> '2004_0001',
+		project_path	=> '2004_0001',
+		customer_id	=> v_customer_id,
+		-- Trans+Edit+Proof Project
+		project_type_id	=> 89
+	);
+
+	-- Add some users
+	-- 1300 is full member, 1301 is PM, 1302 is Key Account
+	select party_id	into v_user_id
+	from parties where email='project.manager@project-open.com';
+	v_rel_id := im_biz_object_member.new (
+        	object_id       => v_project_id,
+        	user_id         => v_user_id,
+        	object_role_id  => 1301
+	);
+
+	select party_id	into v_user_id
+	from parties where email='staff.member2@project-open.com';
+	v_rel_id := im_biz_object_member.new (
+        	object_id       => v_project_id,
+        	user_id         => v_user_id,
+        	object_role_id  => 1300
+	);
+
+	select party_id	into v_user_id
+	from parties where email='senior.manager@project-open.com';
+	v_rel_id := im_biz_object_member.new (
+        	object_id       => v_project_id,
+        	user_id         => v_user_id,
+        	object_role_id  => 1300
+	);
+
+	select party_id	into v_user_id
+	from parties where email='free.lance2@project-open.com';
+	v_rel_id := im_biz_object_member.new (
+        	object_id       => v_project_id,
+        	user_id         => v_user_id,
+        	object_role_id  => 1300
+	);
+end;
+/
+commit;
