@@ -18,7 +18,7 @@ ad_page_contract {
     customer_contact_id:integer 
     expected_quality_id:integer,optional
     source_language_id:integer
-    target_language_ids:multiple
+    target_language_ids:multiple,optional
     subject_area_id:integer
     expected_quality_id:integer
 }
