@@ -21,6 +21,8 @@ ad_page_contract {
 } {
     return_url:optional
     object_id:integer
+    match_x:float
+    match_rep:float
     match100:float
     match95:float
     match85:float
@@ -56,12 +58,14 @@ set count [db_string matrix_count "select count(*) from im_trans_trados_matrix w
 if {!$count} {
     db_dml insert_matrix "
 insert into im_trans_trados_matrix 
-(object_id, match100, match95, match85, match75, match50, match0) values
-(:object_id, :match100, :match95, :match85, :match75, :match50, :match0)"
+(object_id, match_x, match_rep, match100, match95, match85, match75, match50, match0) values
+(:object_id, :match_x, :match_rep, :match100, :match95, :match85, :match75, :match50, :match0)"
 }
 
 db_dml update_matrix "
 update im_trans_trados_matrix set
+	match_x = :match_x,
+	match_rep = :match_rep,
 	match100 = :match100,
 	match95 = :match95,
 	match85 = :match85,

@@ -46,6 +46,8 @@ if {"" == $match75} { set match75 $default(75) }
 if {"" == $match85} { set match85 $default(85) }
 if {"" == $match95} { set match95 $default(95) }
 if {"" == $match100} { set match100 $default(100) }
+if {"" == $match_rep} { set match_rep $default(rep) }
+if {"" == $match_x} { set match_x $default(x) }
 
 
 set page_title "Edit Trados Matrix of '$object_name'"

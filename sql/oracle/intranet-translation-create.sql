@@ -84,9 +84,13 @@ create table im_trans_tasks (
 				constraint im_trans_tasks_invoice_fk
 				references im_invoices,
 				-- "Trados Matrix" determine duplicated words
+	match_x			number(12,0),
+	match_rep		number(12,0),
 	match100		number(12,0),
 	match95			number(12,0),
 	match85			number(12,0),
+	match75			number(12,0),
+	match50			number(12,0),
 	match0			number(12,0),
 				-- Translation Workflow
 	trans_id		integer 
@@ -117,6 +121,8 @@ create table im_trans_trados_matrix (
 				references acs_objects
 				constraint im_trans_matrix_pk
 				primary key,
+        match_x			number(12,4),
+        match_rep		number(12,4),
         match100                number(12,4),
         match95                 number(12,4),
         match85                 number(12,4),
@@ -166,11 +172,19 @@ insert into im_view_columns values (9001,90,NULL,'Task Name','$task_name_splitte
 '','',10,'');
 insert into im_view_columns values (9003,90,NULL,'Target Lang','$target_language',
 '','',10,'');
-insert into im_view_columns values (9005,90,NULL,'100 %','$match100',
+insert into im_view_columns values (9004,90,NULL,'XTr','$match_x',
+'','',10,'im_permission $user_id view_trans_task_matrix');
+insert into im_view_columns values (9005,90,NULL,'Rep','$match_rep',
+'','',10,'im_permission $user_id view_trans_task_matrix');
+insert into im_view_columns values (9006,90,NULL,'100 %','$match100',
 '','',10,'im_permission $user_id view_trans_task_matrix');
 insert into im_view_columns values (9007,90,NULL,'95 %','$match95',
 '','',10,'im_permission $user_id view_trans_task_matrix');
-insert into im_view_columns values (9009,90,NULL,'85 %','$match85',
+insert into im_view_columns values (9008,90,NULL,'85 %','$match85',
+'','',10,'im_permission $user_id view_trans_task_matrix');
+insert into im_view_columns values (9009,90,NULL,'75 %','$match75',
+'','',10,'im_permission $user_id view_trans_task_matrix');
+insert into im_view_columns values (9010,90,NULL,'50 %','$match50',
 '','',10,'im_permission $user_id view_trans_task_matrix');
 insert into im_view_columns values (9011,90,NULL,'0 %','$match0',
 '','',10,'im_permission $user_id view_trans_task_matrix');

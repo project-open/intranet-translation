@@ -139,6 +139,8 @@ ad_proc -public im_trans_trados_matrix_component { user_id object_id return_url 
 } {
     array set matrix [im_trans_trados_matrix $object_id]
     set header_html "
+<td class=rowtitle align=center>XTr</td>
+<td class=rowtitle align=center>Rep</td>
 <td class=rowtitle align=center>100%</td>
 <td class=rowtitle align=center>95%</td>
 <td class=rowtitle align=center>85%</td>
@@ -149,6 +151,8 @@ ad_proc -public im_trans_trados_matrix_component { user_id object_id return_url 
 "
 
     set value_html "
+<td align=right>[expr 100 * $matrix(x)]%</td>
+<td align=right>[expr 100 * $matrix(rep)]%</td>
 <td align=right>[expr 100 * $matrix(100)]%</td>
 <td align=right>[expr 100 * $matrix(95)]%</td>
 <td align=right>[expr 100 * $matrix(85)]%</td>
@@ -175,7 +179,7 @@ ad_proc -public im_trans_trados_matrix_component { user_id object_id return_url 
 
 
 
-ad_proc -public im_trans_trados_matrix_calculate { object_id p100_words p95_words p85_words p75_words p50_words p0_words } {
+ad_proc -public im_trans_trados_matrix_calculate { object_id px_words prep_words p100_words p95_words p85_words p75_words p50_words p0_words } {
     Calculate the number of "effective" words based on
     a valuation of repetitions from the associated tradox
     matrix.<br>
@@ -187,15 +191,17 @@ ad_proc -public im_trans_trados_matrix_calculate { object_id p100_words p95_word
     If the "Internal" customer doesn't have a matrix fall
     back to some default values.
 } {
-    return [im_trans_trados_matrix_calculate_helper $object_id $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
+    return [im_trans_trados_matrix_calculate_helper $object_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
 }
 
 
-ad_proc -public im_trans_trados_matrix_calculate_helper { object_id p100_words p95_words p85_words p75_words p50_words p0_words } {
+ad_proc -public im_trans_trados_matrix_calculate_helper { object_id px_words prep_words p100_words p95_words p85_words p75_words p50_words p0_words } {
     See im_trans_trados_matrix_calculate for comments...
 } {
     array set matrix [im_trans_trados_matrix $object_id]
     set task_units [expr \
+		    ($px_words * $matrix(x)) + \
+		    ($prep_words * $matrix(rep)) + \
 		    ($p100_words * $matrix(100)) + \
 		    ($p95_words * $matrix(95)) + \
 		    ($p85_words * $matrix(85)) + \
@@ -249,6 +255,9 @@ where
         o.object_id = :project_id
         and o.object_id = m.object_id(+)
 "
+
+    set matrix(x) $match_x
+    set matrix(rep) $match_rep
     set matrix(100) $match100
     set matrix(95) $match95
     set matrix(85) $match85
@@ -280,6 +289,9 @@ where
         o.object_id = :customer_id
         and o.object_id = m.object_id(+)
 "
+
+    set matrix(x) $match_x
+    set matrix(rep) $match_rep
     set matrix(100) $match100
     set matrix(95) $match95
     set matrix(85) $match85
@@ -312,6 +324,9 @@ where
         o.object_id = :customer_id
         and o.object_id = m.object_id(+)
 "
+
+    set matrix(x) $match_x
+    set matrix(rep) $match_rep
     set matrix(100) $match100
     set matrix(95) $match95
     set matrix(85) $match85
@@ -327,6 +342,8 @@ where
 ad_proc -public im_trans_trados_matrix_default { } {
     Returns an array with the trados matrix values for the "Internal" customer.
 } {
+    set matrix(x) 0.25
+    set matrix(rep) 0.25
     set matrix(100) 0.25
     set matrix(95) 0.3
     set matrix(85) 0.5
