@@ -78,6 +78,8 @@ create table im_trans_tasks (
 	task_uom_id		integer not null 
 				constraint im_trans_tasks_uom_fk
 				references im_categories,
+				-- invoice_id=null => needs to be invoiced still
+				-- invoice_id!= null => has already been invoiced
 	invoice_id		integer 
 				constraint im_trans_tasks_invoice_fk
 				references im_invoices,
