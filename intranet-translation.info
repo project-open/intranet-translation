@@ -20,6 +20,7 @@
         </callbacks>
         <parameters>
             <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="EnableLocalTradosImport"  default="0" description="Enable the import of Trados wordcount files from the local projects filestorage? (default no)"/>
+
             <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="EnableAspTradosImport"  default="1" description="Enable the import of Trados wordcount files via web upload? (default yes)"/>
         </parameters>
 

@@ -13,6 +13,23 @@ ad_library {
 }
 
 
+
+
+ad_proc -public im_package_translation_id { } {
+} {
+    return [util_memoize "im_package_translation_id_helper"]
+}
+
+ad_proc -private im_package_translation_id_helper {} {
+    return [db_string im_package_core_id {
+        select package_id from apm_packages
+        where package_key = 'intranet-translation'
+    } -default 0]
+}
+
+
+
+
 # -------------------------------------------------------------------
 # Serve the abstract URLs to download im_trans_tasks files and
 # to advance the task status.
@@ -1503,7 +1520,7 @@ ad_proc im_new_task_component { user_id project_id return_url } {
 
     # -------------- Upload a local Trados Wordcount File  ----------------
 
-    if {[ad_parameter EnableLocalTradosImport intranet "0"]} {
+    if {[ad_parameter -package_id [im_package_translation_id] EnableLocalTradosImport "" 0]} {
 	append task_table "
 <tr $bgcolor([expr $ctr % 2])> 
   <td>
@@ -1524,7 +1541,7 @@ ad_proc im_new_task_component { user_id project_id return_url } {
 
     # -------------------- Add an Asp Wordcount -----------------------
 
-    if {[ad_parameter EnableAspTradosImport intranet "0"]} {
+    if {[ad_parameter -package_id [im_package_translation_id] EnableAspTradosImport "" 0]} {
 	append task_table "
 <tr $bgcolor(0)> 
   <td>
