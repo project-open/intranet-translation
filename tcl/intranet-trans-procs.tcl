@@ -1505,12 +1505,26 @@ ad_proc im_task_error_component { user_id project_id return_url } {
     im_project_permissions $user_id $project_id view read write admin
     if {!$write} { return "" }
 
+    set err_count 0
+    set task_table_rows ""
+    
+    # -------------------------------------------------------
+    # Check that the path exists
+
+    set project_path [im_filestorage_project_path $project_id]
+    set source_language [db_string source_language "select im_category_from_id(source_language_id) from im_projects where project_id=:project_id" -default ""]
+    if {![file isdirectory "$project_path/source_$source_language"]} {
+	incr err_count
+	append task_table_rows "<tr class=roweven><td colspan=99>'$project_path/source_$source_language' does not exist</td></tr>\n"
+    }
 
     # -------------------------------------------------------
     # Get the list of tasks with missing files
 
-    set missing_task_list [im_task_missing_file_list $project_id]
-    ns_log Notice "im_task_error_component: missing_task_list=$missing_task_list"
+    if {!$err_count} {
+	set missing_task_list [im_task_missing_file_list $project_id]
+	ns_log Notice "im_task_error_component: missing_task_list=$missing_task_list"
+    }
 
 
     # -------------------- SQL -----------------------------------
@@ -1544,10 +1558,10 @@ group by
     set bgcolor(0) " class=roweven"
     set bgcolor(1) " class=rowodd"
     set ctr 0
-    set task_table_rows ""
 
     db_foreach select_tasks $sql {
 
+	if {$err_count} { continue }
         set upload_folder "source_$source_language"
 
 	# only show the tasks that are in the "missing_task_list":
@@ -1574,7 +1588,7 @@ group by
     }
     
     # Return an empty string if there are no errors
-    if {$ctr == 0} {
+    if {$ctr == 0 && !$err_count} {
 #	return ""
 	append task_table_rows "
 <tr $bgcolor([expr $ctr % 2])>
@@ -1817,12 +1831,11 @@ where
     ns_log Notice "im_task_missing_file_list: org_paths_len=$org_paths_len"
     
     if { [catch {
-	set find_cmd [parameter::get -package_id [im_package_core_id] -parameter "FindCmd" -default "/bin/find"]
+	set find_cmd [im_filestorage_find_cmd]
 	set file_list [exec $find_cmd $source_folder -type f]
     } err_msg] } {
 	# The directory probably doesn't exist yet, so don't generate
-	# an error
-	ns_log Error "im_task_missing_file_list: directory $source_folder doesn't exist"
+	# an error !!!
 	ad_return_complaint 1 "im_task_missing_file_list: directory $source_folder<br>
                        probably does not exist:<br>$err_msg"
 	set file_list ""
