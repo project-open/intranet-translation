@@ -12,9 +12,6 @@ ad_library {
     @author frank.bergmann@project-open.com
 }
 
-
-
-
 ad_proc -public im_package_translation_id { } {
 } {
     return [util_memoize "im_package_translation_id_helper"]
@@ -26,9 +23,6 @@ ad_proc -private im_package_translation_id_helper {} {
         where package_key = 'intranet-translation'
     } -default 0]
 }
-
-
-
 
 # -------------------------------------------------------------------
 # Serve the abstract URLs to download im_trans_tasks files and
@@ -60,12 +54,17 @@ proc intranet_task_download {} {
     set task_sql "
 select
 	t.*,
+	p.project_nr,
+	im_name_from_user_id(p.project_lead_id) as project_lead_name,
+	im_email_from_user_id(p.project_lead_id) as project_lead_email,
 	im_category_from_id(t.source_language_id) as source_language,
 	im_category_from_id(t.target_language_id) as target_language
 from
-	im_trans_tasks t
+	im_trans_tasks t,
+	im_projects p
 where
-	t.task_id = :task_id"
+	t.task_id = :task_id
+	and t.project_id = p.project_id"
 
     if {![db_0or1row task_info_query $task_sql] } {
 	doc_return 403 text/html "Task \#$task_id doesn't exist"
@@ -123,7 +122,21 @@ where
 
     } else {
 	ns_log notice "intranet_task_download: file '$file' not readable"
-	doc_return 500 text/html "Did not find the specified file"
+
+	set subject "File is missing in project #$project_nr: $file_name"
+	set subject [ad_urlencode $subject]
+
+	ad_return_complaint 1 "<li>The specified file doesn't exist<br>
+        Your are trying to download the file \"$file_name\", but the file
+        doesn't exist in our system.<p>
+        The most probable cause for this error is that the Project Manager
+        hasn't uploaded the file yet.<br>
+	Please send an email to 
+	<A href=\"mailto:$project_lead_email?subject=$subject\">
+	  $project_lead_name
+	</a>."
+	return
+#	doc_return 200 text/html "Did not find the specified file"
     }
 }
 
