@@ -8,7 +8,6 @@ ad_page_contract {
     @creation-date Nov 2003
 } {
     group_id:integer
-    return_url
 }
 
 set user_id [ad_maybe_redirect_for_registration]

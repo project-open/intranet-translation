@@ -1,6 +1,5 @@
 -----------------------------------------------------------
 -- Translation Sector Specific Extensions
--- 2
 --
 -- Projects in the translation sector are typically much
 -- smaller and more frequent than in other sectors. They 
@@ -108,28 +107,6 @@ delete from categories where category_id >= 2420 and category_id < 2430;
 INSERT INTO categories VALUES (2420,'upload','This is the value of im_task_actions.action_type_id when a user uploads a task file.','Intranet Task Action Type',0,'f','');
 INSERT INTO categories VALUES (2421,'download','','Intranet Task Action Type',0,'f','');
 
-
-
--- insert component into Project/View.tcl
--- 
-insert into im_component_plugins (
-        plugin_id,
-        sort_order,
-        page_url,
-        bay_name,
-        component_tcl
-)values (
-	im_component_plugins_seq.nextval,
-	2,
-	'/intranet/projects/view',
-	'bottom',
-	'im_task_component \
-		$user_id \
-		$project_id \
-		$user_admin_p \
-		$user_is_employee_p \
-		$return_url'
-);
 
 -- Show the task component in project page
 --
