@@ -24,8 +24,19 @@
   <msg key="Client_Project">Client Project#</msg>
   <msg key="Client_project_">Client project #</msg>
   <msg key="Comment">Comment</msg>
+  <msg key="Companies">Companies</msg>
+  <msg key="Company">Company</msg>
+  <msg key="Company_1">Company:</msg>
   <msg key="Company_Contact">Company Contact</msg>
+  <msg key="context">context</msg>
+  <msg key="cost_type_Data">%cost_type% Data</msg>
+  <msg key="cost_type_date">%cost_type% date:</msg>
+  <msg key="cost_type_nr">%cost_type% nr.:</msg>
+  <msg key="cost_type_status">%cost_type% status</msg>
+  <msg key="cost_type_template">%cost_type% template:</msg>
+  <msg key="cost_type_type">%cost_type% type</msg>
   <msg key="Database_Error">Database Error</msg>
+  <msg key="days">days</msg>
   <msg key="Del">Del</msg>
   <msg key="Dn">Dn</msg>
   <msg key="Edit">Edit</msg>
@@ -86,6 +97,7 @@
 size of the file and your Internet connection. Please do not interrupt the 
 system meanwhile.)</msg>
   <msg key="lt_This_task_is_not_goin">This task is not going to controled by the translation workflow.</msg>
+  <msg key="lt_Translation_Assignmen">Translation Assignments</msg>
   <msg key="lt_Translation_source_la">Translation source language</msg>
   <msg key="lt_Translation_target_la">Translation target languages. Searate target folders will be created for every language that you select</msg>
   <msg key="lt_Unable_to_read_the_fi">Unable to read the file '%trados_wordcount_file%'.</msg>
@@ -117,18 +129,24 @@ system meanwhile.)</msg>
   <msg key="lt_Your_have_successfull">Your have successfully uploaded $filesize bytes of file '%task_name%'.</msg>
   <msg key="Message">Message</msg>
   <msg key="Name">Name</msg>
+  <msg key="No_Match">No Match</msg>
   <msg key="No_tasks_found">No tasks found</msg>
   <msg key="One_Project">One Project</msg>
   <msg key="One_project">One project</msg>
   <msg key="optional">(optional)</msg>
   <msg key="Other">Other</msg>
+  <msg key="Payment_Method">Payment Method</msg>
+  <msg key="Payment_terms">Payment terms</msg>
   <msg key="Project_Details">Project Details</msg>
   <msg key="Project_Tasks">Project Tasks</msg>
   <msg key="Projects">Projects</msg>
   <msg key="Proof">Proof</msg>
   <msg key="Proofing">Proofing</msg>
+  <msg key="Provider">Provider</msg>
+  <msg key="Provider_1">Provider:</msg>
   <msg key="Quality_Level">Quality Level</msg>
   <msg key="Rep">Rep</msg>
+  <msg key="Repetitions">Repetitions</msg>
   <msg key="Save">Save</msg>
   <msg key="Size">Size</msg>
   <msg key="Source_Language">Source Language</msg>
@@ -142,11 +160,13 @@ system meanwhile.)</msg>
   <msg key="Task_Assignments">Task Assignments</msg>
   <msg key="Task_Name">Task Name</msg>
   <msg key="Task_Type">Task Type</msg>
+  <msg key="TAXnbsp">TAX&amp;nbsp;</msg>
   <msg key="Trados_Import">Trados Import</msg>
   <msg key="Trados_Matrix">Trados Matrix</msg>
   <msg key="Trados_Upload">Trados Upload</msg>
   <msg key="Trans">Trans</msg>
   <msg key="Translation">Translation</msg>
+  <msg key="Translation_Tasks">Translation Tasks</msg>
   <msg key="Units">Units</msg>
   <msg key="UoM">UoM</msg>
   <msg key="Up">Up</msg>
@@ -156,9 +176,11 @@ system meanwhile.)</msg>
   <msg key="Upload_New_FileURL">Upload New File/URL</msg>
   <msg key="Upload_Successful">Upload Successful</msg>
   <msg key="User_Error">User Error</msg>
+  <msg key="VATnbsp">VAT&amp;nbsp;</msg>
   <msg key="View_Tasks">View Tasks</msg>
   <msg key="Weighted">Weighted</msg>
   <msg key="Wordcount">Wordcount</msg>
   <msg key="Wordcount_Import">Wordcount Import</msg>
+  <msg key="X_Trans">X Trans</msg>
   <msg key="XTr">XTr</msg>
 </message_catalog>
