@@ -58,7 +58,7 @@ where
     # Now we can check if the user permissions on the project:
     #
     set user_is_admin_p [im_is_user_site_wide_or_intranet_admin $user_id]
-    set user_is_group_admin_p [im_can_user_administer_group $project_id $user_id]
+    set user_is_group_admin_p [im_biz_object_admin_p $user_id $project_id]
     set user_is_employee_p [im_user_is_employee_p $user_id]
     set user_admin_p [expr $user_is_admin_p || $user_is_group_admin_p]
 
