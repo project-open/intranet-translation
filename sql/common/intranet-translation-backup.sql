@@ -181,7 +181,7 @@ extra_select, extra_where, sort_order, visible_for) values (15037,150,NULL,'proo
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (15039,150,NULL,'other_email','$other_email','','',39,'');
 --
-commit;
+-- commit;
 
 
 
@@ -211,7 +211,7 @@ extra_select, extra_where, sort_order, visible_for) values (18101,181,NULL,'proj
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (18103,181,NULL,'language','$language','','',3,'');
 --
-commit;
+-- commit;
 
 
 

@@ -106,7 +106,7 @@ insert into im_view_columns (column_id, view_id, group_id, column_name, column_r
 extra_select, extra_where, sort_order, visible_for) values (9029,90,NULL,'[im_gif open "Upload files"]','$upload_link',
 '','',10,'');
 --
-commit;
+-- commit;
 
 
 create or replace view im_task_status as 
