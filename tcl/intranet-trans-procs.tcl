@@ -1813,24 +1813,24 @@ where
     set org_paths [split $source_folder "/"]
     set org_paths_len [llength $org_paths]
 
-    ns_log Notice "source_folder=$source_folder"
-    ns_log Notice "org_paths=$org_paths"
-    ns_log Notice "org_paths_len=$org_paths_len"
+    ns_log Notice "im_task_missing_file_list: source_folder=$source_folder"
+    ns_log Notice "im_task_missing_file_list: org_paths=$org_paths"
+    ns_log Notice "im_task_missing_file_list: org_paths_len=$org_paths_len"
     
     if { [catch {
-	set file_list [exec $find_cmd "$source_folder" -type f]
+	set find_cmd [parameter::get -package_id [im_package_core_id] -parameter "FindCmd" -default "/bin/find"]
+	set file_list [exec $find_cmd $source_folder -type f]
     } err_msg] } {
 	# The directory probably doesn't exist yet, so don't generate
 	# an error
-	ns_log Notice "im_task_missing_file_list: directory $source_folder doesn't exist"
-#	ad_return_complaint 1 "im_task_missing_file_list: directory $source_folder<br>
-#                       probably does not exist:<br>$err_msg"
+	ns_log Error "im_task_missing_file_list: directory $source_folder doesn't exist"
+	ad_return_complaint 1 "im_task_missing_file_list: directory $source_folder<br>
+                       probably does not exist:<br>$err_msg"
 	set file_list ""
     }
 
     # Get the sorted list of files in the directory
     set files [split $file_list "\n"]
-
     set file_set [ns_set create]
 
     foreach file $files {
@@ -1848,7 +1848,7 @@ where
 	}
 
 	ns_set put $file_set $file_name $file_name
-	ns_log Notice "file_name=$file_name"
+	ns_log Notice "im_task_missing_file_list: file_name=$file_name"
     }
 
     # We've got now a list of all files in the source folder.
