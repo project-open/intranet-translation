@@ -1356,6 +1356,7 @@ ad_proc im_task_error_component { user_id project_id return_url } {
     }
 
     set missing_task_list [im_task_missing_file_list $project_id]
+    ns_log Notice "im_task_error_component: missing_task_list=$missing_task_list"
 
     # Show the missing tasks only to people who can write on the
     # project
@@ -1365,16 +1366,13 @@ ad_proc im_task_error_component { user_id project_id return_url } {
     # -------------------- SQL -----------------------------------
     set sql "
 select 
-	t.*,
+	min(t.task_id) as task_id,
+	t.task_name,
+	t.task_filename,
+	t.task_units,
         im_category_from_id(t.source_language_id) as source_language,
-        im_category_from_id(t.target_language_id) as target_language,
-        im_category_from_id(t.task_status_id) as task_status,
 	uom_c.category as uom_name,
-	type_c.category as type_name,
-	im_initials_from_user_id (t.trans_id) as trans_name,
-	im_initials_from_user_id (t.edit_id) as edit_name,
-	im_initials_from_user_id (t.proof_id) as proof_name,
-	im_initials_from_user_id (t.other_id) as other_name
+	type_c.category as type_name
 from 
 	im_trans_tasks t,
 	im_categories uom_c,
@@ -1384,6 +1382,13 @@ where
 	and t.task_status_id <> 372
 	and t.task_uom_id=uom_c.category_id(+)
 	and t.task_type_id=type_c.category_id(+)
+group by
+	t.task_name,
+	t.task_filename,
+	t.task_units,
+	t.source_language_id,
+	uom_c.category,
+	type_c.category
 "
 
     set bgcolor(0) " class=roweven"
@@ -1408,9 +1413,7 @@ where
         append task_table_rows "
 <tr $bgcolor([expr $ctr % 2])> 
   <td align=left><font color=red>$task_name_splitted</font></td>
-  <td align=left>$target_language</td>
   <td align=right>$task_units $uom_name</td>
-  <td align=middle><input type=checkbox name=delete_task value=$task_id></td>
   <td align=center>
     <A HREF='/intranet-translation/trans-tasks/upload-task?[export_url_vars project_id task_id return_url]'>
       [im_gif open "Upload file"]
@@ -1443,19 +1446,12 @@ where
 </tr>
 <tr> 
   <td class=rowtitle>Task Name</td>
-  <td class=rowtitle>Target Lang</td>
   <td class=rowtitle>&nbsp;Units&nbsp;</td>
-  <td class=rowtitle align=middle>[im_gif delete "Delete the Task"]</td>
   <td class=rowtitle>[im_gif open "Upload files"]</td>
 </tr>
 
 $task_table_rows
 
-<tr align=right> 
-  <td colspan=3>&nbsp;</td>
-  <td align=center><input type=submit value=Del name=submit></td>
-  <td></td>
-</tr>
 </table>
 </form>\n"
 

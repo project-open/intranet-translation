@@ -349,18 +349,18 @@ db_transaction {
 	foreach target_language_id $target_language_ids {
 
 	    set insert_sql "<tr><td colspan=10>INSERT INTO im_trans_tasks VALUES
-(im_trans_tasks_seq.nextval, $task_name, $project_id, $task_type_id, 
+(im_trans_tasks_seq.nextval, $task_name, $task_filename, $project_id, $task_type_id, 
 $task_status_id, $task_description, $source_language_id, $target_language_id, 
 $task_units, $billable_units, $task_uom_id)</td></tr>\n"
 
 	    set sql "
 INSERT INTO im_trans_tasks (
-	task_id, task_name, project_id, task_type_id, 
+	task_id, task_name, task_filename, project_id, task_type_id, 
 	task_status_id, description, source_language_id, target_language_id, 
 	task_units, billable_units, task_uom_id,
 	match_x, match_rep, match100, match95, match85, match75, match50, match0
 ) VALUES (
-	im_trans_tasks_seq.nextval, :task_name, :project_id, :task_type_id, 
+	im_trans_tasks_seq.nextval, :task_name, :task_name, :project_id, :task_type_id, 
 	:task_status_id, :task_description, :source_language_id, :target_language_id, 
 	:task_units, :billable_units, :task_uom_id, 
 	:px_words, :prep_words, :p100_words, :p95_words, :p85_words, :p75_words, :p50_words, :p0_words

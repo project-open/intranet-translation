@@ -43,7 +43,7 @@ if {0 == [llength $target_language_ids]} {
 }
 
 
-ad_proc im_task_insert {project_id task_name task_units task_uom task_type target_language_ids} {
+ad_proc im_task_insert {project_id task_name task_filename task_units task_uom task_type target_language_ids} {
     Add a new task into the DB
 } {
 
@@ -75,12 +75,14 @@ ad_proc im_task_insert {project_id task_name task_units task_uom task_type targe
 
     set sql "
 INSERT INTO im_trans_tasks 
-(task_id, task_name, project_id, task_type_id, task_status_id, 
+(task_id, task_name, task_filename, project_id, task_type_id, 
+ task_status_id, 
  description, source_language_id, target_language_id, task_units, 
  billable_units, task_uom_id, match100, match95, match85, match0)
 VALUES
-(im_trans_tasks_seq.nextval, :task_name, :project_id, :task_type, :task_status_id, 
-:task_description, :source_language_id, :target_language_id, :task_units, 
+(im_trans_tasks_seq.nextval, :task_name, :task_filename, :project_id, :task_type, 
+ :task_status_id, 
+ :task_description, :source_language_id, :target_language_id, :task_units, 
  :task_units, :task_uom, :match100, :match95, :match85, :match0)"
 
     # Add a new task for every project target language
@@ -187,13 +189,18 @@ switch -glob $submit {
 
 
     "Add File" {
-	im_task_insert $project_id [ns_urldecode $task_name_file] $task_units_file $task_uom_file $task_type_file $target_language_ids
+	set task_filename [ns_urldecode $task_name_file]
+	im_task_insert $project_id $task_filename $task_filename $task_units_file $task_uom_file $task_type_file $target_language_ids
 	ad_returnredirect $return_url
 	return
     }
 
     "Add" {
-	im_task_insert $project_id [ns_urldecode $task_name_manual] $task_units_manual $task_uom_manual $task_type_manual $target_language_ids
+	# Add the task WITHOUT filename.
+	# This means that the task does not require to
+	# have a file associated in the filestorage.
+	set task_filename ""
+	im_task_insert $project_id [ns_urldecode $task_name_manual] $task_filename $task_units_manual $task_uom_manual $task_type_manual $target_language_ids
 	ad_returnredirect $return_url
 	return
     }
