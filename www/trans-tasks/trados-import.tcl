@@ -196,7 +196,7 @@ if {[string equal $import_method "Asp"]} {
 
 ns_log Notice "common_filename_comps=$common_filename_comps"
 
-db_transaction {
+
 
     set ctr 0
     for {set i 2} {$i < $trados_files_len} {incr i} {
@@ -367,7 +367,7 @@ INSERT INTO im_trans_tasks (
 
 	}
     }
-}
+
 
 append page_body "</table>\n"
 append page_body "\n<P><A HREF=$return_url>[_ intranet-translation.lt_Return_to_previous_pa]</A></P>\n"

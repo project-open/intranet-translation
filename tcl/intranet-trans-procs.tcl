@@ -478,7 +478,7 @@ where
 	project_id=:project_id
 "
     db_foreach select_target_languages $sql {
-	lappend result [_ intranet-core.$target_language]
+	lappend result $target_language
     }
     return $result
 }
@@ -1643,7 +1643,7 @@ ad_proc im_new_task_component { user_id project_id return_url } {
     [export_form_vars project_id return_url]
     <table border=0>
       <tr>
-        <td>[im_select "task_name_file" $task_list]</td>
+        <td>[im_select -translate_p 0 "task_name_file" $task_list]</td>
         <td><input type=text size=2 value='0' name=task_units_file></td>
         <td>[im_category_select "Intranet UoM" "task_uom_file" 324]</td>
         <td>[im_category_select "Intranet Project Type" task_type_file 86]</td>

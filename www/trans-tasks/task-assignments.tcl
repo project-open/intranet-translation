@@ -119,7 +119,7 @@ where
         and t.task_status_id <> 372
 "
 
-set task_colspan 8
+set task_colspan 9
 set task_html "
 <form method=POST action=task-assignments-2>
 [export_form_vars project_id return_url]
@@ -299,32 +299,49 @@ append task_html "
 # -------------------------------------------------------------------
 
 set autoassignment_html_body ""
-set autoassignment_html "
-<table>
-<tr><td colspan=4 class=rowtitle align=center>[_ intranet-translation.Auto_Assignment]</td></tr>\n<tr align=center>"
+set autoassignment_html_header ""
+
+append autoassignment_html_header "<td class=rowtitle>[_ intranet-translation.Num_Words]</td>\n"
+append autoassignment_html_body "<td><input type=text size=6 name=auto_assigned_words></td>\n"
+
 if { $n_trans > 0 } {
-    append autoassignment_html "<td class=rowtitle>[_ intranet-translation.Trans]</td>"
+    append autoassignment_html_header "<td class=rowtitle>[_ intranet-translation.Trans]</td>\n"
     append autoassignment_html_body "<td>[im_task_user_select trans_auto_id $users "" translator]</td>\n"
 }
 if { $n_edit > 0 } {
-    append autoassignment_html "<td class=rowtitle>[_ intranet-translation.Edit]</td>"
+    append autoassignment_html_header "<td class=rowtitle>[_ intranet-translation.Edit]</td>\n"
     append autoassignment_html_body "<td>[im_task_user_select edit_auto_id $users "" editor]</td>\n"
 }
 if { $n_proof > 0} {
-    append autoassignment_html "<td class=rowtitle>[_ intranet-translation.Proof]</td>"
+    append autoassignment_html_header "<td class=rowtitle>[_ intranet-translation.Proof]</td>\n"
     append autoassignment_html_body "<td>[im_task_user_select proof_auto_id $users "" proof]</td>\n"
 }
 if { $n_other > 0 } {
-    append autoassignment_html "<td class=rowtitle>Other#></td>"
+    append autoassignment_html_header "<td class=rowtitle>[_ intranet-translation.Other]</td\n>"
     append autoassignment_html_body "<td>[im_task_user_select other_auto_id $users ""]</td>\n"
 }
 
-append autoassignment_html "</tr>\n
-<tr>$autoassignment_html_body<td>
-<input type=text size=6 name=auto_assigned_words>
-<input type=submit name='auto_assigment' value='[_ intranet-translation.Auto_Assigment]'></td>
-</tr>\n
-</table>\n"
+set autoassignment_html "
+<form action=\"task-assignments\" method=POST>
+[export_form_vars project_id return_url orderby]
+<table>
+<tr>
+  <td colspan=5 class=rowtitle align=center>[_ intranet-translation.Auto_Assignment]</td>
+</tr>
+<tr align=center>
+  $autoassignment_html_header
+</tr>
+<tr>
+  $autoassignment_html_body
+</tr>
+<tr>
+  <td align=left colspan=5>
+    <input type=submit name='auto_assigment' value='[_ intranet-translation.Auto_Assign]'>
+  </td>
+</tr>
+</table>
+</form>
+"
 
 
 # -------------------------------------------------------------------

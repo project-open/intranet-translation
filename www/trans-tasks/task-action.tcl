@@ -73,6 +73,7 @@ ad_proc im_task_insert {project_id task_name task_filename task_units task_uom t
     set match85 ""
     set match0 ""
 
+
     set sql "
 INSERT INTO im_trans_tasks 
 (task_id, task_name, task_filename, project_id, task_type_id, 
@@ -80,7 +81,7 @@ INSERT INTO im_trans_tasks
  description, source_language_id, target_language_id, task_units, 
  billable_units, task_uom_id, match100, match95, match85, match0)
 VALUES
-(im_trans_tasks_seq.nextval, :task_name, :task_filename, :project_id, :task_type, 
+(:new_task_id, :task_name, :task_filename, :project_id, :task_type, 
  :task_status_id, 
  :task_description, :source_language_id, :target_language_id, :task_units, 
  :task_units, :task_uom, :match100, :match95, :match85, :match0)"
@@ -88,6 +89,7 @@ VALUES
     # Add a new task for every project target language
     foreach target_language_id $target_language_ids {
 
+	set new_task_id [db_nextval im_trans_tasks_seq]
         if { [catch {
 	    db_dml insert_tasks $sql
         } err_msg] } {
