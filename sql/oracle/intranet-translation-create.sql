@@ -110,6 +110,22 @@ create unique index im_trans_tasks_unique_idx on im_trans_tasks
 create index im_trans_tasks_project_id_idx on im_trans_tasks(project_id);
 
 
+-- Trados Matrix by object (normally by customer)
+create table im_trans_trados_matrix (
+	object_id		integer 
+				constraint im_trans_matrix_cid_fk
+				references acs_objects
+				constraint im_trans_matrix_pk
+				primary key,
+        match100                number(12,4),
+        match95                 number(12,4),
+        match85                 number(12,4),
+	match75			number(12,4),
+	match50			number(12,4),
+        match0                  number(12,4)
+);
+
+
 -- actions that have occured around im_trans_tasks: upload, download, ...
 create sequence im_task_actions_seq start with 1;
 create table im_task_actions (
@@ -197,6 +213,27 @@ declare
     v_plugin            integer;
 begin
     v_plugin := im_component_plugin.new (
+        plugin_name =>  'Customer Trados Matrix',
+        package_name => 'intranet-translation',
+        page_url =>     '/intranet/customers/view',
+        location =>     'left',
+        sort_order =>   70,
+        component_tcl =>
+        'im_trans_trados_matrix_component \
+                $user_id \
+                $customer_id \
+                $return_url'
+    );
+end;
+/
+
+
+-- Show the translation specific fields in the ProjectViewPage
+--
+declare
+    v_plugin            integer;
+begin
+    v_plugin := im_component_plugin.new (
         plugin_name =>  'Project Translation Details',
         package_name => 'intranet-translation',
         page_url =>     '/intranet/projects/view',
@@ -210,6 +247,9 @@ begin
     );
 end;
 /
+
+
+
 
 
 -- Show the translation tasks for freelancers on the first page

@@ -71,6 +71,7 @@ set err_count 0
 set project_query "
 select
         p.project_nr as project_short_name,
+	p.customer_id,
         c.customer_name as customer_short_name,
         p.source_language_id,
         p.project_type_id
@@ -299,10 +300,14 @@ db_transaction {
 	    }
 	    default {
 		ad_return_complaint 1 "<LI>Internal error: Unknown Input
-		method '$inport_method'.
+		method '$inport_method'."
 		return
 	    }
 	}
+
+	# Calculate the number of "effective" words based on
+	# a valuation of repetitions
+        set task_units [im_trans_trados_matrix_calculate $customer_id $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
 
 	# SLS Formula to count repeated words:
 	# The valuation factor depends on the type of repetition.

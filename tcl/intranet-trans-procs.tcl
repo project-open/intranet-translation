@@ -112,6 +112,218 @@ where
 
 
 # -------------------------------------------------------------------
+# Trados Matrix
+# -------------------------------------------------------------------
+
+
+ad_proc -public im_trans_trados_matrix_component { user_id object_id return_url } {
+    Return a formatted HTML table showing the trados matrix
+    related to the current object
+} {
+    array set matrix [im_trans_trados_matrix $object_id]
+    set header_html "
+<td class=rowtitle align=center>100</td>
+<td class=rowtitle align=center>95</td>
+<td class=rowtitle align=center>85</td>
+<td class=rowtitle align=center>75</td>
+<td class=rowtitle align=center>50</td>
+<td class=rowtitle align=center>0</td>
+<td class=rowtitle align=center>Type</td>
+"
+
+    set value_html "
+<td align=right>[expr 100 * $matrix(100)]%</td>
+<td align=right>[expr 100 * $matrix(95)]%</td>
+<td align=right>[expr 100 * $matrix(85)]%</td>
+<td align=right>[expr 100 * $matrix(75)]%</td>
+<td align=right>[expr 100 * $matrix(50)]%</td>
+<td align=right>[expr 100 * $matrix(0)]%</td>
+<td align=right>$matrix(type)</td>
+"
+
+    set html "
+<table border=0>
+<tr class=rowtitle><td class=rowtitle colspan=99 align=center>Trados Matrix</td></tr>
+<tr class=rowtitle>$header_html</tr>
+<tr class=roweven>$value_html</tr>
+<tr class=rowplain>
+  <td colspan=99 align=right>
+    <A href=/intranet-translation/matrix/new?[export_url_vars object_id return_url]>edit</a>
+  </td>
+</tr>
+</table>\n"
+
+    return $html
+}
+
+
+
+ad_proc -public im_trans_trados_matrix_calculate { object_id p100_words p95_words p85_words p75_words p50_words p0_words } {
+    Calculate the number of "effective" words based on
+    a valuation of repetitions from the associated tradox
+    matrix.<br>
+    If object_id is an "im_project", first check if the project
+    has a matrix associated and then fallback to the customers
+    matrix.<br>
+    If the customer doesn't have a matrix, fall back to the 
+    "Internal" customer<br>
+    If the "Internal" customer doesn't have a matrix fall
+    back to some default values.
+} {
+    return [im_trans_trados_matrix_calculate_helper $object_id $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
+}
+
+
+ad_proc -public im_trans_trados_matrix_calculate_helper { object_id p100_words p95_words p85_words p75_words p50_words p0_words } {
+    See im_trans_trados_matrix_calculate for comments...
+} {
+    array set matrix [im_trans_trados_matrix $object_id]
+    set task_units [expr \
+		    ($p100_words * $matrix(100)) + \
+		    ($p95_words * $matrix(95)) + \
+		    ($p85_words * $matrix(85)) + \
+		    ($p75_words * $matrix(75)) + \
+		    ($p50_words * $matrix(50)) + \
+		    ($p0_words * $matrix(0))]
+    return $task_units
+}
+
+
+ad_proc -public im_trans_trados_matrix { object_id } {
+    Returns an array with the trados matrix values for an object.
+} {
+    set object_type [db_string get_object_type "select object_type from acs_objects where object_id=:object_id" -default none]
+
+    switch $object_type {
+	im_project {
+	    array set matrix [im_trans_trados_matrix_project $object_id]
+	}
+	im_customer {
+	    array set matrix [im_trans_trados_matrix_customer $object_id]
+	}
+	default {
+	    array set matrix [im_trans_trados_matrix_default]
+	}
+    }
+
+    return [array get matrix]
+
+}
+
+
+ad_proc -public im_trans_trados_matrix_project { project_id } {
+    Returns an array with the trados matrix values for a project.
+} {
+    set count [db_string matrix_count "select count(*) from im_trans_trados_matrix where object_id=:project_id"]
+    if {!$count} { 
+	set customer_id [db_string project_customer "select customer_id from im_projects project_id=:project_id"]
+	return [im_trans_trados_matrix_customer] 
+    }
+
+    # Get match100, match95, ...
+db_1row matrix_select "
+select
+        m.*,
+        acs_object.name(o.object_id) as object_name
+from
+        acs_objects o,
+        im_trans_trados_matrix m
+where
+        o.object_id = :project_id
+        and o.object_id = m.object_id(+)
+"
+    set matrix(100) $match100
+    set matrix(95) $match95
+    set matrix(85) $match85
+    set matrix(75) $match75
+    set matrix(50) $match50
+    set matrix(0) $match0
+    set matrix(type) im_customer
+    set matrix(object) $project_id
+
+    return [array get matrix]
+}
+
+
+ad_proc -public im_trans_trados_matrix_customer { customer_id } {
+    Returns an array with the trados matrix values for a customer.
+} {
+    set count [db_string matrix_count "select count(*) from im_trans_trados_matrix where object_id=:customer_id"]
+    if {!$count} { return [im_trans_trados_matrix_internal] }
+
+    # Get match100, match95, ...
+db_1row matrix_select "
+select
+        m.*,
+        acs_object.name(o.object_id) as object_name
+from
+        acs_objects o,
+        im_trans_trados_matrix m
+where
+        o.object_id = :customer_id
+        and o.object_id = m.object_id(+)
+"
+    set matrix(100) $match100
+    set matrix(95) $match95
+    set matrix(85) $match85
+    set matrix(75) $match75
+    set matrix(50) $match50
+    set matrix(0) $match0
+    set matrix(type) im_customer
+    set matrix(object) $customer_id
+
+    return [array get matrix]
+}
+
+ad_proc -public im_trans_trados_matrix_internal { } {
+    Returns an array with the trados matrix values for the "Internal" customer.
+} {
+    set customer_id [im_customer_internal]
+    
+    set count [db_string matrix_count "select count(*) from im_trans_trados_matrix where object_id=:customer_id"]
+    if {!$count} { return [im_trans_trados_matrix_default] }
+
+    # Get match100, match95, ...
+db_1row matrix_select "
+select
+        m.*,
+        acs_object.name(o.object_id) as object_name
+from
+        acs_objects o,
+        im_trans_trados_matrix m
+where
+        o.object_id = :customer_id
+        and o.object_id = m.object_id(+)
+"
+    set matrix(100) $match100
+    set matrix(95) $match95
+    set matrix(85) $match85
+    set matrix(75) $match75
+    set matrix(50) $match50
+    set matrix(0) $match0
+    set matrix(type) internal
+    set matrix(object) 0
+    return [array get matrix]
+}
+
+
+ad_proc -public im_trans_trados_matrix_default { } {
+    Returns an array with the trados matrix values for the "Internal" customer.
+} {
+    set matrix(100) 0.25
+    set matrix(95) 0.3
+    set matrix(85) 0.5
+    set matrix(75) 1.0
+    set matrix(50) 1.0
+    set matrix(0) 1.0
+    set matrix(type) default
+    set matrix(object) 0
+
+    return [array get matrix]
+}
+
+
+# -------------------------------------------------------------------
 # Permissions
 # -------------------------------------------------------------------
 
