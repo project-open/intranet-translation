@@ -162,3 +162,120 @@ begin
 end;
 /
 
+
+
+insert into categories (PROFILING_WEIGHT,  CATEGORY_DESCRIPTION,  ENABLED_P,  CATEGORY_ID,  CATEGORY,  MAILING_LIST_INFO,  CATEGORY_TYPE) values 
+('1',  '',  'f',  '86',  'Trans + Edit',  '',  'Intranet Project Type');
+insert into categories (PROFILING_WEIGHT,  CATEGORY_DESCRIPTION,  ENABLED_P,  CATEGORY_ID,  CATEGORY,  MAILING_LIST_INFO,  CATEGORY_TYPE) values 
+('1',  '',  'f',  '87',  'Edit Only',  '',  'Intranet Project Type');
+insert into categories (PROFILING_WEIGHT,  CATEGORY_DESCRIPTION,  ENABLED_P,  CATEGORY_ID,  CATEGORY,  MAILING_LIST_INFO,  CATEGORY_TYPE) values 
+('1',  '',  'f',  '88',  'Trans + Edit + Proof',  '',  'Intranet Project Type');
+insert into categories (PROFILING_WEIGHT,  CATEGORY_DESCRIPTION,  ENABLED_P,  CATEGORY_ID,  CATEGORY,  MAILING_LIST_INFO,  CATEGORY_TYPE) values 
+('1',  '',  'f',  '89',  'Linguistic Validation',  '',  'Intranet Project Type');
+insert into categories (PROFILING_WEIGHT,  CATEGORY_DESCRIPTION,  ENABLED_P,  CATEGORY_ID,  CATEGORY,  MAILING_LIST_INFO,  CATEGORY_TYPE) values 
+('1',  '',  'f',  '90',  'Localization',  '',  'Intranet Project Type');
+insert into categories (PROFILING_WEIGHT,  CATEGORY_DESCRIPTION,  ENABLED_P,  CATEGORY_ID,  CATEGORY,  MAILING_LIST_INFO,  CATEGORY_TYPE) values 
+('1',  '',  'f',  '92',  'Technology',  '',  'Intranet Project Type');
+insert into categories (PROFILING_WEIGHT,  CATEGORY_DESCRIPTION,  ENABLED_P,  CATEGORY_ID,  CATEGORY,  MAILING_LIST_INFO,  CATEGORY_TYPE) values 
+('1',  '',  'f',  '94',  'Trans + Int. Spotcheck',  '',  'Intranet Project Type');
+insert into categories (PROFILING_WEIGHT,  CATEGORY_DESCRIPTION,  ENABLED_P,  CATEGORY_ID,  CATEGORY,  MAILING_LIST_INFO,  CATEGORY_TYPE) values 
+('1',  '',  'f',  '95',  'Proof Only',  '',  'Intranet Project Type');
+insert into categories (PROFILING_WEIGHT,  CATEGORY_DESCRIPTION,  ENABLED_P,  CATEGORY_ID,  CATEGORY,  MAILING_LIST_INFO,  CATEGORY_TYPE) values 
+('1',  '',  'f',  '96',  'Glossary Compilation',  '',  'Intranet Project Type');
+
+
+-- Intranet Quality
+INSERT INTO categories VALUES (110,'Premium Quality','Premium Quality','Intranet Quality',1,'f','');
+INSERT INTO categories VALUES (111,'High Quality','High Quality','Intranet Quality',1,'f','');
+INSERT INTO categories VALUES (112,'Average Quality','Average Quality','Intranet Quality',1,'f','');
+INSERT INTO categories VALUES (113,'Draft Quality','Draft Quality','Intranet Quality',1,'f','');
+
+
+
+
+
+
+-- Setup the most frequently used language (lang, sort_key, name)
+INSERT INTO categories VALUES (250,'es','Spanish','Intranet Translation Language',1,'f','');
+INSERT INTO categories VALUES (251,'es_ES','Castilian Spanish','Intranet Translation Language',1,'f','');
+INSERT INTO categories VALUES (252,'es_LA','Latin Americal Spanish','Intranet Translation Language',1,'f','');
+INSERT INTO categories VALUES (253,'es_US','US Spanish','Intranet Translation Language',1,'f','');
+INSERT INTO categories VALUES (254,'es_MX','Mexican Spanish','Intranet Translation Language',1,'f','');
+INSERT INTO categories VALUES (261,'en','English','Intranet Translation Language',1,'f','');
+INSERT INTO categories VALUES (262,'en_US','US English','Intranet Translation Language',1,'f','');
+INSERT INTO categories VALUES (263,'en_UK','UK English','Intranet Translation Language',1,'f','');
+INSERT INTO categories VALUES (271,'fr','French','Intranet Translation Language',1,'f','');
+INSERT INTO categories VALUES (272,'fr_FR','French French','Intranet Translation Language',1,'f','');
+INSERT INTO categories VALUES (273,'fr_BE','Belgian French','Intranet Translation Language',1,'f','');
+INSERT INTO categories VALUES (274,'fr_CH','Swiss French','Intranet Translation Language',1,'f','');
+INSERT INTO categories VALUES (281,'de','German','Intranet Translation Language',1,'f','');
+INSERT INTO categories VALUES (282,'de_DE','German German','Intranet Translation Language',1,'f','');
+INSERT INTO categories VALUES (283,'de_CH','Swiss German','Intranet Translation Language',1,'f','');
+INSERT INTO categories VALUES (290,'none','No Language','Intranet Translation Language',1,'f','');
+
+
+
+
+
+-- Unit or Mesurement
+INSERT INTO categories VALUES (320,'Hour','','Intranet Translation UoM',1,'f','');
+INSERT INTO categories VALUES (321,'Day','','Intranet Translation UoM',1,'f','');
+-- INSERT INTO categories VALUES (322,'Week','','Intranet Translation UoM',1,'f','');
+INSERT INTO categories VALUES (323,'Page','','Intranet Translation UoM',1,'f','');
+INSERT INTO categories VALUES (324,'S-Word','','Intranet Translation UoM',1,'f','');
+INSERT INTO categories VALUES (325,'T-Word','','Intranet Translation UoM',1,'f','');
+INSERT INTO categories VALUES (326,'S-Line','','Intranet Translation UoM',1,'f','');
+INSERT INTO categories VALUES (327,'T-Line','','Intranet Translation UoM',1,'f','');
+
+-- Task Status
+INSERT INTO categories VALUES (340,'Created','','Intranet Translation Task Status',1,'f','');
+INSERT INTO categories VALUES (342,'for Trans','','Intranet Translation Task Status',1,'f','');
+INSERT INTO categories VALUES (344,'Trans-ing','','Intranet Translation Task Status',1,'f','');
+INSERT INTO categories VALUES (346,'for Edit','','Intranet Translation Task Status',1,'f','');
+INSERT INTO categories VALUES (348,'Editing','','Intranet Translation Task Status',1,'f','');
+INSERT INTO categories VALUES (350,'for Proof','','Intranet Translation Task Status',1,'f','');
+INSERT INTO categories VALUES (352,'Proofing','','Intranet Translation Task Status',1,'f','');
+INSERT INTO categories VALUES (354,'for QCing','','Intranet Translation Task Status',1,'f','');
+INSERT INTO categories VALUES (356,'QCing','','Intranet Translation Task Status',1,'f','');
+INSERT INTO categories VALUES (358,'for Deliv','','Intranet Translation Task Status',1,'f','');
+INSERT INTO categories VALUES (360,'Delivered','','Intranet Translation Task Status',1,'f','');
+INSERT INTO categories VALUES (365,'Invoiced','','Intranet Translation Task Status',1,'f','');
+INSERT INTO categories VALUES (370,'Payed','','Intranet Translation Task Status',1,'f','');
+INSERT INTO categories VALUES (372,'Deleted','','Intranet Translation Task Status',1,'f','');
+-- reserved until 399
+
+
+-- Employee/Freelance Pipeline Status
+insert into categories (PROFILING_WEIGHT,  CATEGORY_DESCRIPTION,  ENABLED_P,  CATEGORY_ID,  CATEGORY,  MAILING_LIST_INFO,  CATEGORY_TYPE) values 
+('1',  '',  'f',  '450',  'Potential',  '',  'Intranet Employee Pipeline State');
+insert into categories (PROFILING_WEIGHT,  CATEGORY_DESCRIPTION,  ENABLED_P,  CATEGORY_ID,  CATEGORY,  MAILING_LIST_INFO,  CATEGORY_TYPE) values 
+('1',  '',  'f',  '451',  'Received Translation Test',  '',  'Intranet Employee Pipeline State');
+insert into categories (PROFILING_WEIGHT,  CATEGORY_DESCRIPTION,  ENABLED_P,  CATEGORY_ID,  CATEGORY,  MAILING_LIST_INFO,  CATEGORY_TYPE) values 
+('1',  '',  'f',  '452',  'Failed Translation Test',  '',  'Intranet Employee Pipeline State');
+insert into categories (PROFILING_WEIGHT,  CATEGORY_DESCRIPTION,  ENABLED_P,  CATEGORY_ID,  CATEGORY,  MAILING_LIST_INFO,  CATEGORY_TYPE) values 
+('1',  '',  'f',  '453',  'Aproved Translation Test',  '',  'Intranet Employee Pipeline State');
+insert into categories (PROFILING_WEIGHT,  CATEGORY_DESCRIPTION,  ENABLED_P,  CATEGORY_ID,  CATEGORY,  MAILING_LIST_INFO,  CATEGORY_TYPE) values 
+('1',  '',  'f',  '454',  'Active',  '',  'Intranet Employee Pipeline State');
+insert into categories (PROFILING_WEIGHT,  CATEGORY_DESCRIPTION,  ENABLED_P,  CATEGORY_ID,  CATEGORY,  MAILING_LIST_INFO,  CATEGORY_TYPE) values 
+('0',  '',  'f',  '455',  'Past',  '',  'Intranet Employee Pipeline State');
+insert into categories (PROFILING_WEIGHT,  CATEGORY_DESCRIPTION,  ENABLED_P,  CATEGORY_ID,  CATEGORY,  MAILING_LIST_INFO,  CATEGORY_TYPE) values 
+('0',  '',  'f',  '456',  'Deleted',  '',  'Intranet Employee Pipeline State');
+
+-- Subject Areas
+INSERT INTO categories VALUES (500,'Bio','','Intranet Translation Subject Area',1,'f','');
+INSERT INTO categories VALUES (505,'Biz','','Intranet Translation Subject Area',1,'f','');
+INSERT INTO categories VALUES (510,'Com','','Intranet Translation Subject Area',1,'f','');
+INSERT INTO categories VALUES (515,'Eco','','Intranet Translation Subject Area',1,'f','');
+INSERT INTO categories VALUES (520,'Gen','','Intranet Translation Subject Area',1,'f','');
+INSERT INTO categories VALUES (525,'Law','','Intranet Translation Subject Area',1,'f','');
+INSERT INTO categories VALUES (530,'Lit','','Intranet Translation Subject Area',1,'f','');
+INSERT INTO categories VALUES (535,'Loc','','Intranet Translation Subject Area',1,'f','');
+INSERT INTO categories VALUES (540,'Mkt','','Intranet Translation Subject Area',1,'f','');
+INSERT INTO categories VALUES (545,'Med','','Intranet Translation Subject Area',1,'f','');
+INSERT INTO categories VALUES (550,'Tec','','Intranet Translation Subject Area',1,'f','');
+INSERT INTO categories VALUES (555,'Tec-Auto','','Intranet Translation Subject Area',1,'f','');
+INSERT INTO categories VALUES (560,'Tec-Telecos','','Intranet Translation Subject Area',1,'f','');
+INSERT INTO categories VALUES (565,'Tec-Gen','','Intranet Translation Subject Area',1,'f','');
+INSERT INTO categories VALUES (570,'Tec-Mech. eng','','Intranet Translation Subject Area',1,'f','');
+-- reserved until 599
+
