@@ -59,14 +59,14 @@ set page_body "
                       <td>[_ intranet-translation.Client_project_]</td>
                       <td> 
                         <input type=text size=40 name=company_project_nr value='$company_project_nr'>
-                         [im_gif help "[_ intranet-translation.lt_An_optional_field_spe]"]
+                         [im_gif help "An optional field specifying the project reference code of the client. Is used when printing the invoice. Example: 20030310A12478"]
                       </td>
                     </tr>
                     <tr> 
                       <td>[_ intranet-translation.Final_User] &nbsp;</td>
                       <td> 
                         <input type=text size=20 name=final_company value='$final_company'>
-                         [im_gif help "[_ intranet-translation.lt_Who_is_the_final_cons]"]
+                         [im_gif help "Who is the final consumer (when working for an agency)? Examples: \"Shell\", \"UBS\", ..."]
                       </td>
                     </tr>
 
@@ -82,7 +82,7 @@ set page_body "
                       <td>
 [im_category_select "Intranet Translation Language" source_language_id $source_language_id]
 [im_admin_category_gif "Intranet Translation Language"]
-[im_gif help "[_ intranet-translation.lt_Translation_source_la]"]
+[im_gif help "Translation source language"]
                       </td>
                     </tr>
 
@@ -91,7 +91,7 @@ set page_body "
                       <td>
 [im_category_select_multiple "Intranet Translation Language" target_language_ids $target_language_ids 6 multiple]
 [im_admin_category_gif "Intranet Translation Language"]
-[im_gif help "[_ intranet-translation.lt_Translation_target_la]"]
+[im_gif help "Translation target languages. Searate target folders will be created for every language that you select"]
                       </td>
                     </tr>
 
@@ -100,7 +100,7 @@ set page_body "
                       <td>
 [im_category_select "Intranet Translation Subject Area" subject_area_id $subject_area_id]
 [im_admin_category_gif "Intranet Translation Subject Area"]
-[im_gif help "[_ intranet-translation.lt_Add_a_new_subject_are]"]
+[im_gif help "Add a new subject area"]
                       </td>
                     </tr>
 
@@ -117,9 +117,9 @@ set page_body "
                       <td>
 		 	<p> 
                           <input type=submit value='Submit changes' name=submit_changes>
-                          [im_gif help "[_ intranet-translation.lt_Create_the_new_folder]"] <br>
+                          [im_gif help "Create the new folder structure"] <br>
                           <input type=submit value='Create Language Subprojects' name=submit_subprojects>
-                          [im_gif help "[_ intranet-translation.lt_Create_folder_structu]"] <br>
+                          [im_gif help "Create folder structure and create a subproject for each language that you have chosen."] <br>
                         </p>
                       </td>
                     </tr>

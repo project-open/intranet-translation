@@ -883,7 +883,7 @@ ad_proc im_task_status_component { user_id project_id return_url } {
 <tr>
   <td class=rowtitle align=center colspan=17>
     [_ intranet-translation.lt_Project_Workflow_Stat]
-[im_gif help "[_ intranet-translation.lt_Shows_the_status_of_a]"]
+[im_gif help "Shows the status of all tasks\nAss: Assigned Files\nDn: Downloaded Files\nUp: Uploaded Files"]
   </td>
 </tr>
 <tr>
@@ -1231,8 +1231,12 @@ foreach col $column_headers {
     set header ""
     set header_cmd "set header \"$col\""
     eval $header_cmd
-    set header_tr [lang::util::suggest_key $header]
-    append task_table "<td class=rowtitle>[_ intranet-translation.$header_tr]</td>\n"
+    if { [regexp "im_gif" $col] } {
+	set header_tr $header
+    } else {
+	set header_tr [_ intranet-translation.[lang::util::suggest_key $header]]
+    }
+    append task_table "<td class=rowtitle>$header_tr</td>\n"
 }
 append task_table "
 </tr>\n"
@@ -1322,7 +1326,7 @@ and t.task_type_id=type_c.category_id(+)
 	if {$download_folder != ""} {
 	    set download_link "
   <A HREF='/intranet-translation/download-task/$task_id/$download_folder/$task_name'>
-    [im_gif save "[_ intranet-translation.lt_Click_right_and_choos]"]
+    [im_gif save "Click right and choose \"Save target as\" to download the file"]
   </A>\n"
 	}
 
@@ -1331,7 +1335,7 @@ and t.task_type_id=type_c.category_id(+)
 	if {$upload_folder != ""} {
 	    set upload_link "
   <A HREF='/intranet-translation/trans-tasks/upload-task?[export_url_vars project_id task_id return_url]'>
-    [im_gif open "[_ intranet-translation.Upload_file]"]
+    [im_gif open "Upload file"]
   </A>\n"
 	}
 	
@@ -1464,7 +1468,7 @@ group by
   <td align=right>$task_units $uom_name</td>
   <td align=center>
     <A HREF='/intranet-translation/trans-tasks/upload-task?[export_url_vars project_id task_id return_url]'>
-      [im_gif open "[_ intranet-translation.Upload_file]"]
+      [im_gif open "Upload file"]
     </A>
   </td>
 </tr>\n"
@@ -1495,7 +1499,7 @@ group by
 <tr> 
   <td class=rowtitle>[_ intranet-translation.Task_Name]</td>
   <td class=rowtitle>[_ intranet-translation.Units]</td>
-  <td class=rowtitle>[im_gif open "[_ intranet-translation.Upload_files]"]</td>
+  <td class=rowtitle>[im_gif open "Upload files"]</td>
 </tr>
 
 $task_table_rows
@@ -1593,7 +1597,7 @@ ad_proc im_new_task_component { user_id project_id return_url } {
 
   </td>
   <td>
-    [im_gif help "[_ intranet-translation.lt_Add_the_content_of_a_]"]
+    [im_gif help "Add the content of a local Trados 'wordcount.csv' file to the list of tasks. \nThe file needs to be called 'wordcount.csv' (lowercase letters), it needs to reside in the project folder, and there may not be more then one file with this name."]
   </td>
 </tr>
 "
@@ -1612,8 +1616,7 @@ ad_proc im_new_task_component { user_id project_id return_url } {
     </form>
   </td>
   <td>
-    [im_gif help "[_ intranet-translation.lt_Use_the_Browse_button_1] 
-[_ intranet-translation.lt_This_file_is_used_to_]"]
+    [im_gif help "Use the 'Browse...' button to locate your file, then click 'Open'.\nThis file is used to define the tasks of the project, one task for each line of the wordcount file."]
   </td>
 </tr>
 "
@@ -1641,8 +1644,7 @@ ad_proc im_new_task_component { user_id project_id return_url } {
 
   </td>
   <td>
-    [im_gif help "[_ intranet-translation.lt_Add_a_new_file_to_the]
-[_ intranet-translation.lt_New_files_need_to_be_]"]
+    [im_gif help "Add a new file to the list of tasks. \n New files need to be located in the \"source_xx\" folder to appear in the drop-down box on the left."]
   </td>
 </tr>
 "
@@ -1668,8 +1670,7 @@ ad_proc im_new_task_component { user_id project_id return_url } {
 
   </td>
   <td>
-    [im_gif help "[_ intranet-translation.lt_Add_a_manual_task_to_]
-[_ intranet-translation.lt_This_task_is_not_goin]"]
+    [im_gif help "Add a \"manual\" task to the project. \n This task is not going to controled by the translation workflow."]
   </td>
 </tr>"
 
