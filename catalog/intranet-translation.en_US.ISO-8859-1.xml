@@ -159,6 +159,7 @@ system meanwhile.)</msg>
   <msg key="Task">Task</msg>
   <msg key="Task_Assignments">Task Assignments</msg>
   <msg key="Task_Name">Task Name</msg>
+  <msg key="Task_Status">Task Status</msg>
   <msg key="Task_Type">Task Type</msg>
   <msg key="TAXnbsp">TAX&amp;nbsp;</msg>
   <msg key="Trados_Import">Trados Import</msg>
