@@ -131,6 +131,10 @@ select inline_revoke_permission ('view_trans_proj_detail');
 
 
 --drop privileges
+select acs_privilege__remove_child('admin','view_trans_tasks');
+select acs_privilege__remove_child('admin','view_trans_task_matrix');
+select acs_privilege__remove_child('admin','view_trans_task_status');
+select acs_privilege__remove_child('admin','view_trans_proj_detail');
 select acs_privilege__drop_privilege('view_trans_tasks');
 select acs_privilege__drop_privilege('view_trans_task_matrix');
 select acs_privilege__drop_privilege('view_trans_task_status');

@@ -371,7 +371,7 @@ begin
 	'view_trans_tasks',
 	'View Trans Tasks',
 	'View Trans Tasks');
-    acs_privilege.add_child('admin', 'view_trans_task');
+    acs_privilege.add_child('admin', 'view_trans_tasks');
 
 
     -- Should Freelancers see the Trados matrix for the translation tasks?
@@ -452,7 +452,7 @@ begin
     select group_id into v_proman from groups where group_name = 'Project Managers';
     select group_id into v_accounting from groups where group_name = 'Accounting';
     select group_id into v_employees from groups where group_name = 'Employees';
-    select group_id into v_companies from groups where group_name = 'Companies';
+    select group_id into v_companies from groups where group_name = 'Customers';
     select group_id into v_freelancers from groups where group_name = 'Freelancers';
 
     select menu_id
@@ -723,8 +723,8 @@ begin
 	v_project_id := im_project.new(
 		object_type	=> 'im_project',
 		project_name	=> 'Large Translation Project',
-		project_nr	=> '2004_0001',
-		project_path	=> '2004_0001',
+		project_nr	=> '1004_0001',
+		project_path	=> '1004_0001',
 		company_id	=> v_company_id,
 		-- Trans+Edit+Proof Project
 		project_type_id	=> 89
