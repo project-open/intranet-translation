@@ -60,9 +60,10 @@ if { ![db_0or1row projects_info_query $query] } {
 }
 
 set project_path [im_filestorage_project_path $project_id]
+set find_cmd [parameter::get -package_id [im_package_core_id] -parameter "FindCmd" -default "/bin/find"]
 
 if { [catch {
-    set file_list [exec /usr/bin/find $project_path -name wordcount.csv]
+    set file_list [exec $find_cmd $project_path -name wordcount.csv]
 } err_msg] } {
     # No "wordcount.csv" present or permission error
     ns_log Notice "trados-upload: $err_msg"

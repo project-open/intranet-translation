@@ -1775,6 +1775,8 @@ ad_proc im_task_missing_file_list { project_id } {
     The algorithm works O(n*log(n)), using ns_set, so
     it should be a reasonably cheap operation.
 } {
+    set find_cmd [parameter::get -package_id [im_package_core_id] -parameter "FindCmd" -default "/bin/find"]
+
     set query "
 select
         p.project_nr as project_short_name,
@@ -1804,7 +1806,7 @@ where
     ns_log Notice "org_paths_len=$org_paths_len"
     
     if { [catch {
-	set file_list [exec /usr/bin/find "$source_folder" -type f]
+	set file_list [exec $find_cmd "$source_folder" -type f]
     } err_msg] } {
 	# The directory probably doesn't exist yet, so don't generate
 	# an error
