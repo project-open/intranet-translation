@@ -20,7 +20,7 @@
 
 select
         m.*,
-        acs_object.name(o.object_id) as object_name
+        acs_object__name(o.object_id) as object_name
 from
         acs_objects o
       LEFT JOIN
