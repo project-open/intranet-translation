@@ -77,7 +77,7 @@ set max_n_bytes [ad_parameter -package_id [im_package_filestorage_id] MaxNumberO
 set tmp_filename [ns_queryget upload_file.tmpfile]
 set filesize [file size $tmp_filename]
 
-if { ![empty_string_p $max_n_bytes] && ($filesize > $max_n_bytes) } {
+if { $max_n_bytes && ($filesize > $max_n_bytes) } {
     ad_return_complaint 1 "Your file is larger than the maximum permissible upload size:  [util_commify_number $max_n_bytes] bytes"
     return 0
 }

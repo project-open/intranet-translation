@@ -43,7 +43,7 @@ set trados_wordcount_file "$tmp_filename.copy"
 ns_log Notice "trados-upload: max_n_bytes=$max_n_bytes"
 ns_log Notice "trados-upload: tmp_filename=$tmp_filename"
 
-if { ![empty_string_p $max_n_bytes] && ([file size $tmp_filename] > $max_n_bytes) } {
+if { $max_n_bytes && ([file size $tmp_filename] > $max_n_bytes) } {
     ad_return_complaint 1 "Your file is larger than the maximum permissible upload size:  [util_commify_number $max_n_bytes] bytes"
     return 0
 }
