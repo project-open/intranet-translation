@@ -617,15 +617,6 @@ INSERT INTO im_categories VALUES (372,'Deleted','','Intranet Translation Task St
 -- reserved until 399
 
 
--- Employee/Freelance Pipeline Status
-insert into im_categories values ('450',  'Potential',  '',  'Intranet Employee Pipeline State','category','t','f');
-insert into im_categories values ('451',  'Received Translation Test',  '',  'Intranet Employee Pipeline State','category','t','f');
-insert into im_categories values ('452',  'Failed Translation Test',  '',  'Intranet Employee Pipeline State','category','t','f');
-insert into im_categories values ('453',  'Aproved Translation Test',  '',  'Intranet Employee Pipeline State','category','t','f');
-insert into im_categories values ('454',  'Active',  '',  'Intranet Employee Pipeline State','category','t','f');
-insert into im_categories values ('455',  'Past',  '',  'Intranet Employee Pipeline State','category','t','f');
-insert into im_categories values ('456',  'Deleted',  '',  'Intranet Employee Pipeline State','category','t','f');
-
 -- Subject Areas
 INSERT INTO im_categories VALUES (500,'Bio','','Intranet Translation Subject Area','category','t','f');
 INSERT INTO im_categories VALUES (505,'Biz','','Intranet Translation Subject Area','category','t','f');
