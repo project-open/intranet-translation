@@ -821,6 +821,7 @@ ad_proc im_task_status_component { user_id project_id return_url } {
     # Is this a translation project?
 
     if {![im_project_has_type $project_id "Translation Project"]} {
+	ns_log Notice "im_task_status_component: Project $project_id is not a translation project"
 	return ""
     }
 
