@@ -609,8 +609,8 @@ where
       [_ intranet-translation.Project_Details]
     </td>
   </tr>
-"
-if {[im_permission $user_id view_trans_proj_detail]} {
+    "
+    if {[im_permission $user_id view_trans_proj_detail]} {
     append html "
   <tr> 
     <td>[_ intranet-translation.Client_Project]</td>
@@ -625,20 +625,20 @@ if {[im_permission $user_id view_trans_proj_detail]} {
     <td>[im_category_from_id $expected_quality_id]</td>
   </tr>
 "
-}
+    }
 
-set company_contact_html [im_render_user_id $company_contact_id $company_contact_name $user_id $project_id]
-if {"" != $company_contact_html} {
-    append html "
+    set company_contact_html [im_render_user_id $company_contact_id $company_contact_name $user_id $project_id]
+    if {"" != $company_contact_html} {
+	append html "
   <tr> 
     <td>[_ intranet-translation.Company_Contact]</td>
     <td>$company_contact_html</td>
   </tr>
 "
-}
+    }
 
 
-append html "
+    append html "
   <tr> 
     <td>[_ intranet-translation.Subject_Area]</td>
     <td>[im_category_from_id $subject_area_id]</td>
