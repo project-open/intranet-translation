@@ -94,7 +94,7 @@ set page_body "
                    <tr>
                       <td>[_ intranet-translation.Source_Language] $required_field </td>
                       <td>
-[im_category_select "Intranet Translation Language" source_language_id $source_language_id]
+[im_category_select_plain "Intranet Translation Language" source_language_id $source_language_id]
 [im_admin_category_gif "Intranet Translation Language"]
 [im_gif help "Translation source language"]
                       </td>
