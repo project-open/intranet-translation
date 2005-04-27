@@ -583,10 +583,12 @@ ad_proc -public im_trans_project_details_component { user_id project_id return_u
     specific fields of a translation project.
 } {
     # Is this a translation project?
-    if {![im_project_has_type $project_id "Translation Project"]} {
+    if {![im_project_has_type $project_id "Translation Project"] || ![im_permission $user_id view_trans_proj_detail]} {
 	return ""
     }
- 
+
+    im_project_permissions $user_id $project_id view read write admin
+
     set query "
 select
         p.*,
@@ -610,7 +612,7 @@ where
     </td>
   </tr>
     "
-    if {[im_permission $user_id view_trans_proj_detail]} {
+
     append html "
   <tr> 
     <td>[_ intranet-translation.Client_Project]</td>
@@ -625,8 +627,6 @@ where
     <td>[im_category_from_id $expected_quality_id]</td>
   </tr>
 "
-    }
-
     set company_contact_html [im_render_user_id $company_contact_id $company_contact_name $user_id $project_id]
     if {"" != $company_contact_html} {
 	append html "
@@ -636,7 +636,6 @@ where
   </tr>
 "
     }
-
 
     append html "
   <tr> 
@@ -651,6 +650,10 @@ where
     <td>[_ intranet-translation.Target_Languages_1]</td>
     <td>[im_target_languages $project_id]</td>
   </tr>
+"
+
+    if {$write} {
+	append html "
   <tr> 
     <td></td>
     <td>
@@ -662,6 +665,7 @@ where
   </tr>
 </table>
 "
+    }
 
     return $html
 }
