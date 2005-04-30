@@ -109,3 +109,15 @@ delete from im_views where view_id = 90;
 delete from im_view_columns where column_id = 2023;
 
 
+-----------------------------------------------------------
+-- Remove backup views 
+--
+delete from im_view_columns where view_id = 150;
+delete from im_views where view_id = 150;
+
+delete from im_view_columns where view_id = 151;
+delete from im_views where view_id = 151;
+
+delete from im_view_columns where view_id = 152;
+delete from im_views where view_id = 152;
+
