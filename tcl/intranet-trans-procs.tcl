@@ -374,7 +374,7 @@ where
     set matrix(75) $match75
     set matrix(50) $match50
     set matrix(0) $match0
-    set matrix(type) im_company
+    set matrix(type) company
     set matrix(object) $project_id
 
     return [array get matrix]
@@ -408,7 +408,7 @@ where
     set matrix(75) $match75
     set matrix(50) $match50
     set matrix(0) $match0
-    set matrix(type) im_company
+    set matrix(type) company
     set matrix(object) $company_id
 
     return [array get matrix]
