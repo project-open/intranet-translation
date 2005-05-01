@@ -1502,7 +1502,9 @@ ad_proc im_task_error_component { user_id project_id return_url } {
 	return ""
     }
 
-    if {![im_permission $user_id view_trans_proj_detail]} { return "" }
+# 050501 Frank Bergmann: Disabled - PMs should be able to see this 
+# component anyway
+#    if {![im_permission $user_id view_trans_proj_detail]} { return "" }
 
     # Show the missing tasks only to people who can write on the
     # project
