@@ -101,20 +101,41 @@ set trados_files_content [exec /bin/cat $trados_wordcount_file]
 set trados_files [split $trados_files_content "\n"]
 set trados_files_len [llength $trados_files]
 set trados_header [lindex $trados_files 1]
-set trados_headers [split $trados_header ";"]
+
+set separator ";"
+
+set trados_headers [split $trados_header $separator]
+
+if {1 == [llength $trados_headers]} {
+    # Probably got the wrong separator
+    set separator ","
+    set trados_headers [split $trados_header $separator]
+}
+
 
 # Distinguish between Trados 3 and Trados 5.5 files
 #
 set line2 [lindex $trados_files 2]
-set line2_len [llength [split $line2 ";"]]
+set line2_len [llength [split $line2 $separator]]
 
-switch $line2_len {
-    40 { set trados_version "6.5" }
-    39 { set trados_version "5.5" }
-    38 { set trados_version "5.0" }
-    25 { set trados_version "3" }
-    default { set trados_version "unknown" }
+
+
+if {";" == $separator} {
+    switch $line2_len {
+	40 { set trados_version "6.5" }
+	39 { set trados_version "5.5" }
+	38 { set trados_version "5.0" }
+	25 { set trados_version "3" }
+	default { set trados_version "unknown" }
+    }
+} else {
+    switch $line2_len {
+	39 { set trados_version "6.0" }
+	default { set trados_version "unknown" }
+    }
 }
+
+
 
 append page_body "
 <P>
@@ -160,7 +181,7 @@ set common_filename_comps 0
 ns_log Notice "import_method=$import_method"
 if {[string equal $import_method "Asp"]} {
     set first_trados_line [lindex $trados_files 2]
-    set first_trados_fields [split $first_trados_line ";"]
+    set first_trados_fields [split $first_trados_line $separator]
     set first_filename [lindex $first_trados_fields 0]
     set first_filename_comps [split $first_filename "\\"]
 
@@ -179,7 +200,7 @@ if {[string equal $import_method "Asp"]} {
 
 	for {set i 2} {$i < $trados_files_len} {incr i} {
 	    set trados_line [lindex $trados_files $i]
-	    set trados_fields [split $trados_line ";"]
+	    set trados_fields [split $trados_line $separator]
 	    set filename [lindex $trados_fields 0]
 	    set filename_comps [split $filename "\\"]
 	    set this_component [lindex $filename_comps $ctr]
@@ -204,7 +225,7 @@ ns_log Notice "common_filename_comps=$common_filename_comps"
     for {set i 2} {$i < $trados_files_len} {incr i} {
 	incr ctr
 	set trados_line [lindex $trados_files $i]
-	set trados_fields [split $trados_line ";"]
+	set trados_fields [split $trados_line $separator]
 	
 	set filename    	[lindex $trados_fields 0]
 	set tagging_errors	[lindex $trados_fields 1]
@@ -237,7 +258,8 @@ ns_log Notice "common_filename_comps=$common_filename_comps"
 	    set p0_placeables	[lindex $trados_fields 23]
 	}
 
-	if {[string equal $trados_version "5.5"] || [string equal $trados_version "5.0"] || [string equal $trados_version "6.5"]} {
+	if {[string equal $trados_version "5.5"] || [string equal $trados_version "5.0"] || [string equal $trados_version "6.0"] | [string equal $trados_version "6.5"]} {
+
 	    set px_segments	[lindex $trados_fields 3]
 	    set px_words	[lindex $trados_fields 4]
 	    set px_placeables	[lindex $trados_fields 5]
