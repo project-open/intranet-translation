@@ -51,15 +51,30 @@ select inline_01 ();
 drop function inline_01 ();
 
 
--- try to drop categories
-delete from im_category_hierarchy where parent_id = 2500;
-delete from im_categories where category_id = 2500;
-delete from im_categories where category_id >= 87 and category_id <= 96;
-delete from im_categories where category_id >= 110 and category_id <= 113;
-delete from im_categories where category_id >= 250 and category_id <= 299;
-delete from im_categories where category_id >= 323 and category_id <= 327;
-delete from im_categories where category_id >= 340 and category_id <= 372;
-delete from im_categories where category_id >= 500 and category_id <= 570;
+-- ----------------------------------------------------------------
+-- Drop categories
+
+-- Project Types
+-- update im_projects 
+-- set project_type_id=85 
+-- where project_type_id in (2500,87,88,89,90,91,92,93,94,95,96);
+
+-- update im_invoice_items 
+-- set item_type_id=85 
+-- where item_type_id in (2500,87,88,89,90,91,92,93,94,95,96);
+
+-- delete from im_category_hierarchy 
+-- where parent_id in (2500,87,88,89,90,91,92,93,94,95,96)
+-- 	or child_id in (2500,87,88,89,90,91,92,93,94,95,96);
+
+-- delete from im_categories 
+-- where category_id in (2500,87,88,89,90,91,92,93,94,95,96);
+
+-- delete from im_categories where category_id >= 110 and category_id <= 113;
+-- delete from im_categories where category_id >= 250 and category_id <= 299;
+-- delete from im_categories where category_id >= 323 and category_id <= 327;
+-- delete from im_categories where category_id >= 340 and category_id <= 372;
+-- delete from im_categories where category_id >= 500 and category_id <= 570;
 
 
 -- before remove priviliges remove granted permissions
