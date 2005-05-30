@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <message_catalog package_key="intranet-translation" package_version="3.0.0.0.4" locale="de_DE" charset="ISO-8859-1">
 
+  <msg key="--_Please_Select_--">-- Bitte wählen --</msg>
   <msg key="0_">0%</msg>
   <msg key="50_">50%</msg>
   <msg key="75_">75%</msg>
@@ -9,17 +10,35 @@
   <msg key="100_">100%</msg>
   <msg key="Add">Hinzufügen</msg>
   <msg key="Add_a_New_Task">Neue Aufgabe</msg>
+  <msg key="Add_File">Neue Datei</msg>
   <msg key="Add_Trados_Wordcount">Trados Wordcount hinzufügen</msg>
   <msg key="Ass">Zugew.</msg>
+  <msg key="Assign">Zuweisen</msg>
   <msg key="Assign_Tasks">Aufgaben zuweisen</msg>
   <msg key="Assigned">Zugewiesen</msg>
   <msg key="Assignments">Zuweisungen</msg>
+  <msg key="Auto_Assigment">Automatische Zuweisung</msg>
   <msg key="Auto_Assign">Auto-Zuweisen</msg>
   <msg key="Auto_Assignment">Autmatische Zuweisung</msg>
   <msg key="Bill_Units">Abrech Einheiten</msg>
+  <msg key="Client_contact">Kundenkontakt</msg>
   <msg key="Client_Project">Kunden Projektnr.</msg>
+  <msg key="Client_project_">Kundenprojektnr.</msg>
   <msg key="Comment">Kommentar</msg>
+  <msg key="Companies">Firmen</msg>
+  <msg key="Company">Firma</msg>
+  <msg key="Company_1">Firma</msg>
   <msg key="Company_Contact">Kundenkontakt</msg>
+  <msg key="context">Kontext</msg>
+  <msg key="cost_type_Data">%cost_type% Daten</msg>
+  <msg key="cost_type_date">%cost_type% Datum</msg>
+  <msg key="cost_type_nr">%cost_type% Nr.</msg>
+  <msg key="cost_type_status">%cost_type% Status</msg>
+  <msg key="cost_type_template">%cost_type% Vorlage</msg>
+  <msg key="cost_type_type">%cost_type% Typ</msg>
+  <msg key="Database_Error">Datenbankfehler</msg>
+  <msg key="days">Tage</msg>
+  <msg key="Del">Löschen</msg>
   <msg key="Dn">Downl.</msg>
   <msg key="Edit">Bearbeiten</msg>
   <msg key="Editing">Editieren</msg>
@@ -27,6 +46,11 @@
   <msg key="Filename">Dateiname</msg>
   <msg key="Final_User">Endbenutzer</msg>
   <msg key="Help">Hilfe</msg>
+  <msg key="Input_Error">Eingabefehler</msg>
+  <msg key="Internal_error">Interner Fehler</msg>
+  <msg key="lt_Add_a_manual_task_to_">Neue \&quot;manualle\&quot; Aufgabe für dieses Projekt</msg>
+  <msg key="lt_Add_a_new_file_to_the">Neue Datei zur Aufgabenliste hinzufügen</msg>
+  <msg key="lt_Add_a_new_subject_are">Neue Fachbereich</msg>
   <msg key="lt_Missing_Translation_F">Fehlende Übersetzungsdateien</msg>
   <msg key="lt_No_missing_files_foun">Keine fehlenden Dateien gefunden</msg>
   <msg key="lt_Project_Workflow_Stat">Workflow Projektstatus</msg>
