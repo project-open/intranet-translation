@@ -13,7 +13,7 @@
   <msg key="Add_File">Añadir un archivo</msg>
   <msg key="Add_Trados_Wordcount">Añadir contaje palabras Trados</msg>
   <msg key="Ass">Asi</msg>
-  <msg key="Assign">Asignar</msg>
+  <msg key="Assign">Assign</msg>
   <msg key="Assign_Tasks">Asignar tareas</msg>
   <msg key="Assigned">Asignada</msg>
   <msg key="Assignments">Tareas asignadas</msg>
@@ -38,7 +38,7 @@
   <msg key="cost_type_type">%cost_type% tipo</msg>
   <msg key="Database_Error">Error de base de datos</msg>
   <msg key="days">días</msg>
-  <msg key="Del">Supr</msg>
+  <msg key="Del">Del</msg>
   <msg key="Dn">Dn</msg>
   <msg key="Edit">Editar</msg>
   <msg key="Editing">Edición</msg>
@@ -69,7 +69,7 @@
   <msg key="lt_Expected_file_task_na">Archivo esperado: %task_name%</msg>
   <msg key="lt_File_is_missing_in_pr">Falta un archivo en el proyecto no. %project_nr%: %file_name%</msg>
   <msg key="lt_img_srcintranetimages">_</msg>
-  <msg key="lt_Missing_Translation_F">Faltan los arcivos a traducir</msg>
+  <msg key="lt_Missing_Translation_F">Archivos a traducir</msg>
   <msg key="lt_New_files_need_to_be_">Para que aparezcan en el cuadro de lista desplegable de la izquierda, los nuevos archivos deben estar alojados en la carpeta \&quot;source_xx\&quot;.</msg>
   <msg key="lt_New_Trados_Matrix_of_">Nueva matriz Trados de '%object_name%'</msg>
   <msg key="lt_No_missing_files_foun">No se han encontrado archivos faltantes</msg>
@@ -147,7 +147,7 @@
   <msg key="Rep">Rep</msg>
   <msg key="Repetitions">Repeticiones</msg>
   <msg key="Report">Informe</msg>
-  <msg key="Save">Guardar</msg>
+  <msg key="Save">Save</msg>
   <msg key="Size">Tamaño</msg>
   <msg key="Source">Partida</msg>
   <msg key="Source_Language">Idioma de partida</msg>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="intranet-translation" package_version="3.0.0" locale="de_DE" charset="ISO-8859-1">
+<message_catalog package_key="intranet-translation" package_version="3.0.0.0.4" locale="de_DE" charset="ISO-8859-1">
 
   <msg key="0_">0%</msg>
   <msg key="50_">50%</msg>
@@ -18,19 +18,27 @@
   <msg key="Auto_Assignment">Autmatische Zuweisung</msg>
   <msg key="Bill_Units">Abrech Einheiten</msg>
   <msg key="Client_Project">Kunden Projektnr.</msg>
+  <msg key="Comment">Kommentar</msg>
   <msg key="Company_Contact">Kundenkontakt</msg>
   <msg key="Dn">Downl.</msg>
   <msg key="Edit">Bearbeiten</msg>
   <msg key="Editing">Editieren</msg>
+  <msg key="File">Datei</msg>
+  <msg key="Filename">Dateiname</msg>
   <msg key="Final_User">Endbenutzer</msg>
   <msg key="Help">Hilfe</msg>
   <msg key="lt_Missing_Translation_F">Fehlende Übersetzungsdateien</msg>
   <msg key="lt_No_missing_files_foun">Keine fehlenden Dateien gefunden</msg>
   <msg key="lt_Project_Workflow_Stat">Workflow Projektstatus</msg>
+  <msg key="lt_Return_to_Project_Pag">Zur Projektseite zurückkehren</msg>
+  <msg key="lt_This_page_may_take_se">(Diese Operation kann mehrere Minuten dauern, in Abhängigkeit von der Größe der Datei und ihrer Internet-Anbindung. Bitte brechen sie diese Operation nicht ab.)</msg>
+  <msg key="lt_Your_have_successfull">Sie haben erfolgreich %filesize% Bytes der Datei '%task_name%' hochgeladen.</msg>
   <msg key="Name">Name</msg>
   <msg key="No_tasks_found">Keine Aufgaben gefunden</msg>
   <msg key="Num_Words">Anzahl Wörter</msg>
+  <msg key="One_Project">Ein Projekt</msg>
   <msg key="One_project">Ein Projekt</msg>
+  <msg key="optional">(optional)</msg>
   <msg key="Other">Andere</msg>
   <msg key="Project_Details">Projektdetails</msg>
   <msg key="Project_Tasks">Projektaufgaben</msg>
@@ -40,8 +48,11 @@
   <msg key="Quality_Level">Qualitätsniveau</msg>
   <msg key="Rep">Rep</msg>
   <msg key="Size">Größe</msg>
+  <msg key="Source">Quelle</msg>
   <msg key="Source_Language">Quellsprache</msg>
   <msg key="Subject_Area">Fachrichtung</msg>
+  <msg key="Submit_and_Upload">Bestätigen und hochladen</msg>
+  <msg key="Target">Ziel</msg>
   <msg key="Target_Lang">Ziel-sprache</msg>
   <msg key="Target_Languages_1">Zielsprache</msg>
   <msg key="Task_Action">Aktion</msg>
@@ -49,11 +60,15 @@
   <msg key="Task_Name">Aufgabenname</msg>
   <msg key="Task_Status">Aufgaben-status</msg>
   <msg key="Task_Type">Aufgaben-typ</msg>
+  <msg key="Trados_Matrix">Trados Matrix</msg>
   <msg key="Trans">Übers</msg>
   <msg key="Translation">Übersetzung</msg>
   <msg key="Units">Einheiten</msg>
   <msg key="UoM">Einheit</msg>
   <msg key="Up">Upl.</msg>
+  <msg key="Upload_File">Datei hochladen</msg>
+  <msg key="Upload_New_FileURL">Neue Datei hochladen</msg>
+  <msg key="Upload_Successful">Hochladen war erfogreich</msg>
   <msg key="View_Tasks">Aufgaben anzeigen</msg>
   <msg key="Wordcount">Anzahl Wörter</msg>
   <msg key="XTr">XTr</msg>

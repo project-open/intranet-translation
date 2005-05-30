@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="intranet-translation" package_version="3.0.0" locale="en_US" charset="ISO-8859-1">
+<message_catalog package_key="intranet-translation" package_version="3.0.0.0.4" locale="en_US" charset="ISO-8859-1">
 
   <msg key="--_Please_Select_--">-- Please Select --</msg>
   <msg key="0_">0%</msg>
@@ -89,8 +89,8 @@
 	&lt;#_ Please send an email to</msg>
   <msg key="lt_The_project_has_no_ta">The project has no target language defined, so we are unable to add translation tasks to the project.</msg>
   <msg key="lt_The_project_id_specif">The project_id specified doesn't look like an integer.</msg>
-  <msg key="lt_The_specified_file_do">The specified file doesn't exist</msg>
-  <msg key="lt_The_specified_file_fi">The specified file $file is not available.</msg>
+  <msg key="lt_The_specified_file_do">The specified file does not exist.</msg>
+  <msg key="lt_The_specified_file_fi">The specified file %file% is not available.</msg>
   <msg key="lt_The_task_id_specified">The task_id specified doesn't look like an integer.</msg>
   <msg key="lt_This_file_is_used_to_">This file is used to define the tasks of the project, one task for each line of the wordcount file.</msg>
   <msg key="lt_This_page_may_take_se">(This page may take several minutes to upload your file, depending on the
@@ -119,14 +119,14 @@ system meanwhile.)</msg>
   <msg key="lt_You_have_no_rights_to_1">You have no rights to see this object.</msg>
   <msg key="lt_You_havent_defined_th">You haven't defined the source language of your project.</msg>
   <msg key="lt_You_havent_selected_a">You haven't selected a user for auto assignation</msg>
-  <msg key="lt_Your_are_trying_to_do">Your are trying to download the file \&quot;$file_name\&quot;, but the file doesn't exist in our system.</msg>
+  <msg key="lt_Your_are_trying_to_do">Your are trying to download the file &quot;&lt;b&gt;%file_name%&lt;/b&gt;&quot; in the folder &quot;&lt;b&gt;%download_folder%&lt;/b&gt;&quot;, but the file is not readable or does not exist in the system.</msg>
   <msg key="lt_Your_file_doesnt_coin">Your file doesn't coincide with the expected file:</msg>
   <msg key="lt_Your_file_is_larger_t">Your file is larger than the maximum permissible upload size</msg>
   <msg key="lt_Your_file_is_larger_t_1">Your file is larger than the maximum permissible upload size:  %util_commify_number_max_n_bytes% bytes</msg>
   <msg key="lt_Your_file_is_not_a_tr">Your file is not a trados wordcount file.</msg>
   <msg key="lt_Your_file_trados_word">Your file '%trados_wordcount_file%' has not been created with one of the supported Trados versions (3.0 and 5.5).</msg>
   <msg key="lt_Your_file_upload_file">Your file: %upload_file%</msg>
-  <msg key="lt_Your_have_successfull">Your have successfully uploaded $filesize bytes of file '%task_name%'.</msg>
+  <msg key="lt_Your_have_successfull">Your have successfully uploaded %filesize% bytes of file '%task_name%'.</msg>
   <msg key="Message">Message</msg>
   <msg key="Name">Name</msg>
   <msg key="No_Match">No Match</msg>
@@ -147,12 +147,15 @@ system meanwhile.)</msg>
   <msg key="Quality_Level">Quality Level</msg>
   <msg key="Rep">Rep</msg>
   <msg key="Repetitions">Repetitions</msg>
+  <msg key="Report">Report</msg>
   <msg key="Save">Save</msg>
   <msg key="Size">Size</msg>
+  <msg key="Source">Source</msg>
   <msg key="Source_Language">Source Language</msg>
   <msg key="Status">Status</msg>
   <msg key="Subject_Area">Subject Area</msg>
   <msg key="Submit_and_Upload">Submit and Upload</msg>
+  <msg key="Target">Target</msg>
   <msg key="Target_Lang">Target Lang</msg>
   <msg key="Target_Languages">Target Language(s)</msg>
   <msg key="Target_Languages_1">Target Languages</msg>
