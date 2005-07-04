@@ -18,6 +18,7 @@
   <msg key="Assigned">Assigned</msg>
   <msg key="Assignments">Assignments</msg>
   <msg key="Auto_Assigment">Auto Assigment</msg>
+  <msg key="Auto_Assign">Auto Assign</msg>
   <msg key="Auto_Assignment">Auto Assignment</msg>
   <msg key="Bill_Units">Bill Units</msg>
   <msg key="Client_contact">Client contact</msg>
@@ -85,8 +86,8 @@
   <msg key="lt_Return_to_Project_Pag">Return to Project Page</msg>
   <msg key="lt_Shows_the_status_of_a">Shows the status of all tasks\nAss: Assigned Files\nDn: Downloaded Files\nUp: Uploaded Files</msg>
   <msg key="lt_Task_task_id_doesnt_e">Task \#%task_id% doesn't exist</msg>
-  <msg key="lt_The_most_probable_cau">The most probable cause for this error is that the Project Manager hasn't uploaded the file yet.#&lt;br&gt;
-	&lt;#_ Please send an email to</msg>
+  <msg key="lt_The_most_probable_cau">The most probable cause for this error is that the Project Manager has not uploaded the file yet. &lt;br&gt;
+Please contact the project manager of your project: </msg>
   <msg key="lt_The_project_has_no_ta">The project has no target language defined, so we are unable to add translation tasks to the project.</msg>
   <msg key="lt_The_project_id_specif">The project_id specified doesn't look like an integer.</msg>
   <msg key="lt_The_specified_file_do">The specified file does not exist.</msg>
@@ -118,7 +119,7 @@ system meanwhile.)</msg>
   <msg key="lt_You_have_no_rights_to">You have no rights to modify this object.</msg>
   <msg key="lt_You_have_no_rights_to_1">You have no rights to see this object.</msg>
   <msg key="lt_You_havent_defined_th">You haven't defined the source language of your project.</msg>
-  <msg key="lt_You_havent_selected_a">You haven't selected a user for auto assignation</msg>
+  <msg key="lt_You_havent_selected_a">You haven't selected a user for auto assignment.</msg>
   <msg key="lt_Your_are_trying_to_do">Your are trying to download the file &quot;&lt;b&gt;%file_name%&lt;/b&gt;&quot; in the folder &quot;&lt;b&gt;%download_folder%&lt;/b&gt;&quot;, but the file is not readable or does not exist in the system.</msg>
   <msg key="lt_Your_file_doesnt_coin">Your file doesn't coincide with the expected file:</msg>
   <msg key="lt_Your_file_is_larger_t">Your file is larger than the maximum permissible upload size</msg>
@@ -131,6 +132,7 @@ system meanwhile.)</msg>
   <msg key="Name">Name</msg>
   <msg key="No_Match">No Match</msg>
   <msg key="No_tasks_found">No tasks found</msg>
+  <msg key="Num_Words">#Words</msg>
   <msg key="One_Project">One Project</msg>
   <msg key="One_project">One project</msg>
   <msg key="optional">(optional)</msg>
@@ -160,6 +162,7 @@ system meanwhile.)</msg>
   <msg key="Target_Languages">Target Language(s)</msg>
   <msg key="Target_Languages_1">Target Languages</msg>
   <msg key="Task">Task</msg>
+  <msg key="Task_Action">Task Action</msg>
   <msg key="Task_Assignments">Task Assignments</msg>
   <msg key="Task_Name">Task Name</msg>
   <msg key="Task_Status">Task Status</msg>
@@ -185,6 +188,7 @@ system meanwhile.)</msg>
   <msg key="Weighted">Weighted</msg>
   <msg key="Wordcount">Wordcount</msg>
   <msg key="Wordcount_Import">Wordcount Import</msg>
+  <msg key="Words">Words</msg>
   <msg key="X_Trans">X Trans</msg>
   <msg key="XTr">XTr</msg>
 </message_catalog>
