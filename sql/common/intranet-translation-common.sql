@@ -116,11 +116,15 @@ where category_type = 'Intranet Translation Task Status';
 -- -------------------------------------------------------------------
 -- Categories
 -- -------------------------------------------------------------------
-delete from im_biz_object_role_map where object_type_id in (
-	select category_id from im_categories where category_type = 'Intranet Project Type');
-delete from im_category_hierarchy where parent_id in (
-	select category_id from im_categories where category_type = 'Intranet Project Type');
-delete from im_categories where category_type = 'Intranet Project Type';
+
+# Fixed thanks to Bohumil Gorcic:
+# Maybe these lines have got here as part of testing the code?
+#
+# delete from im_biz_object_role_map where object_type_id in (
+# 	select category_id from im_categories where category_type = 'Intranet Project Type');
+# delete from im_category_hierarchy where parent_id in (
+#	select category_id from im_categories where category_type = 'Intranet Project Type');
+#delete from im_categories where category_type = 'Intranet Project Type';
 
 insert into im_categories values (87,  'Trans + Edit',  
 '',  'Intranet Project Type','category','t','f');
