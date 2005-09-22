@@ -76,13 +76,26 @@ set page_body "
                          [im_gif help "An optional field specifying the project reference code of the client. Is used when printing the invoice. Example: 20030310A12478"]
                       </td>
                     </tr>
+
                     <tr> 
-                      <td>[_ intranet-translation.Final_User] &nbsp;</td>
+                      <td>Service Customer &nbsp;</td>
                       <td> 
-                        <input type=text size=20 name=final_company value='$final_company'>
-                         [im_gif help "Who is the final consumer (when working for an agency)? Examples: \"Shell\", \"UBS\", ..."]
+                        [im_company_select "service_customer_id" $service_customer_id "" "CustOrIntl" [list "Deleted" "Past" "Declined" "Inactive"]]
+                         [im_gif help "Who is the final customer of the project?"]
                       </td>
                     </tr>
+
+
+                    <tr>
+			<td>[_ intranet-translation.Final_User] &nbsp;</td>
+                      <td>
+                        <input type=text size=20 name=final_company value='$final_company'>
+[im_gif help "Who is the final consumer (when working for an agency)? Exa\
+mples: \"Shell\", \"UBS\", ..."]
+                      </td>
+                    </tr>
+
+
 
                     <tr> 
                       <td>[_ intranet-translation.Client_contact] &nbsp;</td>

@@ -14,6 +14,7 @@ ad_page_contract {
     project_id:integer
     company_project_nr
     final_company
+    service_customer_id:integer,optional
     company_contact_id:integer 
     expected_quality_id:integer,optional
     source_language_id:integer
@@ -46,6 +47,9 @@ if {[exists_and_not_null company_contact_id]} {
 }
 if {[exists_and_not_null expected_quality_id]} {
     append sql "expected_quality_id=:expected_quality_id,\n"
+}
+if {[exists_and_not_null service_customer_id]} {
+    append sql "service_customer_id = :service_customer_id,\n"
 }
 if {[exists_and_not_null subject_area_id]} {
     append sql "subject_area_id=:subject_area_id,\n"

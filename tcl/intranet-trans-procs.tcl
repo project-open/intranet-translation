@@ -592,9 +592,11 @@ ad_proc -public im_trans_project_details_component { user_id project_id return_u
     set query "
 select
         p.*,
+	c.company_name as service_customer_name,
 	im_name_from_user_id(p.company_contact_id) as company_contact_name
 from
         im_projects p
+	left outer join im_companies c on (p.service_customer_id = c.company_id)
 where
         p.project_id=:project_id
 "
@@ -619,8 +621,10 @@ where
     <td>$company_project_nr</td>
   </tr>
   <tr> 
-    <td>[_ intranet-translation.Final_User]</td>
-    <td>$final_company</td>
+    <td>Service Customer</td>
+    <td>
+      <a href=/intranet/companies/view?company_id=$service_customer_id>$service_customer_name</a>
+    </td>
   </tr>
   <tr> 
     <td>[_ intranet-translation.Quality_Level]</td>
