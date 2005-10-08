@@ -373,6 +373,7 @@ ns_log Notice "trados-import: common_filename_comps=$common_filename_comps"
 	# Skip if it was an empty line
 
 	if {"" == $px_words && "" == $prep_words && "" == $p100_words} {
+	    ns_log Notice "trados-import: found an empty line - maybe the last one..."
 	    continue
 	}
 
