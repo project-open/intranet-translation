@@ -369,8 +369,17 @@ ns_log Notice "trados-import: common_filename_comps=$common_filename_comps"
 	    }
 	}
 
+
+	# Skip if it was an empty line
+
+	if {"" == $px_words && "" == $prep_words && "" == $p100_words} {
+	    continue
+	}
+
 	# Calculate the number of "effective" words based on
 	# a valuation of repetitions
+
+        ns_log Notice "trados-import: im_trans_trados_matrix_calculate $company_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words"
         set task_units [im_trans_trados_matrix_calculate $company_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
 
 	set billable_units $task_units
