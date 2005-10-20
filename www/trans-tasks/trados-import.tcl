@@ -138,7 +138,6 @@ if {[catch {
     return
 }
 
-# set trados_files_content [exec /bin/cat $trados_wordcount_file]
 set trados_files [split $trados_files_content "\n"]
 set trados_files_len [llength $trados_files]
 set trados_header [lindex $trados_files 1]
@@ -242,11 +241,14 @@ if {[string equal $import_method "Asp"]} {
 
 	for {set i 2} {$i < $trados_files_len} {incr i} {
 	    set trados_line [lindex $trados_files $i]
+	    if {0 == [string length $trados_line]} { continue }
+
 	    set trados_fields [split $trados_line $separator]
 	    set filename [lindex $trados_fields 0]
 	    set filename_comps [split $filename "\\"]
 	    set this_component [lindex $filename_comps $ctr]
 	    ns_log Notice "trados-import: this_component=$this_component"
+	    ns_log Notice "trados-import: common_component=$common_component"
 
 	    if {![string equal $common_component $this_component]} {
 		set all_the_same 0
@@ -267,8 +269,9 @@ ns_log Notice "trados-import: common_filename_comps=$common_filename_comps"
     for {set i 2} {$i < $trados_files_len} {incr i} {
 	incr ctr
 	set trados_line [lindex $trados_files $i]
+	if {0 == [string length $trados_line]} { continue }
+
 	set trados_fields [split $trados_line $separator]
-	
 	set filename    	[lindex $trados_fields 0]
 	set tagging_errors	[lindex $trados_fields 1]
 	set chars_per_word	[lindex $trados_fields 2]
