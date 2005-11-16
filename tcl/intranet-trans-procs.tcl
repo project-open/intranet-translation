@@ -273,17 +273,27 @@ ad_proc -public im_trans_trados_matrix_component { user_id object_id return_url 
 "
 
     set html "
+<form action=\"/intranet-translation/matrix/new\" method=POST>
+[export_form_vars object_id return_url]
 <table border=0>
-<tr class=rowtitle><td class=rowtitle colspan=99 align=center>[_ intranet-translation.Trados_Matrix] ($matrix(type))</td></tr>
+<tr class=rowtitle><td class=rowtitle colspan=8 align=center>[_ intranet-translation.Trados_Matrix] ($matrix(type))</td></tr>
 <tr class=rowtitle>$header_html</tr>
 <tr class=roweven>$value_html</tr>
+"
+
+    if {[im_permission $user_id add_costs]} {
+
+        append html "
 <tr class=rowplain>
   <td colspan=99 align=right>
-    <A href=/intranet-translation/matrix/new?[export_url_vars object_id return_url]>edit</a>
+    <input type=submit value=\"Edit\">
+<!--  <A href=/intranet-translation/matrix/new?[export_url_vars object_id return_url]>edit</a> -->
   </td>
 </tr>
-</table>\n"
+"
+    }
 
+    append html "\n</table>\n</form>\n"
     return $html
 }
 
