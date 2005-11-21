@@ -1489,7 +1489,7 @@ and t.task_type_id=type_c.category_id(+)
   <td colspan=12 align=right>&nbsp;</td>
   <td align=center><input type=submit value=\"[_ intranet-translation.Save]\" name=submit></td>
   <td align=center><input type=submit value=\"[_ intranet-translation.Del]\" name=submit></td>
-  <td align=center><input type=submit value=\"[_ intranet-translation.Assign]\" name=submit></td>
+<!--  <td align=center><input type=submit value=\"[_ intranet-translation.Assign]\" name=submit></td> -->
 </tr>"
     }
 
