@@ -102,7 +102,8 @@ ns_log Notice "task_name_body=$task_name_body"
 
 # Make sure both filenames coincide to avoid translator errors
 #
-if {![string equal $upload_file_body $task_name_body]} {
+set check_filename_equal_p [ad_parameter -package_id [im_package_translation_id] CheckTaskUploadFilenamesEqualP "" 1]
+if {![string equal $upload_file_body $task_name_body] && $check_filename_equal_p} {
     set error "<li>[_ intranet-translation.lt_Your_file_doesnt_coin]<br>
     [_ intranet-translation.lt_Your_file_upload_file]<br>
     [_ intranet-translation.lt_Expected_file_task_na]<br>
