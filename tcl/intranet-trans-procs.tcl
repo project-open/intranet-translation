@@ -959,8 +959,10 @@ ad_proc im_task_status_component { user_id project_id return_url } {
     in the filesystem) are not reflected by this component (yet).
 } {
     ns_log Notice "im_trans_status_component($user_id, $project_id)"
-    # Is this a translation project?
+    set current_user_id [ad_get_user_id]
+    set current_user_is_employee_p [im_user_is_employee_p $current_user_id]
 
+    # Is this a translation project?
     if {![im_project_has_type $project_id "Translation Project"]} {
 	ns_log Notice "im_task_status_component: Project $project_id is not a translation project"
 	return ""
@@ -1174,7 +1176,7 @@ where
 
     # --------------------- Display the results ----------------------
 
-    set ctr 0
+    set ctr 1
     db_foreach task_status_sql $task_sql {
 
 	# subtract the assigned files from the unassigned
@@ -1195,8 +1197,16 @@ where
 
 	append task_status_html "
 <tr $bgcolor([expr $ctr % 2])>
-  <td><A HREF=/intranet/users/view?user_id=$user_id>$user_name</A></td>
+  <td>\n"
 
+	if {$current_user_is_employee_p} {
+	    append task_status_html "<A HREF=/intranet/users/view?user_id=$user_id>$user_name</A>\n"
+	} else {
+	    append task_status_html "User# $ctr\n"
+	}
+
+	append task_status_html "
+  </td>
   <td>$trans_ass</td>
   <td>$trans_down</td>
   <td>$trans_up</td>
