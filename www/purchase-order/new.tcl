@@ -152,7 +152,7 @@ where
     set context_bar [im_context_bar [list /intranet/invoices/ "Finance"] $page_title]
 
     set invoice_id [im_new_object_id]
-    set invoice_nr [im_next_invoice_nr]
+    set invoice_nr [im_next_invoice_nr -invoice_type_id $cost_type_id]
     set cost_status_id [im_cost_status_created]
     set effective_date $todays_date
     set payment_days [ad_parameter -package_id [im_package_cost_id] "DefaultCompanyInvoicePaymentDays" "" 30] 
@@ -273,7 +273,7 @@ order by
 	if {$old_project_id != $project_id} {
 	    append task_sum_html "
 		<tr><td class=rowtitle colspan=$colspan>
-	          <A href=/intranet/projects/view?group_id=$project_id>$project_short_name</A>:
+	          <A href=/intranet/projects/view?project_id=$project_id>$project_short_name</A>:
 	          $project_name
 	        </td></tr>\n"
 	
