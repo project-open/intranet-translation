@@ -158,18 +158,25 @@ set task_list [array names tasks_id]
 db_foreach select_tasks $task_sql {
     ns_log Notice "task_id=$task_id, status_id=$task_status_id"
 
-    # determine if this task is auto-assignable or not,
-    # depending on whether the unit of measure (UoM) is
-    # Source-Word or Target-Word.
-    # ToDo: Is this reasonable, or could we also assign Lines etc?
+    # Determine if this task is auto-assignable or not,
+    # depending on the unit of measure (UoM). We currently
+    # only exclude Units and Days.
     #
-    if {324 == $task_uom_id || 325 == $task_uom_id} {
+    # 320 Hour  
+    # 321 Day 
+    # 322 Unit 
+    # 323 Page 
+    # 324 S-Word 
+    # 325 T-Word 
+    # 326 S-Line 
+    # 327 T-Line
+    #
+    if {320 == $task_uom_id || 323 == $task_uom_id || 324 == $task_uom_id || 325 == $task_uom_id || 326 == $task_uom_id || 327 == $task_uom_id } {
 	set auto_assignable_task 1
     } else {
 	set auto_assignable_task 0
     }
 
-    
     # Determine the fields necessary for each task type
     set trans 0
     set edit 0
