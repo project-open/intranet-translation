@@ -945,6 +945,63 @@ ad_proc im_task_component_upload {user_id user_admin_p task_status_id source_lan
     }
 }
 
+
+# -------------------------------------------------------------------
+# Calculate Project Advance
+# -------------------------------------------------------------------
+
+ad_proc im_trans_task_project_advance { project_id } {
+    Calculate the percentage of advance of the project.
+} {
+    set advance ""
+    
+    if {[db_table_exists im_trans_task_progress]} {
+        set advance [db_string project_advance "
+	    select
+		sum(volume_completed) / sum(volume) * 100 as percent_completed
+	    from
+		(select
+			t.task_id,
+			t.task_units,
+			uom_weights.weight,
+			ttp.percent_completed as perc,
+			t.task_units * uom_weights.weight * ttp.percent_completed as volume_completed,
+			t.task_units * uom_weights.weight * 100 as volume,
+			im_category_from_id(t.task_uom_id) as task_uom,
+			im_category_from_id(t.task_type_id) as task_type,
+			im_category_from_id(t.task_status_id) as task_status
+		from
+			im_trans_tasks t,
+			im_trans_task_progress ttp,
+			(       select  320 as id, 1.0 as weight UNION
+				select  321 as id, 8.0 as weight UNION
+				select  322 as id, 0.0 as weight UNION
+				select  323 as id, 1.0 as weight UNION
+				select  324 as id, 0.0032 as weight UNION
+				select  325 as id, 0.0032 as weight UNION
+				select  326 as id, 0.016 as weight UNION
+				select  327 as id, 0.016 as weight
+			) uom_weights
+		where
+			t.project_id = :project_id
+			and t.task_type_id = ttp.task_type_id
+			and t.task_status_id = ttp.task_status_id
+			and t.task_uom_id = uom_weights.id
+		) volume
+        "]
+    }
+
+    if {"" != $advance} {
+        db_dml update_project_advance "
+		update im_projects
+		set percent_completed = :advance
+		where project_id = :project_id
+        "
+    }
+
+    return $advance
+}
+	
 # -------------------------------------------------------------------
 # Task Status Component
 # -------------------------------------------------------------------
@@ -1196,8 +1253,8 @@ where
 	if {0 == $other_ass} { set other_ass "&nbsp;" }
 
 	append task_status_html "
-<tr $bgcolor([expr $ctr % 2])>
-  <td>\n"
+	<tr $bgcolor([expr $ctr % 2])>
+	  <td>\n"
 
 	if {$current_user_is_employee_p} {
 	    append task_status_html "<A HREF=/intranet/users/view?user_id=$user_id>$user_name</A>\n"
@@ -1206,81 +1263,89 @@ where
 	}
 
 	append task_status_html "
-  </td>
-  <td>$trans_ass</td>
-  <td>$trans_down</td>
-  <td>$trans_up</td>
-
-  <td>$edit_ass</td>
-  <td>$edit_down</td>
-  <td>$edit_up</td>
-
-  <td>$proof_ass</td>
-  <td>$proof_down</td>
-  <td>$proof_up</td>
-
-  <td>$other_ass</td>
-  <td>$other_down</td>
-  <td>$other_up</td>
-
-  <td>$trans_words</td>
-  <td>$edit_words</td>
-  <td>$proof_words</td>
-</tr>
-"
-        incr ctr
+	  </td>
+	  <td>$trans_ass</td>
+	  <td>$trans_down</td>
+	  <td>$trans_up</td>
+	
+	  <td>$edit_ass</td>
+	  <td>$edit_down</td>
+	  <td>$edit_up</td>
+	
+	  <td>$proof_ass</td>
+	  <td>$proof_down</td>
+	  <td>$proof_up</td>
+	
+	  <td>$other_ass</td>
+	  <td>$other_down</td>
+	  <td>$other_up</td>
+	
+	  <td>$trans_words</td>
+	  <td>$edit_words</td>
+	  <td>$proof_words</td>
+	</tr>
+	"
+	incr ctr
     }
 
 
     append task_status_html "
-<tr $bgcolor([expr $ctr % 2])>
-  <td>unassigned tasks</td>
-
-  <td>$unassigned_trans</td>
-  <td></td>
-  <td></td>
-
-  <td>$unassigned_edit</td>
-  <td></td>
-  <td></td>
-
-  <td>$unassigned_proof</td>
-  <td></td>
-  <td></td>
-
-  <td>$unassigned_other</td>
-  <td></td>
-  <td></td>
-
-  <td>[expr round($unassigned_trans_wc)]</td>
-  <td>[expr round($unassigned_edit_wc)]</td>
-  <td>[expr round($unassigned_proof_wc)]</td>
-
-</tr>
-"
-
+	<tr $bgcolor([expr $ctr % 2])>
+	  <td>unassigned tasks</td>
+	
+	  <td>$unassigned_trans</td>
+	  <td></td>
+	  <td></td>
+	
+	  <td>$unassigned_edit</td>
+	  <td></td>
+	  <td></td>
+	
+	  <td>$unassigned_proof</td>
+	  <td></td>
+	  <td></td>
+	
+	  <td>$unassigned_other</td>
+	  <td></td>
+	  <td></td>
+	
+	  <td>[expr round($unassigned_trans_wc)]</td>
+	  <td>[expr round($unassigned_edit_wc)]</td>
+	  <td>[expr round($unassigned_proof_wc)]</td>
+	
+	</tr>
+    "
 
     append task_status_html "
-<tr>
-  <td colspan=12 align=left>
-    <input type=submit value='[_ intranet-translation.View_Tasks]' name=submit_view>
-    <input type=submit value='[_ intranet-translation.Assign_Tasks]' name=submit_assign>
-  </td>
-</tr>
-"
+	<tr>
+	  <td colspan=12 align=left>
+	    <input type=submit value='[_ intranet-translation.View_Tasks]' name=submit_view>
+	    <input type=submit value='[_ intranet-translation.Assign_Tasks]' name=submit_assign>
+	  </td>
+	</tr>
+    "
 
     append task_status_html "\n</table>\n</form>\n\n"
+
+
+    # Update Project Advance
+    set project_advance_percent [im_trans_task_project_advance $project_id]
+    db_dml update_project_advance "
+	update im_projects
+	set percent_completed = :project_advance_percent
+	where project_id = :project_id
+    "
+
     return $task_status_html
 }
+
+
 
 
 # -------------------------------------------------------------------
 # Task Component
 # Show the list of tasks for one project
 # -------------------------------------------------------------------
-
-
-
 
 ad_proc im_task_freelance_component { user_id project_id return_url } {
     Same as im_task_component, 
@@ -1319,11 +1384,11 @@ ad_proc im_task_component { user_id project_id return_url {view_name "trans_task
 
     set column_sql "
 select  column_name,
-        column_render_tcl,
-        visible_for
+	column_render_tcl,
+	visible_for
 from    im_view_columns
 where   view_id=:view_id
-        and group_id is null
+	and group_id is null
 order by sort_order"
 
     db_foreach column_list_sql $column_sql {
@@ -1359,15 +1424,15 @@ append task_table "
     set sql "
 select 
 	t.*,
-        im_category_from_id(t.source_language_id) as source_language,
-        im_category_from_id(t.target_language_id) as target_language,
-        im_category_from_id(t.task_status_id) as task_status,
+	im_category_from_id(t.source_language_id) as source_language,
+	im_category_from_id(t.target_language_id) as target_language,
+	im_category_from_id(t.task_status_id) as task_status,
 	uom_c.category as uom_name,
 	type_c.category as type_name,
-        im_initials_from_user_id (t.trans_id) as trans_name,
-        im_initials_from_user_id (t.edit_id) as edit_name,
-        im_initials_from_user_id (t.proof_id) as proof_name,
-        im_initials_from_user_id (t.other_id) as other_name
+	im_initials_from_user_id (t.trans_id) as trans_name,
+	im_initials_from_user_id (t.edit_id) as edit_name,
+	im_initials_from_user_id (t.proof_id) as proof_name,
+	im_initials_from_user_id (t.other_id) as other_name
 from 
 	im_trans_tasks t,
 	im_categories uom_c,
@@ -1389,22 +1454,22 @@ and t.task_type_id=type_c.category_id(+)
 
 	# Determine if $user_id is assigned to some phase of this task
 	set user_assigned 0
-        if {$trans_id == $user_id} { set user_assigned 1 }
-        if {$edit_id == $user_id} { set user_assigned 1 }
-        if {$proof_id == $user_id} { set user_assigned 1 }
-        if {$other_id == $user_id} { set user_assigned 1 }
+	if {$trans_id == $user_id} { set user_assigned 1 }
+	if {$edit_id == $user_id} { set user_assigned 1 }
+	if {$proof_id == $user_id} { set user_assigned 1 }
+	if {$other_id == $user_id} { set user_assigned 1 }
 
 	# Freelancers shouldn't see tasks if they are not assigned to it.
-        if {!$user_assigned && ![im_permission $user_id view_trans_tasks]} {
-	        continue
-        }
+	if {!$user_assigned && ![im_permission $user_id view_trans_tasks]} {
+		continue
+	}
 
 	# Build a string with the user short names for the assignations
-        set assignments ""
-        if {$trans_name != ""} { append assignments "T: <A HREF=/intranet/users/view?user_id=$trans_id>$trans_name</A> " }
-        if {$edit_name != ""} { append assignments "E: <A HREF=/intranet/users/view?user_id=$edit_id>$edit_name</A> " }
-        if {$proof_name != ""} { append assignments "P: <A HREF=/intranet/users/view?user_id=$proof_id>$proof_name</A> " }
-        if {$other_name != ""} { append assignments "<A HREF=/intranet/users/view?user_id=$other_id>$other_name</A> " }
+	set assignments ""
+	if {$trans_name != ""} { append assignments "T: <A HREF=/intranet/users/view?user_id=$trans_id>$trans_name</A> " }
+	if {$edit_name != ""} { append assignments "E: <A HREF=/intranet/users/view?user_id=$edit_id>$edit_name</A> " }
+	if {$proof_name != ""} { append assignments "P: <A HREF=/intranet/users/view?user_id=$proof_id>$proof_name</A> " }
+	if {$other_name != ""} { append assignments "<A HREF=/intranet/users/view?user_id=$other_id>$other_name</A> " }
 
 	# Replace "/" characters in the Task Name (filename) by "/ ",
 	# to allow the line to break more smoothely
@@ -1472,9 +1537,9 @@ and t.task_type_id=type_c.category_id(+)
     }
 
     if {$ctr > 0} {
-         append task_table $task_table_rows
+	 append task_table $task_table_rows
     } else {
-         append task_table "<tr><td colspan=7 align=center>[_ intranet-translation.No_tasks_found]</td></tr>"
+	 append task_table "<tr><td colspan=7 align=center>[_ intranet-translation.No_tasks_found]</td></tr>"
     }
 
     # -------------------- Calculate the project size -------------------------------
@@ -1562,7 +1627,7 @@ select
 	t.task_name,
 	t.task_filename,
 	t.task_units,
-        im_category_from_id(t.source_language_id) as source_language,
+	im_category_from_id(t.source_language_id) as source_language,
 	uom_c.category as uom_name,
 	type_c.category as type_name
 from 
@@ -1590,11 +1655,11 @@ group by
     db_foreach select_tasks $sql {
 
 	if {$err_count} { continue }
-        set upload_folder "source_$source_language"
+	set upload_folder "source_$source_language"
 
 	# only show the tasks that are in the "missing_task_list":
-        if {[lsearch -exact $missing_task_list $task_id] < 0} {
-            continue
+	if {[lsearch -exact $missing_task_list $task_id] < 0} {
+	    continue
 	}
 
 	# Replace "/" characters in the Task Name (filename) by "/ ",
@@ -1602,7 +1667,7 @@ group by
 	set task_name_list [split $task_name "/"]
 	set task_name_splitted [join $task_name_list "/ "]
 
-        append task_table_rows "
+	append task_table_rows "
 <tr $bgcolor([expr $ctr % 2])> 
   <td align=left><font color=red>$task_name_splitted</font></td>
   <td align=right>$task_units $uom_name</td>
@@ -1612,7 +1677,7 @@ group by
     </A>
   </td>
 </tr>\n"
-        incr ctr
+	incr ctr
     }
     
     # Return an empty string if there are no errors
@@ -1772,7 +1837,7 @@ ad_proc im_new_task_component { user_id project_id return_url } {
     # -------------------- Add a new File  --------------------------
 
     if {0 < [llength $task_list]} {
-        append task_table "
+	append task_table "
 <form action=/intranet-translation/trans-tasks/task-action method=POST>
 [export_form_vars project_id return_url]
   <tr $bgcolor(0)> 
@@ -1827,17 +1892,17 @@ ad_proc im_task_missing_file_list { project_id } {
 
     set query "
 select
-        p.project_nr as project_short_name,
-        c.company_name as company_short_name,
-        p.source_language_id,
-        im_category_from_id(p.source_language_id) as source_language,
-        p.project_type_id
+	p.project_nr as project_short_name,
+	c.company_name as company_short_name,
+	p.source_language_id,
+	im_category_from_id(p.source_language_id) as source_language,
+	p.project_type_id
 from
-        im_projects p,
-        im_companies c
+	im_projects p,
+	im_companies c
 where
-        p.project_id=:project_id
-        and p.company_id=c.company_id(+)"
+	p.project_id=:project_id
+	and p.company_id=c.company_id(+)"
 
     if { ![db_0or1row projects_info_query $query] } {
 	ad_return_complaint 1 "[_ intranet-translation.lt_Cant_find_the_project]"
@@ -1865,7 +1930,7 @@ where
 	# The directory probably doesn't exist yet, so don't generate
 	# an error !!!
 	ad_return_complaint 1 "im_task_missing_file_list: directory $source_folder<br>
-                       probably does not exist:<br>$err_msg"
+		       probably does not exist:<br>$err_msg"
 	set file_list ""
     }
 
