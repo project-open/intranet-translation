@@ -430,7 +430,10 @@ create table im_trans_task_progress (
 				constraint im_trans_task_progres_status_fk
 				references im_categories,
 	percent_completed	numeric(6,2)
+                                constraint im_trans_task_progress_ck
+                                check(percent_completed >= 0 and percent_completed <= 100)
 );
+
 
 create unique index im_trans_task_progress_idx 
 on im_trans_task_progress
