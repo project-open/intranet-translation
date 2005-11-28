@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="intranet-translation" package_version="3.0.0.2.1" locale="en_US" charset="ISO-8859-1">
+<message_catalog package_key="intranet-translation" package_version="3.0.1.0.0" locale="en_US" charset="ISO-8859-1">
 
   <msg key="--_Please_Select_--">-- Please Select --</msg>
   <msg key="0_">0%</msg>
@@ -125,7 +125,7 @@ system meanwhile.)</msg>
   <msg key="lt_Your_file_is_larger_t">Your file is larger than the maximum permissible upload size</msg>
   <msg key="lt_Your_file_is_larger_t_1">Your file is larger than the maximum permissible upload size:  %util_commify_number_max_n_bytes% bytes</msg>
   <msg key="lt_Your_file_is_not_a_tr">Your file is not a trados wordcount file.</msg>
-  <msg key="lt_Your_file_trados_word">Your file '%trados_wordcount_file%' has not been created with one of the supported Trados versions (3.0 and 5.5).</msg>
+  <msg key="lt_Your_file_trados_word">Your file '%trados_wordcount_file%' has not been created with one of the supported Trados versions (3.x, 5.0, 5.5, 6.0 and 6.5).</msg>
   <msg key="lt_Your_file_upload_file">Your file: %upload_file%</msg>
   <msg key="lt_Your_have_successfull">Your have successfully uploaded %filesize% bytes of file '%task_name%'.</msg>
   <msg key="Message">Message</msg>
