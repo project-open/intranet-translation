@@ -23,6 +23,7 @@ set company_view_page "/intranet/companies/view"
 
 set task_component [im_task_component $user_id $project_id $return_url]
 set task_new_component [im_new_task_component $user_id $project_id $return_url]
+set task_comments_component [im_task_trans_comments_component $project_id]
 
 # Setup the subnavbar
 set bind_vars [ns_set create]
