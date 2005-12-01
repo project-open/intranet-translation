@@ -13,7 +13,9 @@ ad_page_contract {
     return_url
     upload_file
     {file_title:trim ""}
+    {trans_comment "" }
 } 
+
 
 # ---------------------------------------------------------------------
 # Defaults & Security
@@ -28,6 +30,12 @@ if {[im_permission $user_id view_projects]} {
     set context_bar [im_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] [list "/intranet/projects/view?group_id=$project_id" "[_ intranet-translation.One_project]"] $page_title]
 } else {
     set context_bar [im_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] $page_title]
+}
+
+if {[string length $trans_comment] >= 1000} {
+    ad_return_complaint 1 "<li>Comment too long.<br>
+    The maximum length of a comment is 1000 characters"
+    return
 }
 
 
@@ -156,15 +164,14 @@ if { [catch {
 
 # Advance the status of the respective im_task.
 #
-im_trans_upload_action $task_id $task_status_id $task_type_id $user_id
+im_trans_upload_action -trans_comment $trans_comment $task_id $task_status_id $task_type_id $user_id
 
 
-set page_body "
-<H2>[_ intranet-translation.Upload_Successful]</H2>
-[_ intranet-translation.lt_Your_have_successfull]
-<P><A href=\"$return_url\">[_ intranet-translation.lt_Return_to_Project_Pag]</A></P>
-"
-
-ad_return_template
-return
-
+set comment_html ""
+if {[string length $trans_comment] > 2} {
+    set comment_html "
+	<p>
+	[lang::message::lookup "" intranet-translation.Your_comment_has_been_accepted "Your comment is appreciated.."]
+	</p>
+    "
+}
