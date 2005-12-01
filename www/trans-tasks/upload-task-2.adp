@@ -7,4 +7,16 @@
 <property name="context">@context_bar@</property>
 <property name="main_navbar_label">projects</property>
 
-@page_body;noquote@
+
+<H2>#intranet-translation.Upload_Successful#</H2>
+
+#intranet-translation.lt_Your_have_successfull#
+
+@comment_html;noquote@
+
+<P>
+<A href="@return_url@">#intranet-translation.lt_Return_to_Project_Pag#</a>
+</p>
+
+
+
