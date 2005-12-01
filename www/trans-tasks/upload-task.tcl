@@ -50,7 +50,8 @@ set page_content "
 			<font size=-1>[_ intranet-translation.optional]</font>
                         </td>
                         <td colspan=1>
-                          <textarea rows=5 cols=50 name=description wrap></textarea>
+                          <textarea rows=5 cols=50 name=trans_comment wrap></textarea>
+			  <br>Please let us know what you think about this task (max. 1000 characters).
                         </td>
                       </tr>
                       <tr $bgcolor(1)> 

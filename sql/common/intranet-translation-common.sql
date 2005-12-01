@@ -33,7 +33,7 @@ extra_select, extra_where, sort_order, visible_for) values (2023,20,NULL,'Size',
         set t ""
 } else {
         set t "${trans_project_words}w ${trans_project_hours}h"
-}]','','',15,'');
+}]','','',90,'');
 
 
 

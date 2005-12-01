@@ -8,5 +8,7 @@
 
 @task_component;noquote@
 @task_new_component;noquote@
+@task_comments_component;noquote@
+
 
 

@@ -704,9 +704,17 @@ where
 
 # Update the task to advance to the next status
 # after a successful upload of the related file
-ad_proc im_trans_upload_action {task_id task_status_id task_type_id user_id} {
+ad_proc im_trans_upload_action {
+    { -trans_comment "" }
+    task_id 
+    task_status_id 
+    task_type_id 
+    user_id} {
 } {
     set new_status_id $task_status_id
+    if {[string length $trans_comment] >= 1000} {
+	set trans_comment [string_truncate -len 950 $trans_comment]
+    }
 
     # Task Types
     set trans_only 85
@@ -777,7 +785,8 @@ ad_proc im_trans_upload_action {task_id task_status_id task_type_id user_id} {
 	        task_id,
 	        action_date,
 	        old_status_id,
-	        new_status_id
+	        new_status_id,
+		trans_comment
 	    ) values (
 		:action_id,
 		$upload_action_id,
@@ -785,7 +794,8 @@ ad_proc im_trans_upload_action {task_id task_status_id task_type_id user_id} {
 		:task_id,
 		:sysdate,
 		:task_status_id,
-		:new_status_id
+		:new_status_id,
+		:trans_comment
     )"
 }
 
@@ -1870,6 +1880,96 @@ ad_proc im_new_task_component { user_id project_id return_url } {
 
     append task_table "
 </table>
+"
+    return $task_table
+}
+
+
+# ---------------------------------------------------------------------
+# Component showing the list of comments left by translators or editors
+# ---------------------------------------------------------------------
+
+ad_proc im_task_trans_comments_component { 
+    project_id 
+} {
+    Show a list of comments left by translators and editors
+} {
+    set user_id [ad_get_user_id]
+
+    # Show the comments only to people who can write on the project
+    im_project_permissions $user_id $project_id view read write admin
+    if {!$write} { return "" }
+
+    set task_table_rows ""
+
+    # -------------------- SQL -----------------------------------
+    set sql "
+select
+	t.*,
+	a.*,
+	a.user_id as action_user_id,
+	im_initials_from_user_id (t.trans_id) as trans_name,
+	to_char(a.action_date, 'YYYY-MM-DD') as action_date_formatted,
+	im_category_from_id(t.task_uom_id) as uom_name,
+	im_category_from_id(t.target_language_id) as target_language
+from
+	im_trans_tasks t
+	left outer join im_task_actions a on (t.task_id = a.task_id)
+where
+	a.trans_comment is not null
+	and t.project_id = :project_id"
+
+    set bgcolor(0) " class=roweven"
+    set bgcolor(1) " class=rowodd"
+    set ctr 0
+    set task_table_rows ""
+
+    db_foreach task_comments $sql {
+
+        # Replace "/" characters in the Task Name (filename) by "/ ",
+        # to allow the line to break more smoothely
+        set task_name_list [split $task_name "/"]
+        set task_name_splitted [join $task_name_list "/ "]
+
+	append task_table_rows "
+<tr $bgcolor([expr $ctr % 2])> 
+  <td align=left><nobr>$action_date_formatted</nobr></td>
+  <td align=left><a href=/intranet/users/view?user_id=$action_user_id>$trans_name</a></td>
+  <td align=left>$task_name_splitted</td>
+  <td align=left>$target_language</td>
+  <td align=right>$task_units $uom_name</td>
+  <td>$trans_comment</td>
+</tr>\n"
+	incr ctr
+    }
+    
+    # Return an empty string if there are no entries
+    if {$ctr == 0 && !$err_count} {
+	append task_table_rows "
+<tr $bgcolor([expr $ctr % 2])>
+  <td colspan=99 align=center>[_ intranet-translation.No_translator_comments_in_this_project]</td>
+</tr>
+"
+    }
+
+    # ----------------- Put everything together -------------------------
+    set task_table "
+<table border=0>
+<tr>
+  <td class=rowtitle align=center colspan=20>
+    [_ intranet-translation.Translator_Comments]
+  </td>
+</tr>
+<tr> 
+  <td class=rowtitle>[_ intranet-core.Date]</td>
+  <td class=rowtitle>[_ intranet-core.User]</td>
+  <td class=rowtitle>[_ intranet-translation.Task_Name]</td>
+  <td class=rowtitle>[_ intranet-translation.Target_Lang]</td>
+  <td class=rowtitle>[_ intranet-translation.Units]</td>
+  <td class=rowtitle>[_ intranet-translation.Comments]</td>
+</tr>
+$task_table_rows
+</table>\n
 "
     return $task_table
 }
