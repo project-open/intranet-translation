@@ -13,8 +13,8 @@ ad_page_contract {
     return_url
     upload_file
     {file_title:trim ""}
-    {trans_comment "" }
-} 
+    {comment_body:trim "" }
+}
 
 
 # ---------------------------------------------------------------------
@@ -31,13 +31,6 @@ if {[im_permission $user_id view_projects]} {
 } else {
     set context_bar [im_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] $page_title]
 }
-
-if {[string length $trans_comment] >= 1000} {
-    ad_return_complaint 1 "<li>Comment too long.<br>
-    The maximum length of a comment is 1000 characters"
-    return
-}
-
 
 # ---------------------------------------------------------------------
 # SQL
@@ -164,14 +157,61 @@ if { [catch {
 
 # Advance the status of the respective im_task.
 #
-im_trans_upload_action -trans_comment $trans_comment $task_id $task_status_id $task_type_id $user_id
+im_trans_upload_action $task_id $task_status_id $task_type_id $user_id
 
 
+# -----------------------------------------------------------------
+# Create an Forum Topic if there was atleast a subject
+# -----------------------------------------------------------------
+
+set upload_html ""
 set comment_html ""
-if {[string length $trans_comment] > 2} {
-    set comment_html "
-	<p>
-	[lang::message::lookup "" intranet-translation.Your_comment_has_been_accepted "Your comment is appreciated.."]
-	</p>
-    "
+
+if {"" != $comment_body} {
+
+    set topic_id [db_nextval "im_forum_topics_seq"]
+    set parent_id ""
+    set owner_id $user_id
+    # This comment is only visible to members of the company
+    set scope "staff"
+    set subject $task_name
+    set message "$comment_body"
+
+    # Limit Subject and message to their field sizes
+    set subject [string_truncate -len 200 $subject]
+    set message [string_truncate -len 4000 $message]
+
+    set priority 3
+
+    # 1102 is "Incident"
+    # 1108 is "Note"
+    set topic_type_id 1108
+    
+    # 1202 is "Open"
+    set topic_status_id 1202
+
+
+    db_transaction {
+
+        db_dml topic_insert "
+	INSERT INTO im_forum_topics (
+	        topic_id, object_id, parent_id, topic_type_id, topic_status_id,
+	        posting_date, owner_id, scope, subject, message, priority,
+	        asignee_id, due_date
+	) VALUES (
+	        :topic_id, :project_id, :parent_id, :topic_type_id, :topic_status_id,
+	        now(), :owner_id, :scope, :subject, :message, null,
+	        null, null
+	)"
+
+    } on_error {
+	ad_return_error "Error adding a new topic" "
+        <LI>There was an error adding your ticket to our system.<br>
+        Please send an email to <A href=\"mailto:[ad_parameter "SystemOwner" "" ""]\">
+        our webmaster</a>, thanks."
+    }
+
+    set comment_html "<p>[lang::message::lookup "" intranet-translation.Your_comment_has_been_accepted "Your comment is appreciated.."]</p>"
 }
+
+

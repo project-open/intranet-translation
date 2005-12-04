@@ -46,11 +46,13 @@ set page_content "
                         </td>
                       </tr>
                       <tr $bgcolor(0)> 
-                        <td valign=top align=right>[_ intranet-translation.Comment]<br>
-			<font size=-1>[_ intranet-translation.optional]</font>
+                        <td valign=top align=right>
+			[lang::message::lookup "" intranet-core.Comment "Comment"]
+			<br>
+			[_ intranet-translation.optional]
                         </td>
                         <td colspan=1>
-                          <textarea rows=5 cols=50 name=trans_comment wrap></textarea>
+                          <textarea rows=5 cols=50 name=comment_body wrap></textarea>
 			  <br>Please let us know what you think about this task (max. 1000 characters).
                         </td>
                       </tr>
@@ -61,9 +63,13 @@ set page_content "
                         </td>
                       </tr>
                     </table>
+<table width=70%>
+<tr><td>
 <blockquote>
 [_ intranet-translation.lt_This_page_may_take_se]
 </blockquote>
+</td></tr>
+</table>
 
 </form>
 "

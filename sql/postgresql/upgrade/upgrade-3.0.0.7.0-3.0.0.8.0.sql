@@ -224,8 +224,3 @@ insert into im_trans_task_progress values (95, 372, 100);
 insert into im_trans_task_progress values (96, 372, 100);
 
 
--- Add a field to store the translator's comment
-alter table im_task_actions add
-        trans_comment           varchar(1000)
-;
-
