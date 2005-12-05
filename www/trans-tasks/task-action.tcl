@@ -138,8 +138,19 @@ switch -glob $submit {
 		where	task_id = :task_id
 			and project_id=:project_id"
 
-            db_dml delete_task_actions $delete_task_actions_sql
-            db_dml delete_tasks $delete_tasks_sql
+	    if { [catch {
+
+		db_dml delete_task_actions $delete_task_actions_sql
+		db_dml delete_tasks $delete_tasks_sql
+
+	    } err_msg] } {
+		ad_return_complaint 1 "<b>[_ intranet-translation.Database_Error]</b><br>
+                [lang::message::lookup "" intranet-translation.Dependent_objects_exist "We have found 'dependent objects' for the translation task '%task_id%'. Such dependant objects may include quality reports etc. Please remove these dependant objects first."]
+                <br>&nbsp;<br>
+                [lang::message::lookup "" intranet-translation.Here_is_the_error "Here is the error. You may copy this text and send it to your system administrator for reference."]
+                <br><pre>$err_msg</pre>"
+	    }
+
        }
        ad_returnredirect $return_url
        return
