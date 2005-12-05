@@ -224,3 +224,15 @@ insert into im_trans_task_progress values (95, 372, 100);
 insert into im_trans_task_progress values (96, 372, 100);
 
 
+
+-- New field to indicate translators when to finish...
+alter table im_trans_tasks add
+        end_date                timestamptz
+;
+
+
+-- New form of adding the approximate size of the project:
+-- Text format, because there are just too many UoMs around
+-- that are necessary to consider
+alter table im_projects add     trans_size              varchar(200);
+

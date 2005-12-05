@@ -43,6 +43,11 @@ alter table im_projects add	final_company		varchar(50);
 alter table im_projects add	trans_project_words	numeric(12,0);
 alter table im_projects add	trans_project_hours	numeric(12,0);
 
+-- New form of adding the approximate size of the project:
+-- Text format, because there are just too many UoMs around
+-- that are necessary to consider
+alter table im_projects add	trans_size		varchar(200);
+
 
 -----------------------------------------------------------
 -- Tasks
@@ -116,7 +121,11 @@ create table im_trans_tasks (
 				references users,
 	other_id		integer 
 				constraint im_trans_tasks_other_fk
-				references users
+				references users,
+				-- New field to indicate translators when
+				-- this task should be finished.
+				-- Defaults to project end_date
+        end_date                timestamptz
 );
 -- make sure a task doesn't get defined twice for a project:
 create unique index im_trans_tasks_unique_idx on im_trans_tasks 
