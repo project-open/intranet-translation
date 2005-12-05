@@ -242,3 +242,10 @@ alter table im_projects add     trans_size              varchar(200);
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (9016,90,NULL,'End Date','$end_date_input',
 '','',16,'expr $project_write');
+
+-- And this one for the people who cant _write_ on the project:
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (9014,90,NULL,'End Date','$end_date_formatted',
+'','',14,'expr !$project_write');
+
+

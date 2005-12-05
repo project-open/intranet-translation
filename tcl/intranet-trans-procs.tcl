@@ -1430,28 +1430,6 @@ append task_table "
 
     # -------------------- SQL -----------------------------------
 
-    set sql "
-select 
-	t.*,
-	im_category_from_id(t.source_language_id) as source_language,
-	im_category_from_id(t.target_language_id) as target_language,
-	im_category_from_id(t.task_status_id) as task_status,
-	uom_c.category as uom_name,
-	type_c.category as type_name,
-	im_initials_from_user_id (t.trans_id) as trans_name,
-	im_initials_from_user_id (t.edit_id) as edit_name,
-	im_initials_from_user_id (t.proof_id) as proof_name,
-	im_initials_from_user_id (t.other_id) as other_name
-from 
-	im_trans_tasks t,
-	im_categories uom_c,
-	im_categories type_c
-where
-	t.project_id=:project_id
-and t.task_uom_id=uom_c.category_id(+)
-and t.task_type_id=type_c.category_id(+)
-    "
-
     set bgcolor(0) " class=roweven"
     set bgcolor(1) " class=rowodd"
     set trans_project_words 0
@@ -1459,7 +1437,7 @@ and t.task_type_id=type_c.category_id(+)
     set ctr 0
     set task_table_rows ""
 
-    db_foreach select_tasks $sql {
+    db_foreach select_tasks "" {
 
 	# Determine if $user_id is assigned to some phase of this task
 	set user_assigned 0
@@ -1493,9 +1471,8 @@ and t.task_type_id=type_c.category_id(+)
 	set billable_items_input "<input type=text size=3 name=billable_units.$task_id value=$billable_units>"
 
 	# End Date Input Field
-	if {"" == $end_date} { set end_date $project_end_date }
-	set end_date_input "<input type=text size=10 maxlength=10 name=end_date.$task_id value=$end_date>"
-
+	if {"" == $end_date_formatted} { set end_date_formatted $project_end_date }
+	set end_date_input "<input type=text size=10 maxlength=10 name=end_date.$task_id value=$end_date_formatted>"
 
 	# Status Select Box
 	set status_select [im_category_select "Intranet Translation Task Status" task_status.$task_id $task_status_id]

@@ -83,13 +83,17 @@ extra_select, extra_where, sort_order, visible_for) values (9013,90,NULL,'Units'
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (9015,90,NULL,'Bill. Units','$billable_items_input',
 '','',15,'expr $project_write');
+-- for those who can not write on the project...
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (9014,90,NULL,'End Date','$end_date_formatted',
+'','',14,'expr !$project_write');
+-- for those who _can_ write on the project...
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (9016,90,NULL,'End Date','$end_date_input',
 '','',16,'expr $project_write');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (9017,90,NULL,'Task Type','$type_select',
 '','',17,'expr $project_write');
-
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (9019,90,NULL,'Task Status','$status_select',
 '','',19,'expr $project_write');
