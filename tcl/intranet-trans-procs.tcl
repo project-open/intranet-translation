@@ -1373,8 +1373,13 @@ ad_proc im_task_component { user_id project_id return_url {view_name "trans_task
 	return ""
     }
 
+    set date_format "YYYY-MM-DD"
+
     # Get the permissions for the current _project_
     im_project_permissions $user_id $project_id project_view project_read project_write project_admin
+
+    # Get the projects end date as a default for the tasks
+    set project_end_date [db_string project_end_date "select to_char(end_date, :date_format) from im_projects where project_id = :project_id" -default ""]
 
     set company_view_page "/intranet/companies/view"
 
@@ -1486,6 +1491,11 @@ and t.task_type_id=type_c.category_id(+)
 
 	# Billable Items 
 	set billable_items_input "<input type=text size=3 name=billable_units.$task_id value=$billable_units>"
+
+	# End Date Input Field
+	if {"" == $end_date} { set end_date $project_end_date }
+	set end_date_input "<input type=text size=10 maxlength=10 name=end_date.$task_id value=$end_date>"
+
 
 	# Status Select Box
 	set status_select [im_category_select "Intranet Translation Task Status" task_status.$task_id $task_status_id]

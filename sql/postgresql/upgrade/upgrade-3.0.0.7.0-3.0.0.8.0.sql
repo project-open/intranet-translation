@@ -236,3 +236,9 @@ alter table im_trans_tasks add
 -- that are necessary to consider
 alter table im_projects add     trans_size              varchar(200);
 
+
+-- Add a column to show the end_date of the translation tasks
+--
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (9016,90,NULL,'End Date','$end_date_input',
+'','',16,'expr $project_write');
