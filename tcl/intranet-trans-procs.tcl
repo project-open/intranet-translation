@@ -1437,6 +1437,11 @@ append task_table "
     set ctr 0
     set task_table_rows ""
 
+    # Initialize the counters for all UoMs
+    db_foreach init_uom_counters "select category_id as uom_id from im_categories where category_type = 'Intranet UoM'" {
+	set project_size_uom_counter($uom_id) 0
+    }
+
     db_foreach select_tasks "" {
 
 	# Determine if $user_id is assigned to some phase of this task
@@ -1523,6 +1528,9 @@ append task_table "
 	append task_table "</tr>\n"
 
 	incr ctr
+	set uom_size $project_size_uom_counter($task_uom_id)
+	set project_size_uom_counter($task_uom_id) [expr $uom_size + $task_units]
+
 	if {$task_uom_id == [im_uom_s_word]} { set trans_project_words [expr $trans_project_words + $task_units] }
 	if {$task_uom_id == [im_uom_hour]} { set trans_project_hours [expr $trans_project_hours + $task_units] }
     }
@@ -1534,10 +1542,22 @@ append task_table "
     }
 
     # -------------------- Calculate the project size -------------------------------
+
+    set project_size ""
+    db_foreach project_size "select category_id as uom_id, category as uom_unit from im_categories where category_type = 'Intranet UoM'" {
+	set uom_size $project_size_uom_counter($uom_id)
+	if {0 != $uom_size} {
+	    set comma ""
+	    if {"" != $project_size} { set comma ", " }
+	    append project_size "$comma$uom_size $uom_unit"
+	}
+    }
+
     db_dml update_project_size "
 	update im_projects set 
 		trans_project_words = :trans_project_words,
-		trans_project_hours = :trans_project_hours
+		trans_project_hours = :trans_project_hours,
+		trans_size = :project_size
 	where project_id = :project_id
     "
 
