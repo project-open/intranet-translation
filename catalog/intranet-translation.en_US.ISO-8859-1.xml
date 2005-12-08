@@ -25,6 +25,7 @@
   <msg key="Client_Project">Client Project#</msg>
   <msg key="Client_project_">Client project #</msg>
   <msg key="Comment">Comment</msg>
+  <msg key="Comments">Comments</msg>
   <msg key="Companies">Companies</msg>
   <msg key="Company">Company</msg>
   <msg key="Company_1">Company:</msg>
@@ -42,6 +43,7 @@
   <msg key="Dn">Dn</msg>
   <msg key="Edit">Edit</msg>
   <msg key="Editing">Editing</msg>
+  <msg key="End_Date">End Date</msg>
   <msg key="File">File</msg>
   <msg key="Filename">Filename</msg>
   <msg key="Final_User">Final User</msg>
@@ -127,11 +129,12 @@ system meanwhile.)</msg>
   <msg key="lt_Your_file_is_not_a_tr">Your file is not a trados wordcount file.</msg>
   <msg key="lt_Your_file_trados_word">Your file '%trados_wordcount_file%' has not been created with one of the supported Trados versions (3.x, 5.0, 5.5, 6.0 and 6.5).</msg>
   <msg key="lt_Your_file_upload_file">Your file: %upload_file%</msg>
-  <msg key="lt_Your_have_successfull">Your have successfully uploaded %filesize% bytes of file '%task_name%'.</msg>
+  <msg key="lt_Your_have_successfull">You have successfully uploaded %filesize% bytes of file '%task_name%'.</msg>
   <msg key="Message">Message</msg>
   <msg key="Name">Name</msg>
   <msg key="No_Match">No Match</msg>
   <msg key="No_tasks_found">No tasks found</msg>
+  <msg key="No_translator_comments_in_this_project">No translator comments in this project</msg>
   <msg key="Num_Words">#Words</msg>
   <msg key="One_Project">One Project</msg>
   <msg key="One_project">One project</msg>
@@ -174,6 +177,7 @@ system meanwhile.)</msg>
   <msg key="Trans">Trans</msg>
   <msg key="Translation">Translation</msg>
   <msg key="Translation_Tasks">Translation Tasks</msg>
+  <msg key="Translator_Comments">Translator's Comments</msg>
   <msg key="Units">Units</msg>
   <msg key="UoM">UoM</msg>
   <msg key="Up">Up</msg>
