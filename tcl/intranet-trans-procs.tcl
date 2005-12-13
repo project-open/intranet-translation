@@ -1336,13 +1336,8 @@ where
     append task_status_html "\n</table>\n</form>\n\n"
 
 
-    # Update Project Advance
-    set project_advance_percent [im_trans_task_project_advance $project_id]
-    db_dml update_project_advance "
-	update im_projects
-	set percent_completed = :project_advance_percent
-	where project_id = :project_id
-    "
+    # Update Project Advance Percentage
+    im_trans_task_project_advance $project_id
 
     return $task_status_html
 }
