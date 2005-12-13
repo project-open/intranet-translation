@@ -957,8 +957,12 @@ ad_proc im_task_component_upload {user_id user_admin_p task_status_id source_lan
 ad_proc im_trans_task_project_advance { project_id } {
     Calculate the percentage of advance of the project.
 } {
+    set automatic_advance_p [ad_parameter -package_id [im_package_translation_id] AutomaticProjectAdvanceP "" 1]
+    if {!$automatic_advance_p} {
+	return ""
+    }
+
     set advance ""
-    
     if {[db_table_exists im_trans_task_progress]} {
         set advance [db_string project_advance "
 	    select
