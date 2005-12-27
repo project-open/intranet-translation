@@ -966,7 +966,7 @@ ad_proc im_trans_task_project_advance { project_id } {
     if {[db_table_exists im_trans_task_progress]} {
         set advance [db_string project_advance "
 	    select
-		sum(volume_completed) / sum(volume) * 100 as percent_completed
+		sum(volume_completed) / (0.000001 + sum(volume)) * 100 as percent_completed
 	    from
 		(select
 			t.task_id,
