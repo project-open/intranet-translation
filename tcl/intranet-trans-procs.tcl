@@ -285,7 +285,7 @@ ad_proc -public im_trans_trados_matrix_component { user_id object_id return_url 
 
         append html "
 <tr class=rowplain>
-  <td colspan=99 align=right>
+  <td colspan=9 align=right>
     <input type=submit value=\"Edit\">
 <!--  <A href=/intranet-translation/matrix/new?[export_url_vars object_id return_url]>edit</a> -->
   </td>
