@@ -870,17 +870,25 @@ ad_proc im_task_component_upload {user_id user_admin_p task_status_id source_lan
 } {
     ns_log Notice "im_task_component_upload(user_id=$user_id user_admin_p=$user_admin_p task_status_id=$task_status_id target_language=$target_language trans_id=$trans_id edit_id=$edit_id proof_id=$proof_id other_id=$other_id)"
 
+    # Localize the workflow stage directories
+    set source [lang::message::lookup "" intranet-translation.Workflow_source_directory "source"]
+    set trans [lang::message::lookup "" intranet-translation.Workflow_trans_directory "trans"]
+    set edit [lang::message::lookup "" intranet-translation.Workflow_edit_directory "edit"]
+    set proof [lang::message::lookup "" intranet-translation.Workflow_proof_directory "proof"]
+    set deliv [lang::message::lookup "" intranet-translation.Workflow_deliv_directory "deliv"]
+    set other [lang::message::lookup "" intranet-translation.Workflow_other_directory "other"]
+
     switch $task_status_id {
 	340 { 
 	    # The user is admin, so he may upload the file
 	    if {$user_admin_p} {
-		return [list "source_$source_language" "source_$source_language" "You are the administrator..."]
+		return [list "${source}_$source_language" "${source}_$source_language" "You are the administrator..."]
 	    }
 
 	    # Created: In the future there maybe a step between
 	    # created and "for Trans", but today it's the same.
 	    if {$user_id == $trans_id} {
-		return [list "source_$source_language" "" "Please download the source file."]
+		return [list "${source}_$source_language" "" "Please download the source file."]
 	    } 
 
 	    if {"" != $trans_id} {
@@ -891,7 +899,7 @@ ad_proc im_task_component_upload {user_id user_admin_p task_status_id source_lan
 	}
 	342 { # for Trans: 
 	    if {$user_id == $trans_id} {
-		return [list "source_$source_language" "" "Please download the source file."]
+		return [list "${source}_$source_language" "" "Please download the source file."]
 	    }
 	    if {"" != $trans_id} {
 		return [list "" "" "The file is ready to be translated by another person."]
@@ -900,45 +908,45 @@ ad_proc im_task_component_upload {user_id user_admin_p task_status_id source_lan
 	}
 	344 { # Translating: Allow to upload a file into the trans folder
 	    if {$user_id == $trans_id} {
-		return [list "source_$source_language" "trans_$target_language" "Please upload the translated file"]
+		return [list "${source}_$source_language" "${trans}_$target_language" "Please upload the translated file"]
 	    } else {
 		return [list "" "" "The file is being translated by another person"]
 	    }
 	}
 	346 { # for Edit: 
 	    if {$user_id == $edit_id} {
-		return [list "trans_$target_language" "" "Please download the translated file."]
+		return [list "${trans}_$target_language" "" "Please download the translated file."]
 	    }
 	    if {$user_id == $trans_id} {
 		# The translator may upload the file again, while the Editor has not
 		# downloaded the file yet.
-		return [list "" "trans_$target_language" "You are allowed to upload the file again while the Editor has not started editing yet..."]
+		return [list "" "${trans}_$target_language" "You are allowed to upload the file again while the Editor has not started editing yet..."]
 	    } else {
 		return [list "" "" "The file is ready to be edited by another person"]
 	    }
 	}
 	348 { # Editing: Allow to upload a file into the edit folder
 	    if {$user_id == $edit_id} {
-		return [list "trans_$target_language" "edit_$target_language" "Please upload the edited file"]
+		return [list "${trans}_$target_language" "${edit}_$target_language" "Please upload the edited file"]
 	    } else {
 		return [list "" "" "The file is being edited by another person"]
 	    }
 	}
 	350 { # for Proof: 
 	    if {$user_id == $proof_id} {
-		return [list "edit_$target_language" "" "Please download the edited file."]
+		return [list "${edit}_$target_language" "" "Please download the edited file."]
 	    }
 	    if {$user_id == $edit_id} {
 		# The editor may upload the file again, while the Proofer has not
 		# downloaded the file yet.
-		return [list "" "edit_$target_language" "You are allowed to upload the file again while the Proof Reader has not started editing yet..."]
+		return [list "" "${edit}_$target_language" "You are allowed to upload the file again while the Proof Reader has not started editing yet..."]
 	    } else {
 		return [list "" "" "The file is ready to be proofed by another person"]
 	    }
 	}
 	352 { # Proofing: Allow to upload a file into the proof folder
 	    if {$user_id == $proof_id} {
-		return [list "edit_$target_language" "proof_$target_language" "Please upload the proofed file"]
+		return [list "${edit}_$target_language" "${proof}_$target_language" "Please upload the proofed file"]
 	    } else {
 		return [list "" "" "The file is being proofed by another person"]
 	    }
@@ -1599,6 +1607,16 @@ ad_proc im_task_error_component { user_id project_id return_url } {
 	return ""
     }
 
+
+    # Localize the workflow stage directories
+    set source [lang::message::lookup "" intranet-translation.Workflow_source_directory "source"]
+    set trans [lang::message::lookup "" intranet-translation.Workflow_trans_directory "trans"]
+    set edit [lang::message::lookup "" intranet-translation.Workflow_edit_directory "edit"]
+    set proof [lang::message::lookup "" intranet-translation.Workflow_proof_directory "proof"]
+    set deliv [lang::message::lookup "" intranet-translation.Workflow_deliv_directory "deliv"]
+    set other [lang::message::lookup "" intranet-translation.Workflow_other_directory "other"]
+
+
 # 050501 Frank Bergmann: Disabled - PMs should be able to see this 
 # component anyway
 #    if {![im_permission $user_id view_trans_proj_detail]} { return "" }
@@ -1616,9 +1634,9 @@ ad_proc im_task_error_component { user_id project_id return_url } {
 
     set project_path [im_filestorage_project_path $project_id]
     set source_language [db_string source_language "select im_category_from_id(source_language_id) from im_projects where project_id=:project_id" -default ""]
-    if {![file isdirectory "$project_path/source_$source_language"]} {
+    if {![file isdirectory "$project_path/${source}_$source_language"]} {
 	incr err_count
-	append task_table_rows "<tr class=roweven><td colspan=99><font color=red>'$project_path/source_$source_language' does not exist</font></td></tr>\n"
+	append task_table_rows "<tr class=roweven><td colspan=99><font color=red>'$project_path/${source}_$source_language' does not exist</font></td></tr>\n"
     }
 
     # -------------------------------------------------------
@@ -1665,7 +1683,7 @@ group by
     db_foreach select_tasks $sql {
 
 	if {$err_count} { continue }
-	set upload_folder "source_$source_language"
+	set upload_folder "${source}_$source_language"
 
 	# only show the tasks that are in the "missing_task_list":
 	if {[lsearch -exact $missing_task_list $task_id] < 0} {
@@ -1736,6 +1754,16 @@ ad_proc im_new_task_component { user_id project_id return_url } {
 
     if {![im_permission $user_id view_trans_proj_detail]} { return "" }
 
+
+    # Localize the workflow stage directories
+    set source [lang::message::lookup "" intranet-translation.Workflow_source_directory "source"]
+    set trans [lang::message::lookup "" intranet-translation.Workflow_trans_directory "trans"]
+    set edit [lang::message::lookup "" intranet-translation.Workflow_edit_directory "edit"]
+    set proof [lang::message::lookup "" intranet-translation.Workflow_proof_directory "proof"]
+    set deliv [lang::message::lookup "" intranet-translation.Workflow_deliv_directory "deliv"]
+    set other [lang::message::lookup "" intranet-translation.Workflow_other_directory "other"]
+
+
     set bgcolor(0) " class=roweven"
     set bgcolor(1) " class=rowodd"
 
@@ -1778,7 +1806,7 @@ ad_proc im_new_task_component { user_id project_id return_url } {
 	}
 	
 	# add "source_xx_XX" folder contents to file_list
-	if {[regexp source $top_folder]} {
+	if {[regexp ${source} $top_folder]} {
 	    # append twice: for right and left side of select box
 	    lappend task_list $end_path
 	    lappend task_list $end_path
@@ -1900,6 +1928,16 @@ ad_proc im_task_missing_file_list { project_id } {
 } {
     set find_cmd [im_filestorage_find_cmd]
 
+
+    # Localize the workflow stage directories
+    set source [lang::message::lookup "" intranet-translation.Workflow_source_directory "source"]
+    set trans [lang::message::lookup "" intranet-translation.Workflow_trans_directory "trans"]
+    set edit [lang::message::lookup "" intranet-translation.Workflow_edit_directory "edit"]
+    set proof [lang::message::lookup "" intranet-translation.Workflow_proof_directory "proof"]
+    set deliv [lang::message::lookup "" intranet-translation.Workflow_deliv_directory "deliv"]
+    set other [lang::message::lookup "" intranet-translation.Workflow_other_directory "other"]
+
+
     set query "
 select
 	p.project_nr as project_short_name,
@@ -1925,7 +1963,7 @@ where
     }
 
     set project_path [im_filestorage_project_path $project_id]
-    set source_folder "$project_path/source_$source_language"
+    set source_folder "$project_path/${source}_$source_language"
     set org_paths [split $source_folder "/"]
     set org_paths_len [llength $org_paths]
 
