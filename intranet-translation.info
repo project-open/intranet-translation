@@ -21,7 +21,7 @@
         </callbacks>
         <parameters>
             <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="CheckTaskUploadFilenamesEqualP"  default="1" description="Check that the uploaded filename is equal to the filename when uploading a translation task result. Set this parameter to 1 if you are doing business in localization (web sites, ...). You can leave the parameter at 0 for general translation, allowing your translators to rename the file."/>
-            <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="DefaultNotifyPMAboutUploadP"  default="1" description="Determines the default value for the &quot;Notify PM&quot; checkbox when uploading translation tasks."/>
+            <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="DefaultNotifyPMAboutUploadP"  default="0" description="Determines the default value for the &quot;Notify PM&quot; checkbox when uploading translation tasks."/>
             <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="EnableAspTradosImport"  default="1" description="Enable the import of Trados wordcount files via web upload? (default yes)"/>
             <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="EnableLocalTradosImport"  default="0" description="Enable the import of Trados wordcount files from the local projects filestorage? (default no)"/>
         </parameters>
