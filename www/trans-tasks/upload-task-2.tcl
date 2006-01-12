@@ -12,10 +12,10 @@ ad_page_contract {
     task_id:integer
     return_url
     upload_file
+    {notify_project_manager_p ""}
     {file_title:trim ""}
     {comment_body:trim "" }
 }
-
 
 # ---------------------------------------------------------------------
 # Defaults & Security
@@ -40,14 +40,17 @@ if {[im_permission $user_id view_projects]} {
 set task_sql "
 select
 	t.*,
+	p.project_name,
 	im_category_from_id(t.task_status_id) as task_status,
 	im_category_from_id(t.source_language_id) as source_language,
 	im_category_from_id(t.target_language_id) as target_language
 from
-	im_trans_tasks t
+	im_trans_tasks t,
+	im_projects p
 where
 	t.task_id=:task_id
-	and t.project_id=:project_id"
+	and t.project_id = p.project_id 
+	and p.project_id = :project_id"
 
 if {![db_0or1row task_info_query $task_sql] } {
     ad_return_complaint 1 "<li>[_ intranet-translation.lt_Couldnt_find_the_spec]"
@@ -71,8 +74,43 @@ if {"" == $upload_folder} {
     return
 }
 
+
+# -----------------------------------------------------------------
+# Notify the Project Manager(s) about the upload
+# -----------------------------------------------------------------
+
+if {1 == $notify_project_manager_p} {
+
+    set subject [lang::message::lookup "" intranet-translation.Notify_PM_About_Task_Upload_Subject "Task Upload of %upload_folder% into %task_name% for %project_name%"]
+    set message [lang::message::lookup "" intranet-translation.Notify_PM_About_Task_Upload_Message "
+A new file has been uploaded:
+Folder: %upload_folder%
+Task Name: %task_name%
+Project: %project_name%
+    "]
+
+    set project_managers_sql "
+	select
+		r.object_id_two as pm_id
+	from
+		acs_rels r,
+		im_biz_object_members m
+	where
+		r.rel_id = m.rel_id
+		and r.object_id_one = :project_id
+		and m.object_role_id = [im_biz_object_role_project_manager]
+    "
+    db_foreach notify_project_managers $project_managers_sql {
+	im_send_alert $pm_id "hourly" $subject $message
+    }
+
+}
+
+# -------------------------------------------------------------------
 # Get the file from the user.
 # number_of_bytes is the upper-limit
+# -------------------------------------------------------------------
+
 set max_n_bytes [ad_parameter -package_id [im_package_filestorage_id] MaxNumberOfBytes "" 0]
 set tmp_filename [ns_queryget upload_file.tmpfile]
 set filesize [file size $tmp_filename]

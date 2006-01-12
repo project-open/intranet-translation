@@ -871,12 +871,13 @@ ad_proc im_task_component_upload {user_id user_admin_p task_status_id source_lan
     ns_log Notice "im_task_component_upload(user_id=$user_id user_admin_p=$user_admin_p task_status_id=$task_status_id target_language=$target_language trans_id=$trans_id edit_id=$edit_id proof_id=$proof_id other_id=$other_id)"
 
     # Localize the workflow stage directories
-    set source [lang::message::lookup "" intranet-translation.Workflow_source_directory "source"]
-    set trans [lang::message::lookup "" intranet-translation.Workflow_trans_directory "trans"]
-    set edit [lang::message::lookup "" intranet-translation.Workflow_edit_directory "edit"]
-    set proof [lang::message::lookup "" intranet-translation.Workflow_proof_directory "proof"]
-    set deliv [lang::message::lookup "" intranet-translation.Workflow_deliv_directory "deliv"]
-    set other [lang::message::lookup "" intranet-translation.Workflow_other_directory "other"]
+    set locale "en_US"
+    set source [lang::message::lookup $locale intranet-translation.Workflow_source_directory "source"]
+    set trans [lang::message::lookup $locale intranet-translation.Workflow_trans_directory "trans"]
+    set edit [lang::message::lookup $locale intranet-translation.Workflow_edit_directory "edit"]
+    set proof [lang::message::lookup $locale intranet-translation.Workflow_proof_directory "proof"]
+    set deliv [lang::message::lookup $locale intranet-translation.Workflow_deliv_directory "deliv"]
+    set other [lang::message::lookup $locale intranet-translation.Workflow_other_directory "other"]
 
     switch $task_status_id {
 	340 { 
@@ -1607,14 +1608,14 @@ ad_proc im_task_error_component { user_id project_id return_url } {
 	return ""
     }
 
-
     # Localize the workflow stage directories
-    set source [lang::message::lookup "" intranet-translation.Workflow_source_directory "source"]
-    set trans [lang::message::lookup "" intranet-translation.Workflow_trans_directory "trans"]
-    set edit [lang::message::lookup "" intranet-translation.Workflow_edit_directory "edit"]
-    set proof [lang::message::lookup "" intranet-translation.Workflow_proof_directory "proof"]
-    set deliv [lang::message::lookup "" intranet-translation.Workflow_deliv_directory "deliv"]
-    set other [lang::message::lookup "" intranet-translation.Workflow_other_directory "other"]
+    set locale "en_US"
+    set source [lang::message::lookup $locale intranet-translation.Workflow_source_directory "source"]
+    set trans [lang::message::lookup $locale intranet-translation.Workflow_trans_directory "trans"]
+    set edit [lang::message::lookup $locale intranet-translation.Workflow_edit_directory "edit"]
+    set proof [lang::message::lookup $locale intranet-translation.Workflow_proof_directory "proof"]
+    set deliv [lang::message::lookup $locale intranet-translation.Workflow_deliv_directory "deliv"]
+    set other [lang::message::lookup $locale intranet-translation.Workflow_other_directory "other"]
 
 
 # 050501 Frank Bergmann: Disabled - PMs should be able to see this 
@@ -1756,12 +1757,13 @@ ad_proc im_new_task_component { user_id project_id return_url } {
 
 
     # Localize the workflow stage directories
-    set source [lang::message::lookup "" intranet-translation.Workflow_source_directory "source"]
-    set trans [lang::message::lookup "" intranet-translation.Workflow_trans_directory "trans"]
-    set edit [lang::message::lookup "" intranet-translation.Workflow_edit_directory "edit"]
-    set proof [lang::message::lookup "" intranet-translation.Workflow_proof_directory "proof"]
-    set deliv [lang::message::lookup "" intranet-translation.Workflow_deliv_directory "deliv"]
-    set other [lang::message::lookup "" intranet-translation.Workflow_other_directory "other"]
+    set locale "en_US"
+    set source [lang::message::lookup $locale intranet-translation.Workflow_source_directory "source"]
+    set trans [lang::message::lookup $locale intranet-translation.Workflow_trans_directory "trans"]
+    set edit [lang::message::lookup $locale intranet-translation.Workflow_edit_directory "edit"]
+    set proof [lang::message::lookup $locale intranet-translation.Workflow_proof_directory "proof"]
+    set deliv [lang::message::lookup $locale intranet-translation.Workflow_deliv_directory "deliv"]
+    set other [lang::message::lookup $locale intranet-translation.Workflow_other_directory "other"]
 
 
     set bgcolor(0) " class=roweven"
@@ -1930,12 +1932,13 @@ ad_proc im_task_missing_file_list { project_id } {
 
 
     # Localize the workflow stage directories
-    set source [lang::message::lookup "" intranet-translation.Workflow_source_directory "source"]
-    set trans [lang::message::lookup "" intranet-translation.Workflow_trans_directory "trans"]
-    set edit [lang::message::lookup "" intranet-translation.Workflow_edit_directory "edit"]
-    set proof [lang::message::lookup "" intranet-translation.Workflow_proof_directory "proof"]
-    set deliv [lang::message::lookup "" intranet-translation.Workflow_deliv_directory "deliv"]
-    set other [lang::message::lookup "" intranet-translation.Workflow_other_directory "other"]
+    set locale "en_US"
+    set source [lang::message::lookup $locale intranet-translation.Workflow_source_directory "source"]
+    set trans [lang::message::lookup $locale intranet-translation.Workflow_trans_directory "trans"]
+    set edit [lang::message::lookup $locale intranet-translation.Workflow_edit_directory "edit"]
+    set proof [lang::message::lookup $locale intranet-translation.Workflow_proof_directory "proof"]
+    set deliv [lang::message::lookup $locale intranet-translation.Workflow_deliv_directory "deliv"]
+    set other [lang::message::lookup $locale intranet-translation.Workflow_other_directory "other"]
 
 
     set query "

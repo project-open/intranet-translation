@@ -26,6 +26,10 @@ set bgcolor(1) " class=rowodd"
 
 set filename [db_string get_filename "select task_name from im_trans_tasks where task_id=:task_id"]
 
+set default_notify_pm [ad_parameter -package_id [im_package_translation_id] DefaultNotifyPMAboutUploadP "" 0]
+set notify_checked ""
+if {$default_notify_pm} { set notify_checked " checked" }
+
 set page_content "
 <form enctype=multipart/form-data method=POST action=upload-task-2.tcl>
 [export_form_vars project_id task_id return_url]
@@ -57,6 +61,13 @@ set page_content "
                         </td>
                       </tr>
                       <tr $bgcolor(1)> 
+                        <td align=right>[lang::message::lookup "" intranet-translation.Notify "Notify"] </td>
+                        <td>
+                          <input type=checkbox name=notify_project_manager_p value=1 $notify_checked>
+			  [lang::message::lookup "" intranet-translation.Send_Notification_to_PM "Send a notification to the Project Manager"]
+                        </td>
+                      </tr>
+                      <tr $bgcolor(0)> 
                         <td></td>
                         <td> 
                           <input type=submit value='[_ intranet-translation.Submit_and_Upload]'><br>
