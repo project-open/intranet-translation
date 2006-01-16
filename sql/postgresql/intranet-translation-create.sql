@@ -97,9 +97,12 @@ create table im_trans_tasks (
 				-- being invoiced at all...
 				-- invoice_id=null => needs to be invoiced still
 				-- invoice_id!= null => has already been invoiced
-	invoice_id		integer , -- Todo: remove comments when toni finish invoices
---				constraint im_trans_tasks_invoice_fk
---				references im_invoices,
+	invoice_id		integer
+				constraint im_trans_tasks_invoice_fk
+				references im_invoices,
+	quote_id		integer
+				constraint im_trans_tasks_quote_fk
+				references im_invoices,
 				-- "Trados Matrix" determine duplicated words
 	match_x			numeric(12,0),
 	match_rep		numeric(12,0),
