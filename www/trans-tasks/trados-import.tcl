@@ -27,7 +27,7 @@ ad_page_contract {
 } {
     return_url
     project_id:integer
-    trados_wordcount_file
+    wordcount_file
     {import_method "Asp"}
 }
 
@@ -42,19 +42,22 @@ if {!$write} {
     return
 }
 
+# Compatibility with old message...
+set trados_wordcount_file $wordcount_file
+
 # ---------------------------------------------------------------------
 # Get the file and deal with Unicode encoding...
 # ---------------------------------------------------------------------
 
-ns_log Notice "trados-import: trados_wordcount_file=$trados_wordcount_file"
+ns_log Notice "trados-import: wordcount_file=$wordcount_file"
 
 if {[catch {
-    set fl [open $trados_wordcount_file]
+    set fl [open $wordcount_file]
     fconfigure $fl -encoding binary
     set binary_content [read $fl]
     close $fl
 } err]} {
-    ad_return_complaint 1 "Unable to open file $trados_wordcount_file:<br><pre>\n$err</pre>"
+    ad_return_complaint 1 "Unable to open file $wordcount_file:<br><pre>\n$err</pre>"
     return
 }
 
@@ -129,12 +132,12 @@ append page_body "
 
 
 if {[catch {
-    set fl [open $trados_wordcount_file]
+    set fl [open $wordcount_file]
     fconfigure $fl -encoding $encoding 
     set trados_files_content [read $fl]
     close $fl
 } err]} {
-    ad_return_complaint 1 "Unable to open file $trados_wordcount_file:<br><pre>\n$err</pre>"
+    ad_return_complaint 1 "Unable to open file $wordcount_file:<br><pre>\n$err</pre>"
     return
 }
 
@@ -454,7 +457,7 @@ append page_body "\n<P><A HREF=$return_url>[_ intranet-translation.lt_Return_to_
 
 # Remove the wordcount file
 if { [catch {
-    exec /bin/rm $trados_wordcount_file
+    exec /bin/rm $wordcount_file
 } err_msg] } {
     ad_return_complaint 1 "<li>[_ intranet-translation.lt_Error_deleting_the_te]"
     return

@@ -1833,13 +1833,30 @@ ad_proc im_new_task_component { user_id project_id return_url } {
     # -------------------- Add an Asp Wordcount -----------------------
 
     if {[ad_parameter -package_id [im_package_translation_id] EnableAspTradosImport "" 0]} {
+
+	set default_wordcount_app [ad_parameter -package_id [im_package_translation_id] "DefaultWordCountingApplication" "" "trados"]
+	set trados_selected ""
+	set freebudget_selected ""
+	set webbudget_selected ""
+
+	switch $default_wordcount_app {
+	    "trados" { set trados_selected "selected" }
+	    "freebudget" { set freebudget_selected "selected" }
+	    "webbudget" { set webbudget_selected "selected" }
+	}
+
 	append task_table "
 <tr $bgcolor(0)> 
   <td>
     <form enctype=multipart/form-data method=POST action=/intranet-translation/trans-tasks/trados-upload>
     [export_form_vars project_id return_url]
     <input type=file name=upload_file size=30 value='*.csv'>
-    <input type=submit value='[_ intranet-translation.Add_Trados_Wordcount]' name=submit_trados>
+    <select name=wordcount_application>
+	<option value=\"trados\" $trados_selected>Trados (3.0 - 7.0) </option>
+	<option value=\"freebudget\" $freebudget_selected>FreeBudget (4.0 - 5.0)</option>
+	<option value=\"freebudget\" $webbudget_selected>WebBudget (4.0 - 5.0)</option>
+    </select>
+    <input type=submit value='[lang::message::lookup "" intranet-translation.Add_Wordcount "Add Wordcount"]' name=submit_trados>
     </form>
   </td>
   <td>
