@@ -16,6 +16,7 @@ ad_page_contract {
 } {
     project_id:integer
     return_url
+    { wordcount_application "trados" }
     upload_file
 } 
 
@@ -38,7 +39,7 @@ if {!$write} {
 # number_of_bytes is the upper-limit
 set max_n_bytes [ad_parameter -package_id [im_package_filestorage_id] MaxNumberOfBytes "" 0]
 set tmp_filename [ns_queryget upload_file.tmpfile]
-set trados_wordcount_file "$tmp_filename.copy"
+set wordcount_file "$tmp_filename.copy"
 
 ns_log Notice "trados-upload: max_n_bytes=$max_n_bytes"
 ns_log Notice "trados-upload: tmp_filename=$tmp_filename"
@@ -51,16 +52,27 @@ if { $max_n_bytes && ([file size $tmp_filename] > $max_n_bytes) } {
 set file_extension [string tolower [file extension $upload_file]]
 ns_log Notice "trados-upload: file_extension=$file_extension"
 
-if {![string equal $file_extension ".csv"]} {
-    ad_return_complaint 1 "<li>[_ intranet-translation.lt_Your_file_is_not_a_tr]<br>
-    [_ intranet-translation.lt_Please_upload_a_file_]"
+if {![string equal $file_extension ".csv"] && ![string equal $file_extension ".txt"]} {
+    ad_return_complaint 1 "<li>
+	[lang::message::lookup "" intranet-translation.Your_file_is_not_a_wordcount_file "Your file is not a valid wordcount file"]<br>
+	[lang::message::lookup "" intranet-translation.Please_upload_cvs_txt "Please upload a file with the extension '.csv' or '.txt'."]"
     return 0
 }
 
 # Make a copy of the file because AOLServer deletes the file 
 # after leaving this page.
-set copy_result [exec /bin/cp $tmp_filename $trados_wordcount_file]
+set copy_result [exec /bin/cp $tmp_filename $wordcount_file]
 
 set import_method "Asp"
 
-ad_returnredirect trados-import?[export_url_vars project_id return_url trados_wordcount_file import_method]
+switch $wordcount_application {
+    trados {
+	ad_returnredirect trados-import?[export_url_vars project_id return_url wordcount_file import_method]
+    }
+    freebudget {
+	ad_returnredirect freebudget-import?[export_url_vars project_id return_url wordcount_file import_method]
+    }
+    webbudget {
+	ad_returnredirect freebudget-import?[export_url_vars project_id return_url wordcount_file import_method]
+    }
+}
