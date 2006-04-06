@@ -94,7 +94,7 @@ set page_body "
                    <tr>
                       <td>[_ intranet-translation.Source_Language] $required_field </td>
                       <td>
-[im_category_select_plain "Intranet Translation Language" source_language_id $source_language_id]
+[im_category_select_plain -translate_p 0 "Intranet Translation Language" source_language_id $source_language_id]
 [im_admin_category_gif "Intranet Translation Language"]
 [im_gif help "Translation source language"]
                       </td>
@@ -103,7 +103,7 @@ set page_body "
                     <tr>
                       <td>[_ intranet-translation.Target_Languages] </td>
                       <td>
-[im_category_select_multiple "Intranet Translation Language" target_language_ids $target_language_ids 6 multiple]
+[im_category_select_multiple -translate_p 0 "Intranet Translation Language" target_language_ids $target_language_ids 6 multiple]
 [im_admin_category_gif "Intranet Translation Language"]
 [im_gif help "Translation target languages. Searate target folders will be created for every language that you select"]
                       </td>
