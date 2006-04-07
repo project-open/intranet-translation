@@ -27,15 +27,13 @@ ad_page_contract {
 } {
     return_url
     project_id:integer
-    trados_wordcount_file
+    wordcount_file
     {import_method "Asp"}
 }
 
 # ---------------------------------------------------------------------
-# Defaults & security
+# Security
 # ---------------------------------------------------------------------
-
-ns_log Notice "trados-import: trados_wordcount_file=$trados_wordcount_file"
 
 set user_id [ad_maybe_redirect_for_registration]
 im_project_permissions $user_id $project_id view read write admin
@@ -43,6 +41,41 @@ if {!$write} {
     append 1 "<li>[_ intranet-translation.lt_You_have_insufficient_3]"
     return
 }
+
+# Compatibility with old message...
+set trados_wordcount_file $wordcount_file
+
+# ---------------------------------------------------------------------
+# Get the file and deal with Unicode encoding...
+# ---------------------------------------------------------------------
+
+ns_log Notice "trados-import: wordcount_file=$wordcount_file"
+
+if {[catch {
+    set fl [open $wordcount_file]
+    fconfigure $fl -encoding binary
+    set binary_content [read $fl]
+    close $fl
+} err]} {
+    ad_return_complaint 1 "Unable to open file $wordcount_file:<br><pre>\n$err</pre>"
+    return
+}
+
+set encoding_bin [string range $binary_content 0 1]
+binary scan $encoding_bin H* encoding_hex
+ns_log Notice "trados-import: encoding_hex=$encoding_hex"
+
+switch $encoding_hex {
+    fffe {
+	# Assume a UTF-16 file
+	set encoding "unicode"
+    }
+    default {
+	# Assume a UTF-8 file
+	set encoding "utf-8"
+    }
+}
+
 
 set target_language_ids [im_target_language_ids $project_id]
 if {0 == [llength $target_language_ids]} {
@@ -97,7 +130,17 @@ append page_body "
 <table cellpadding=0 cellspacing=2 border=0>
 "
 
-set trados_files_content [exec /bin/cat $trados_wordcount_file]
+
+if {[catch {
+    set fl [open $wordcount_file]
+    fconfigure $fl -encoding $encoding 
+    set trados_files_content [read $fl]
+    close $fl
+} err]} {
+    ad_return_complaint 1 "Unable to open file $wordcount_file:<br><pre>\n$err</pre>"
+    return
+}
+
 set trados_files [split $trados_files_content "\n"]
 set trados_files_len [llength $trados_files]
 set trados_header [lindex $trados_files 1]
@@ -118,8 +161,6 @@ if {1 == [llength $trados_headers]} {
 set line2 [lindex $trados_files 2]
 set line2_len [llength [split $line2 $separator]]
 
-
-
 if {";" == $separator} {
     switch $line2_len {
 	40 { set trados_version "6.5" }
@@ -130,11 +171,14 @@ if {";" == $separator} {
     }
 } else {
     switch $line2_len {
+	41 { set trados_version "7.0" }
+	40 { set trados_version "6.5" }
 	39 { set trados_version "6.0" }
 	default { set trados_version "unknown" }
     }
 }
 
+ns_log Notice "trados-import: trados_version=$trados_version, line2_len=$line2_len, separator=$separator"
 
 
 append page_body "
@@ -178,17 +222,17 @@ if {[string equal "unknown" $trados_version]} {
 # This procedure is not necessary for LocalFs import.
 set common_filename_comps 0
 
-ns_log Notice "import_method=$import_method"
+ns_log Notice "trados-import: import_method=$import_method"
 if {[string equal $import_method "Asp"]} {
     set first_trados_line [lindex $trados_files 2]
     set first_trados_fields [split $first_trados_line $separator]
     set first_filename [lindex $first_trados_fields 0]
     set first_filename_comps [split $first_filename "\\"]
 
-    ns_log Notice "first_trados_line=$first_trados_line"
-    ns_log Notice "first_trados_fields=$first_trados_fields"
-    ns_log Notice "first_filename=$first_filename"
-    ns_log Notice "first_filename_comps=$first_filename_comps"
+    ns_log Notice "trados-import: first_trados_line=$first_trados_line"
+    ns_log Notice "trados-import: first_trados_fields=$first_trados_fields"
+    ns_log Notice "trados-import: first_filename=$first_filename"
+    ns_log Notice "trados-import: first_filename_comps=$first_filename_comps"
 
     set all_the_same 1
     set ctr 0
@@ -200,11 +244,14 @@ if {[string equal $import_method "Asp"]} {
 
 	for {set i 2} {$i < $trados_files_len} {incr i} {
 	    set trados_line [lindex $trados_files $i]
+	    if {0 == [string length $trados_line]} { continue }
+
 	    set trados_fields [split $trados_line $separator]
 	    set filename [lindex $trados_fields 0]
 	    set filename_comps [split $filename "\\"]
 	    set this_component [lindex $filename_comps $ctr]
-	    ns_log Notice "this_component=$this_component"
+	    ns_log Notice "trados-import: this_component=$this_component"
+	    ns_log Notice "trados-import: common_component=$common_component"
 
 	    if {![string equal $common_component $this_component]} {
 		set all_the_same 0
@@ -217,7 +264,7 @@ if {[string equal $import_method "Asp"]} {
     set common_filename_comps [expr $ctr - 1]
 }
 
-ns_log Notice "common_filename_comps=$common_filename_comps"
+ns_log Notice "trados-import: common_filename_comps=$common_filename_comps"
 
 
 
@@ -225,8 +272,9 @@ ns_log Notice "common_filename_comps=$common_filename_comps"
     for {set i 2} {$i < $trados_files_len} {incr i} {
 	incr ctr
 	set trados_line [lindex $trados_files $i]
+	if {0 == [string length $trados_line]} { continue }
+
 	set trados_fields [split $trados_line $separator]
-	
 	set filename    	[lindex $trados_fields 0]
 	set tagging_errors	[lindex $trados_fields 1]
 	set chars_per_word	[lindex $trados_fields 2]
@@ -258,7 +306,7 @@ ns_log Notice "common_filename_comps=$common_filename_comps"
 	    set p0_placeables	[lindex $trados_fields 23]
 	}
 
-	if {[string equal $trados_version "5.5"] || [string equal $trados_version "5.0"] || [string equal $trados_version "6.0"] | [string equal $trados_version "6.5"]} {
+	if {[string equal $trados_version "5.5"] || [string equal $trados_version "5.0"] || [string equal $trados_version "6.0"] || [string equal $trados_version "6.5"] || [string equal $trados_version "7.0"]} {
 
 	    set px_segments	[lindex $trados_fields 3]
 	    set px_words	[lindex $trados_fields 4]
@@ -327,8 +375,18 @@ ns_log Notice "common_filename_comps=$common_filename_comps"
 	    }
 	}
 
+
+	# Skip if it was an empty line
+
+	if {"" == $px_words && "" == $prep_words && "" == $p100_words} {
+	    ns_log Notice "trados-import: found an empty line - maybe the last one..."
+	    continue
+	}
+
 	# Calculate the number of "effective" words based on
 	# a valuation of repetitions
+
+        ns_log Notice "trados-import: im_trans_trados_matrix_calculate $company_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words"
         set task_units [im_trans_trados_matrix_calculate $company_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
 
 	set billable_units $task_units
@@ -399,7 +457,7 @@ append page_body "\n<P><A HREF=$return_url>[_ intranet-translation.lt_Return_to_
 
 # Remove the wordcount file
 if { [catch {
-    exec /bin/rm $trados_wordcount_file
+    exec /bin/rm $wordcount_file
 } err_msg] } {
     ad_return_complaint 1 "<li>[_ intranet-translation.lt_Error_deleting_the_te]"
     return

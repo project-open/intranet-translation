@@ -273,17 +273,27 @@ ad_proc -public im_trans_trados_matrix_component { user_id object_id return_url 
 "
 
     set html "
+<form action=\"/intranet-translation/matrix/new\" method=POST>
+[export_form_vars object_id return_url]
 <table border=0>
-<tr class=rowtitle><td class=rowtitle colspan=99 align=center>[_ intranet-translation.Trados_Matrix] ($matrix(type))</td></tr>
+<tr class=rowtitle><td class=rowtitle colspan=8 align=center>[_ intranet-translation.Trados_Matrix] ($matrix(type))</td></tr>
 <tr class=rowtitle>$header_html</tr>
 <tr class=roweven>$value_html</tr>
+"
+
+    if {[im_permission $user_id add_costs]} {
+
+        append html "
 <tr class=rowplain>
-  <td colspan=99 align=right>
-    <A href=/intranet-translation/matrix/new?[export_url_vars object_id return_url]>edit</a>
+  <td colspan=9 align=right>
+    <input type=submit value=\"Edit\">
+<!--  <A href=/intranet-translation/matrix/new?[export_url_vars object_id return_url]>edit</a> -->
   </td>
 </tr>
-</table>\n"
+"
+    }
 
+    append html "\n</table>\n</form>\n"
     return $html
 }
 
@@ -494,12 +504,14 @@ ad_proc -public im_translation_task_permissions {user_id task_id view_var read_v
 
     set user_is_admin_p [im_is_user_site_wide_or_intranet_admin $user_id]
     set user_is_wheel_p [ad_user_group_member [im_wheel_group_id] $user_id]
-    set user_is_group_member_p [ad_user_group_member $project_id $user_id]
+    set user_is_group_member_p [im_biz_object_member_p $user_id $project_id]
+    set user_is_group_admin_p [im_biz_object_admin_p $user_id $project_id]
     set user_is_employee_p [im_user_is_employee_p $user_id]
 
     if {$user_is_admin_p} { set admin 1}
     if {$user_is_wheel_p} { set admin 1}
     if {$user_is_group_member_p} { set read 1}
+    if {$user_is_group_admin_p} { set admin 1}
 
     if {$admin} {
 	set read 1
@@ -692,7 +704,11 @@ where
 
 # Update the task to advance to the next status
 # after a successful upload of the related file
-ad_proc im_trans_upload_action {task_id task_status_id task_type_id user_id} {
+ad_proc im_trans_upload_action {
+    task_id 
+    task_status_id 
+    task_type_id 
+    user_id} {
 } {
     set new_status_id $task_status_id
 
@@ -854,17 +870,26 @@ ad_proc im_task_component_upload {user_id user_admin_p task_status_id source_lan
 } {
     ns_log Notice "im_task_component_upload(user_id=$user_id user_admin_p=$user_admin_p task_status_id=$task_status_id target_language=$target_language trans_id=$trans_id edit_id=$edit_id proof_id=$proof_id other_id=$other_id)"
 
+    # Localize the workflow stage directories
+    set locale "en_US"
+    set source [lang::message::lookup $locale intranet-translation.Workflow_source_directory "source"]
+    set trans [lang::message::lookup $locale intranet-translation.Workflow_trans_directory "trans"]
+    set edit [lang::message::lookup $locale intranet-translation.Workflow_edit_directory "edit"]
+    set proof [lang::message::lookup $locale intranet-translation.Workflow_proof_directory "proof"]
+    set deliv [lang::message::lookup $locale intranet-translation.Workflow_deliv_directory "deliv"]
+    set other [lang::message::lookup $locale intranet-translation.Workflow_other_directory "other"]
+
     switch $task_status_id {
 	340 { 
 	    # The user is admin, so he may upload the file
 	    if {$user_admin_p} {
-		return [list "source_$source_language" "source_$source_language" "You are the administrator..."]
+		return [list "${source}_$source_language" "${source}_$source_language" "You are the administrator..."]
 	    }
 
 	    # Created: In the future there maybe a step between
 	    # created and "for Trans", but today it's the same.
 	    if {$user_id == $trans_id} {
-		return [list "source_$source_language" "" "Please download the source file."]
+		return [list "${source}_$source_language" "" "Please download the source file."]
 	    } 
 
 	    if {"" != $trans_id} {
@@ -875,7 +900,7 @@ ad_proc im_task_component_upload {user_id user_admin_p task_status_id source_lan
 	}
 	342 { # for Trans: 
 	    if {$user_id == $trans_id} {
-		return [list "source_$source_language" "" "Please download the source file."]
+		return [list "${source}_$source_language" "" "Please download the source file."]
 	    }
 	    if {"" != $trans_id} {
 		return [list "" "" "The file is ready to be translated by another person."]
@@ -884,45 +909,45 @@ ad_proc im_task_component_upload {user_id user_admin_p task_status_id source_lan
 	}
 	344 { # Translating: Allow to upload a file into the trans folder
 	    if {$user_id == $trans_id} {
-		return [list "source_$source_language" "trans_$target_language" "Please upload the translated file"]
+		return [list "${source}_$source_language" "${trans}_$target_language" "Please upload the translated file"]
 	    } else {
 		return [list "" "" "The file is being translated by another person"]
 	    }
 	}
 	346 { # for Edit: 
 	    if {$user_id == $edit_id} {
-		return [list "trans_$target_language" "" "Please download the translated file."]
+		return [list "${trans}_$target_language" "" "Please download the translated file."]
 	    }
 	    if {$user_id == $trans_id} {
 		# The translator may upload the file again, while the Editor has not
 		# downloaded the file yet.
-		return [list "" "trans_$target_language" "You are allowed to upload the file again while the Editor has not started editing yet..."]
+		return [list "" "${trans}_$target_language" "You are allowed to upload the file again while the Editor has not started editing yet..."]
 	    } else {
 		return [list "" "" "The file is ready to be edited by another person"]
 	    }
 	}
 	348 { # Editing: Allow to upload a file into the edit folder
 	    if {$user_id == $edit_id} {
-		return [list "trans_$target_language" "edit_$target_language" "Please upload the edited file"]
+		return [list "${trans}_$target_language" "${edit}_$target_language" "Please upload the edited file"]
 	    } else {
 		return [list "" "" "The file is being edited by another person"]
 	    }
 	}
 	350 { # for Proof: 
 	    if {$user_id == $proof_id} {
-		return [list "edit_$target_language" "" "Please download the edited file."]
+		return [list "${edit}_$target_language" "" "Please download the edited file."]
 	    }
 	    if {$user_id == $edit_id} {
 		# The editor may upload the file again, while the Proofer has not
 		# downloaded the file yet.
-		return [list "" "edit_$target_language" "You are allowed to upload the file again while the Proof Reader has not started editing yet..."]
+		return [list "" "${edit}_$target_language" "You are allowed to upload the file again while the Proof Reader has not started editing yet..."]
 	    } else {
 		return [list "" "" "The file is ready to be proofed by another person"]
 	    }
 	}
 	352 { # Proofing: Allow to upload a file into the proof folder
 	    if {$user_id == $proof_id} {
-		return [list "edit_$target_language" "proof_$target_language" "Please upload the proofed file"]
+		return [list "${edit}_$target_language" "${proof}_$target_language" "Please upload the proofed file"]
 	    } else {
 		return [list "" "" "The file is being proofed by another person"]
 	    }
@@ -933,6 +958,67 @@ ad_proc im_task_component_upload {user_id user_admin_p task_status_id source_lan
     }
 }
 
+
+# -------------------------------------------------------------------
+# Calculate Project Advance
+# -------------------------------------------------------------------
+
+ad_proc im_trans_task_project_advance { project_id } {
+    Calculate the percentage of advance of the project.
+} {
+    set automatic_advance_p [ad_parameter -package_id [im_package_translation_id] AutomaticProjectAdvanceP "" 1]
+    if {!$automatic_advance_p} {
+	return ""
+    }
+
+    set advance ""
+    if {[db_table_exists im_trans_task_progress]} {
+        set advance [db_string project_advance "
+	    select
+		sum(volume_completed) / (0.000001 + sum(volume)) * 100 as percent_completed
+	    from
+		(select
+			t.task_id,
+			t.task_units,
+			uom_weights.weight,
+			ttp.percent_completed as perc,
+			t.task_units * uom_weights.weight * ttp.percent_completed as volume_completed,
+			t.task_units * uom_weights.weight * 100 as volume,
+			im_category_from_id(t.task_uom_id) as task_uom,
+			im_category_from_id(t.task_type_id) as task_type,
+			im_category_from_id(t.task_status_id) as task_status
+		from
+			im_trans_tasks t,
+			im_trans_task_progress ttp,
+			(       select  320 as id, 1.0 as weight UNION
+				select  321 as id, 8.0 as weight UNION
+				select  322 as id, 0.0 as weight UNION
+				select  323 as id, 1.0 as weight UNION
+				select  324 as id, 0.0032 as weight UNION
+				select  325 as id, 0.0032 as weight UNION
+				select  326 as id, 0.016 as weight UNION
+				select  327 as id, 0.016 as weight
+			) uom_weights
+		where
+			t.project_id = :project_id
+			and t.task_type_id = ttp.task_type_id
+			and t.task_status_id = ttp.task_status_id
+			and t.task_uom_id = uom_weights.id
+		) volume
+        "]
+    }
+
+    if {"" != $advance} {
+        db_dml update_project_advance "
+		update im_projects
+		set percent_completed = :advance
+		where project_id = :project_id
+        "
+    }
+
+    return $advance
+}
+	
 # -------------------------------------------------------------------
 # Task Status Component
 # -------------------------------------------------------------------
@@ -947,8 +1033,10 @@ ad_proc im_task_status_component { user_id project_id return_url } {
     in the filesystem) are not reflected by this component (yet).
 } {
     ns_log Notice "im_trans_status_component($user_id, $project_id)"
-    # Is this a translation project?
+    set current_user_id [ad_get_user_id]
+    set current_user_is_employee_p [im_user_is_employee_p $current_user_id]
 
+    # Is this a translation project?
     if {![im_project_has_type $project_id "Translation Project"]} {
 	ns_log Notice "im_task_status_component: Project $project_id is not a translation project"
 	return ""
@@ -1162,7 +1250,7 @@ where
 
     # --------------------- Display the results ----------------------
 
-    set ctr 0
+    set ctr 1
     db_foreach task_status_sql $task_sql {
 
 	# subtract the assigned files from the unassigned
@@ -1182,83 +1270,94 @@ where
 	if {0 == $other_ass} { set other_ass "&nbsp;" }
 
 	append task_status_html "
-<tr $bgcolor([expr $ctr % 2])>
-  <td><A HREF=/intranet/users/view?user_id=$user_id>$user_name</A></td>
+	<tr $bgcolor([expr $ctr % 2])>
+	  <td>\n"
 
-  <td>$trans_ass</td>
-  <td>$trans_down</td>
-  <td>$trans_up</td>
+	if {$current_user_is_employee_p} {
+	    append task_status_html "<A HREF=/intranet/users/view?user_id=$user_id>$user_name</A>\n"
+	} else {
+	    append task_status_html "User# $ctr\n"
+	}
 
-  <td>$edit_ass</td>
-  <td>$edit_down</td>
-  <td>$edit_up</td>
-
-  <td>$proof_ass</td>
-  <td>$proof_down</td>
-  <td>$proof_up</td>
-
-  <td>$other_ass</td>
-  <td>$other_down</td>
-  <td>$other_up</td>
-
-  <td>$trans_words</td>
-  <td>$edit_words</td>
-  <td>$proof_words</td>
-</tr>
-"
-        incr ctr
+	append task_status_html "
+	  </td>
+	  <td>$trans_ass</td>
+	  <td>$trans_down</td>
+	  <td>$trans_up</td>
+	
+	  <td>$edit_ass</td>
+	  <td>$edit_down</td>
+	  <td>$edit_up</td>
+	
+	  <td>$proof_ass</td>
+	  <td>$proof_down</td>
+	  <td>$proof_up</td>
+	
+	  <td>$other_ass</td>
+	  <td>$other_down</td>
+	  <td>$other_up</td>
+	
+	  <td>$trans_words</td>
+	  <td>$edit_words</td>
+	  <td>$proof_words</td>
+	</tr>
+	"
+	incr ctr
     }
 
 
     append task_status_html "
-<tr $bgcolor([expr $ctr % 2])>
-  <td>unassigned tasks</td>
-
-  <td>$unassigned_trans</td>
-  <td></td>
-  <td></td>
-
-  <td>$unassigned_edit</td>
-  <td></td>
-  <td></td>
-
-  <td>$unassigned_proof</td>
-  <td></td>
-  <td></td>
-
-  <td>$unassigned_other</td>
-  <td></td>
-  <td></td>
-
-  <td>[expr round($unassigned_trans_wc)]</td>
-  <td>[expr round($unassigned_edit_wc)]</td>
-  <td>[expr round($unassigned_proof_wc)]</td>
-
-</tr>
-"
-
+	<tr $bgcolor([expr $ctr % 2])>
+	  <td>unassigned tasks</td>
+	
+	  <td>$unassigned_trans</td>
+	  <td></td>
+	  <td></td>
+	
+	  <td>$unassigned_edit</td>
+	  <td></td>
+	  <td></td>
+	
+	  <td>$unassigned_proof</td>
+	  <td></td>
+	  <td></td>
+	
+	  <td>$unassigned_other</td>
+	  <td></td>
+	  <td></td>
+	
+	  <td>[expr round($unassigned_trans_wc)]</td>
+	  <td>[expr round($unassigned_edit_wc)]</td>
+	  <td>[expr round($unassigned_proof_wc)]</td>
+	
+	</tr>
+    "
 
     append task_status_html "
-<tr>
-  <td colspan=12 align=left>
-    <input type=submit value='[_ intranet-translation.View_Tasks]' name=submit_view>
-    <input type=submit value='[_ intranet-translation.Assign_Tasks]' name=submit_assign>
-  </td>
-</tr>
-"
+	<tr>
+	  <td colspan=12 align=left>
+	    <input type=submit value='[_ intranet-translation.View_Tasks]' name=submit_view>
+	    <input type=submit value='[_ intranet-translation.Assign_Tasks]' name=submit_assign>
+	  </td>
+	</tr>
+    "
 
     append task_status_html "\n</table>\n</form>\n\n"
+
+
+    # Update Project Advance Percentage
+    im_trans_task_project_advance $project_id
+
     return $task_status_html
 }
+
+
 
 
 # -------------------------------------------------------------------
 # Task Component
 # Show the list of tasks for one project
 # -------------------------------------------------------------------
-
-
-
 
 ad_proc im_task_freelance_component { user_id project_id return_url } {
     Same as im_task_component, 
@@ -1282,8 +1381,13 @@ ad_proc im_task_component { user_id project_id return_url {view_name "trans_task
 	return ""
     }
 
+    set date_format "YYYY-MM-DD"
+
     # Get the permissions for the current _project_
     im_project_permissions $user_id $project_id project_view project_read project_write project_admin
+
+    # Get the projects end date as a default for the tasks
+    set project_end_date [db_string project_end_date "select to_char(end_date, :date_format) from im_projects where project_id = :project_id" -default ""]
 
     set company_view_page "/intranet/companies/view"
 
@@ -1297,11 +1401,11 @@ ad_proc im_task_component { user_id project_id return_url {view_name "trans_task
 
     set column_sql "
 select  column_name,
-        column_render_tcl,
-        visible_for
+	column_render_tcl,
+	visible_for
 from    im_view_columns
 where   view_id=:view_id
-        and group_id is null
+	and group_id is null
 order by sort_order"
 
     db_foreach column_list_sql $column_sql {
@@ -1334,28 +1438,6 @@ append task_table "
 
     # -------------------- SQL -----------------------------------
 
-    set sql "
-select 
-	t.*,
-        im_category_from_id(t.source_language_id) as source_language,
-        im_category_from_id(t.target_language_id) as target_language,
-        im_category_from_id(t.task_status_id) as task_status,
-	uom_c.category as uom_name,
-	type_c.category as type_name,
-        im_initials_from_user_id (t.trans_id) as trans_name,
-        im_initials_from_user_id (t.edit_id) as edit_name,
-        im_initials_from_user_id (t.proof_id) as proof_name,
-        im_initials_from_user_id (t.other_id) as other_name
-from 
-	im_trans_tasks t,
-	im_categories uom_c,
-	im_categories type_c
-where
-	t.project_id=:project_id
-and t.task_uom_id=uom_c.category_id(+)
-and t.task_type_id=type_c.category_id(+)
-    "
-
     set bgcolor(0) " class=roweven"
     set bgcolor(1) " class=rowodd"
     set trans_project_words 0
@@ -1363,26 +1445,31 @@ and t.task_type_id=type_c.category_id(+)
     set ctr 0
     set task_table_rows ""
 
-    db_foreach select_tasks $sql {
+    # Initialize the counters for all UoMs
+    db_foreach init_uom_counters "select category_id as uom_id from im_categories where category_type = 'Intranet UoM'" {
+	set project_size_uom_counter($uom_id) 0
+    }
+
+    db_foreach select_tasks "" {
 
 	# Determine if $user_id is assigned to some phase of this task
 	set user_assigned 0
-        if {$trans_id == $user_id} { set user_assigned 1 }
-        if {$edit_id == $user_id} { set user_assigned 1 }
-        if {$proof_id == $user_id} { set user_assigned 1 }
-        if {$other_id == $user_id} { set user_assigned 1 }
+	if {$trans_id == $user_id} { set user_assigned 1 }
+	if {$edit_id == $user_id} { set user_assigned 1 }
+	if {$proof_id == $user_id} { set user_assigned 1 }
+	if {$other_id == $user_id} { set user_assigned 1 }
 
 	# Freelancers shouldn't see tasks if they are not assigned to it.
-        if {!$user_assigned && ![im_permission $user_id view_trans_tasks]} {
-	        continue
-        }
+	if {!$user_assigned && ![im_permission $user_id view_trans_tasks]} {
+		continue
+	}
 
 	# Build a string with the user short names for the assignations
-        set assignments ""
-        if {$trans_name != ""} { append assignments "T: <A HREF=/intranet/users/view?user_id=$trans_id>$trans_name</A> " }
-        if {$edit_name != ""} { append assignments "E: <A HREF=/intranet/users/view?user_id=$edit_id>$edit_name</A> " }
-        if {$proof_name != ""} { append assignments "P: <A HREF=/intranet/users/view?user_id=$proof_id>$proof_name</A> " }
-        if {$other_name != ""} { append assignments "<A HREF=/intranet/users/view?user_id=$other_id>$other_name</A> " }
+	set assignments ""
+	if {$trans_name != ""} { append assignments "T: <A HREF=/intranet/users/view?user_id=$trans_id>$trans_name</A> " }
+	if {$edit_name != ""} { append assignments "E: <A HREF=/intranet/users/view?user_id=$edit_id>$edit_name</A> " }
+	if {$proof_name != ""} { append assignments "P: <A HREF=/intranet/users/view?user_id=$proof_id>$proof_name</A> " }
+	if {$other_name != ""} { append assignments "<A HREF=/intranet/users/view?user_id=$other_id>$other_name</A> " }
 
 	# Replace "/" characters in the Task Name (filename) by "/ ",
 	# to allow the line to break more smoothely
@@ -1395,6 +1482,10 @@ and t.task_type_id=type_c.category_id(+)
 
 	# Billable Items 
 	set billable_items_input "<input type=text size=3 name=billable_units.$task_id value=$billable_units>"
+
+	# End Date Input Field
+	if {"" == $end_date_formatted} { set end_date_formatted $project_end_date }
+	set end_date_input "<input type=text size=10 maxlength=10 name=end_date.$task_id value=$end_date_formatted>"
 
 	# Status Select Box
 	set status_select [im_category_select "Intranet Translation Task Status" task_status.$task_id $task_status_id]
@@ -1445,21 +1536,36 @@ and t.task_type_id=type_c.category_id(+)
 	append task_table "</tr>\n"
 
 	incr ctr
+	set uom_size $project_size_uom_counter($task_uom_id)
+	set project_size_uom_counter($task_uom_id) [expr $uom_size + $task_units]
+
 	if {$task_uom_id == [im_uom_s_word]} { set trans_project_words [expr $trans_project_words + $task_units] }
 	if {$task_uom_id == [im_uom_hour]} { set trans_project_hours [expr $trans_project_hours + $task_units] }
     }
 
     if {$ctr > 0} {
-         append task_table $task_table_rows
+	 append task_table $task_table_rows
     } else {
-         append task_table "<tr><td colspan=7 align=center>[_ intranet-translation.No_tasks_found]</td></tr>"
+	 append task_table "<tr><td colspan=7 align=center>[_ intranet-translation.No_tasks_found]</td></tr>"
     }
 
     # -------------------- Calculate the project size -------------------------------
+
+    set project_size ""
+    db_foreach project_size "select category_id as uom_id, category as uom_unit from im_categories where category_type = 'Intranet UoM'" {
+	set uom_size $project_size_uom_counter($uom_id)
+	if {0 != $uom_size} {
+	    set comma ""
+	    if {"" != $project_size} { set comma ", " }
+	    append project_size "$comma$uom_size $uom_unit"
+	}
+    }
+
     db_dml update_project_size "
 	update im_projects set 
 		trans_project_words = :trans_project_words,
-		trans_project_hours = :trans_project_hours
+		trans_project_hours = :trans_project_hours,
+		trans_size = :project_size
 	where project_id = :project_id
     "
 
@@ -1477,7 +1583,7 @@ and t.task_type_id=type_c.category_id(+)
   <td colspan=12 align=right>&nbsp;</td>
   <td align=center><input type=submit value=\"[_ intranet-translation.Save]\" name=submit></td>
   <td align=center><input type=submit value=\"[_ intranet-translation.Del]\" name=submit></td>
-  <td align=center><input type=submit value=\"[_ intranet-translation.Assign]\" name=submit></td>
+<!--  <td align=center><input type=submit value=\"[_ intranet-translation.Assign]\" name=submit></td> -->
 </tr>"
     }
 
@@ -1502,6 +1608,16 @@ ad_proc im_task_error_component { user_id project_id return_url } {
 	return ""
     }
 
+    # Localize the workflow stage directories
+    set locale "en_US"
+    set source [lang::message::lookup $locale intranet-translation.Workflow_source_directory "source"]
+    set trans [lang::message::lookup $locale intranet-translation.Workflow_trans_directory "trans"]
+    set edit [lang::message::lookup $locale intranet-translation.Workflow_edit_directory "edit"]
+    set proof [lang::message::lookup $locale intranet-translation.Workflow_proof_directory "proof"]
+    set deliv [lang::message::lookup $locale intranet-translation.Workflow_deliv_directory "deliv"]
+    set other [lang::message::lookup $locale intranet-translation.Workflow_other_directory "other"]
+
+
 # 050501 Frank Bergmann: Disabled - PMs should be able to see this 
 # component anyway
 #    if {![im_permission $user_id view_trans_proj_detail]} { return "" }
@@ -1519,9 +1635,9 @@ ad_proc im_task_error_component { user_id project_id return_url } {
 
     set project_path [im_filestorage_project_path $project_id]
     set source_language [db_string source_language "select im_category_from_id(source_language_id) from im_projects where project_id=:project_id" -default ""]
-    if {![file isdirectory "$project_path/source_$source_language"]} {
+    if {![file isdirectory "$project_path/${source}_$source_language"]} {
 	incr err_count
-	append task_table_rows "<tr class=roweven><td colspan=99><font color=red>'$project_path/source_$source_language' does not exist</font></td></tr>\n"
+	append task_table_rows "<tr class=roweven><td colspan=99><font color=red>'$project_path/${source}_$source_language' does not exist</font></td></tr>\n"
     }
 
     # -------------------------------------------------------
@@ -1540,7 +1656,7 @@ select
 	t.task_name,
 	t.task_filename,
 	t.task_units,
-        im_category_from_id(t.source_language_id) as source_language,
+	im_category_from_id(t.source_language_id) as source_language,
 	uom_c.category as uom_name,
 	type_c.category as type_name
 from 
@@ -1568,11 +1684,11 @@ group by
     db_foreach select_tasks $sql {
 
 	if {$err_count} { continue }
-        set upload_folder "source_$source_language"
+	set upload_folder "${source}_$source_language"
 
 	# only show the tasks that are in the "missing_task_list":
-        if {[lsearch -exact $missing_task_list $task_id] < 0} {
-            continue
+	if {[lsearch -exact $missing_task_list $task_id] < 0} {
+	    continue
 	}
 
 	# Replace "/" characters in the Task Name (filename) by "/ ",
@@ -1580,7 +1696,7 @@ group by
 	set task_name_list [split $task_name "/"]
 	set task_name_splitted [join $task_name_list "/ "]
 
-        append task_table_rows "
+	append task_table_rows "
 <tr $bgcolor([expr $ctr % 2])> 
   <td align=left><font color=red>$task_name_splitted</font></td>
   <td align=right>$task_units $uom_name</td>
@@ -1590,7 +1706,7 @@ group by
     </A>
   </td>
 </tr>\n"
-        incr ctr
+	incr ctr
     }
     
     # Return an empty string if there are no errors
@@ -1639,6 +1755,17 @@ ad_proc im_new_task_component { user_id project_id return_url } {
 
     if {![im_permission $user_id view_trans_proj_detail]} { return "" }
 
+
+    # Localize the workflow stage directories
+    set locale "en_US"
+    set source [lang::message::lookup $locale intranet-translation.Workflow_source_directory "source"]
+    set trans [lang::message::lookup $locale intranet-translation.Workflow_trans_directory "trans"]
+    set edit [lang::message::lookup $locale intranet-translation.Workflow_edit_directory "edit"]
+    set proof [lang::message::lookup $locale intranet-translation.Workflow_proof_directory "proof"]
+    set deliv [lang::message::lookup $locale intranet-translation.Workflow_deliv_directory "deliv"]
+    set other [lang::message::lookup $locale intranet-translation.Workflow_other_directory "other"]
+
+
     set bgcolor(0) " class=roweven"
     set bgcolor(1) " class=rowodd"
 
@@ -1681,7 +1808,7 @@ ad_proc im_new_task_component { user_id project_id return_url } {
 	}
 	
 	# add "source_xx_XX" folder contents to file_list
-	if {[regexp source $top_folder]} {
+	if {[regexp ${source} $top_folder]} {
 	    # append twice: for right and left side of select box
 	    lappend task_list $end_path
 	    lappend task_list $end_path
@@ -1706,13 +1833,30 @@ ad_proc im_new_task_component { user_id project_id return_url } {
     # -------------------- Add an Asp Wordcount -----------------------
 
     if {[ad_parameter -package_id [im_package_translation_id] EnableAspTradosImport "" 0]} {
+
+	set default_wordcount_app [ad_parameter -package_id [im_package_translation_id] "DefaultWordCountingApplication" "" "trados"]
+	set trados_selected ""
+	set freebudget_selected ""
+	set webbudget_selected ""
+
+	switch $default_wordcount_app {
+	    "trados" { set trados_selected "selected" }
+	    "freebudget" { set freebudget_selected "selected" }
+	    "webbudget" { set webbudget_selected "selected" }
+	}
+
 	append task_table "
 <tr $bgcolor(0)> 
   <td>
     <form enctype=multipart/form-data method=POST action=/intranet-translation/trans-tasks/trados-upload>
     [export_form_vars project_id return_url]
     <input type=file name=upload_file size=30 value='*.csv'>
-    <input type=submit value='[_ intranet-translation.Add_Trados_Wordcount]' name=submit_trados>
+    <select name=wordcount_application>
+	<option value=\"trados\" $trados_selected>Trados (3.0 - 7.0) </option>
+	<option value=\"freebudget\" $freebudget_selected>FreeBudget (4.0 - 5.0)</option>
+	<option value=\"freebudget\" $webbudget_selected>WebBudget (4.0 - 5.0)</option>
+    </select>
+    <input type=submit value='[lang::message::lookup "" intranet-translation.Add_Wordcount "Add Wordcount"]' name=submit_trados>
     </form>
   </td>
   <td>
@@ -1750,7 +1894,7 @@ ad_proc im_new_task_component { user_id project_id return_url } {
     # -------------------- Add a new File  --------------------------
 
     if {0 < [llength $task_list]} {
-        append task_table "
+	append task_table "
 <form action=/intranet-translation/trans-tasks/task-action method=POST>
 [export_form_vars project_id return_url]
   <tr $bgcolor(0)> 
@@ -1803,19 +1947,30 @@ ad_proc im_task_missing_file_list { project_id } {
 } {
     set find_cmd [im_filestorage_find_cmd]
 
+
+    # Localize the workflow stage directories
+    set locale "en_US"
+    set source [lang::message::lookup $locale intranet-translation.Workflow_source_directory "source"]
+    set trans [lang::message::lookup $locale intranet-translation.Workflow_trans_directory "trans"]
+    set edit [lang::message::lookup $locale intranet-translation.Workflow_edit_directory "edit"]
+    set proof [lang::message::lookup $locale intranet-translation.Workflow_proof_directory "proof"]
+    set deliv [lang::message::lookup $locale intranet-translation.Workflow_deliv_directory "deliv"]
+    set other [lang::message::lookup $locale intranet-translation.Workflow_other_directory "other"]
+
+
     set query "
 select
-        p.project_nr as project_short_name,
-        c.company_name as company_short_name,
-        p.source_language_id,
-        im_category_from_id(p.source_language_id) as source_language,
-        p.project_type_id
+	p.project_nr as project_short_name,
+	c.company_name as company_short_name,
+	p.source_language_id,
+	im_category_from_id(p.source_language_id) as source_language,
+	p.project_type_id
 from
-        im_projects p,
-        im_companies c
+	im_projects p,
+	im_companies c
 where
-        p.project_id=:project_id
-        and p.company_id=c.company_id(+)"
+	p.project_id=:project_id
+	and p.company_id=c.company_id(+)"
 
     if { ![db_0or1row projects_info_query $query] } {
 	ad_return_complaint 1 "[_ intranet-translation.lt_Cant_find_the_project]"
@@ -1828,7 +1983,7 @@ where
     }
 
     set project_path [im_filestorage_project_path $project_id]
-    set source_folder "$project_path/source_$source_language"
+    set source_folder "$project_path/${source}_$source_language"
     set org_paths [split $source_folder "/"]
     set org_paths_len [llength $org_paths]
 
@@ -1843,7 +1998,7 @@ where
 	# The directory probably doesn't exist yet, so don't generate
 	# an error !!!
 	ad_return_complaint 1 "im_task_missing_file_list: directory $source_folder<br>
-                       probably does not exist:<br>$err_msg"
+		       probably does not exist:<br>$err_msg"
 	set file_list ""
     }
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="intranet-translation" package_version="3.0.0.0.4" locale="en_US" charset="ISO-8859-1">
+<message_catalog package_key="intranet-translation" package_version="3.1.0.0.0" locale="en_US" charset="ISO-8859-1">
 
   <msg key="--_Please_Select_--">-- Please Select --</msg>
   <msg key="0_">0%</msg>
@@ -18,12 +18,14 @@
   <msg key="Assigned">Assigned</msg>
   <msg key="Assignments">Assignments</msg>
   <msg key="Auto_Assigment">Auto Assigment</msg>
+  <msg key="Auto_Assign">Auto Assign</msg>
   <msg key="Auto_Assignment">Auto Assignment</msg>
   <msg key="Bill_Units">Bill Units</msg>
   <msg key="Client_contact">Client contact</msg>
   <msg key="Client_Project">Client Project#</msg>
   <msg key="Client_project_">Client project #</msg>
   <msg key="Comment">Comment</msg>
+  <msg key="Comments">Comments</msg>
   <msg key="Companies">Companies</msg>
   <msg key="Company">Company</msg>
   <msg key="Company_1">Company:</msg>
@@ -41,6 +43,7 @@
   <msg key="Dn">Dn</msg>
   <msg key="Edit">Edit</msg>
   <msg key="Editing">Editing</msg>
+  <msg key="End_Date">End Date</msg>
   <msg key="File">File</msg>
   <msg key="Filename">Filename</msg>
   <msg key="Final_User">Final User</msg>
@@ -85,8 +88,8 @@
   <msg key="lt_Return_to_Project_Pag">Return to Project Page</msg>
   <msg key="lt_Shows_the_status_of_a">Shows the status of all tasks\nAss: Assigned Files\nDn: Downloaded Files\nUp: Uploaded Files</msg>
   <msg key="lt_Task_task_id_doesnt_e">Task \#%task_id% doesn't exist</msg>
-  <msg key="lt_The_most_probable_cau">The most probable cause for this error is that the Project Manager hasn't uploaded the file yet.#&lt;br&gt;
-	&lt;#_ Please send an email to</msg>
+  <msg key="lt_The_most_probable_cau">The most probable cause for this error is that the Project Manager has not uploaded the file yet. &lt;br&gt;
+Please contact the project manager of your project: </msg>
   <msg key="lt_The_project_has_no_ta">The project has no target language defined, so we are unable to add translation tasks to the project.</msg>
   <msg key="lt_The_project_id_specif">The project_id specified doesn't look like an integer.</msg>
   <msg key="lt_The_specified_file_do">The specified file does not exist.</msg>
@@ -118,19 +121,27 @@ system meanwhile.)</msg>
   <msg key="lt_You_have_no_rights_to">You have no rights to modify this object.</msg>
   <msg key="lt_You_have_no_rights_to_1">You have no rights to see this object.</msg>
   <msg key="lt_You_havent_defined_th">You haven't defined the source language of your project.</msg>
-  <msg key="lt_You_havent_selected_a">You haven't selected a user for auto assignation</msg>
+  <msg key="lt_You_havent_selected_a">You haven't selected a user for auto assignment.</msg>
   <msg key="lt_Your_are_trying_to_do">Your are trying to download the file &quot;&lt;b&gt;%file_name%&lt;/b&gt;&quot; in the folder &quot;&lt;b&gt;%download_folder%&lt;/b&gt;&quot;, but the file is not readable or does not exist in the system.</msg>
   <msg key="lt_Your_file_doesnt_coin">Your file doesn't coincide with the expected file:</msg>
   <msg key="lt_Your_file_is_larger_t">Your file is larger than the maximum permissible upload size</msg>
   <msg key="lt_Your_file_is_larger_t_1">Your file is larger than the maximum permissible upload size:  %util_commify_number_max_n_bytes% bytes</msg>
   <msg key="lt_Your_file_is_not_a_tr">Your file is not a trados wordcount file.</msg>
-  <msg key="lt_Your_file_trados_word">Your file '%trados_wordcount_file%' has not been created with one of the supported Trados versions (3.0 and 5.5).</msg>
+  <msg key="lt_Your_file_trados_word">Your file '%trados_wordcount_file%' has not been created with one of the supported Trados versions (3.x, 5.0, 5.5, 6.0 and 6.5).</msg>
   <msg key="lt_Your_file_upload_file">Your file: %upload_file%</msg>
-  <msg key="lt_Your_have_successfull">Your have successfully uploaded %filesize% bytes of file '%task_name%'.</msg>
+  <msg key="lt_Your_have_successfull">You have successfully uploaded %filesize% bytes of file '%task_name%'.</msg>
   <msg key="Message">Message</msg>
   <msg key="Name">Name</msg>
   <msg key="No_Match">No Match</msg>
   <msg key="No_tasks_found">No tasks found</msg>
+  <msg key="No_translator_comments_in_this_project">No translator comments in this project</msg>
+  <msg key="Notify_PM_About_Task_Upload_Message">A new file has been uploaded:
+Folder: %upload_folder%
+Task Name: %task_name%
+Project: %project_name%
+</msg>
+  <msg key="Notify_PM_About_Task_Upload_Subject">Task Upload of %upload_folder% into %task_name% for %project_name%</msg>
+  <msg key="Num_Words">#Words</msg>
   <msg key="One_Project">One Project</msg>
   <msg key="One_project">One project</msg>
   <msg key="optional">(optional)</msg>
@@ -160,6 +171,7 @@ system meanwhile.)</msg>
   <msg key="Target_Languages">Target Language(s)</msg>
   <msg key="Target_Languages_1">Target Languages</msg>
   <msg key="Task">Task</msg>
+  <msg key="Task_Action">Task Action</msg>
   <msg key="Task_Assignments">Task Assignments</msg>
   <msg key="Task_Name">Task Name</msg>
   <msg key="Task_Status">Task Status</msg>
@@ -171,6 +183,7 @@ system meanwhile.)</msg>
   <msg key="Trans">Trans</msg>
   <msg key="Translation">Translation</msg>
   <msg key="Translation_Tasks">Translation Tasks</msg>
+  <msg key="Translator_Comments">Translator's Comments</msg>
   <msg key="Units">Units</msg>
   <msg key="UoM">UoM</msg>
   <msg key="Up">Up</msg>
@@ -185,6 +198,13 @@ system meanwhile.)</msg>
   <msg key="Weighted">Weighted</msg>
   <msg key="Wordcount">Wordcount</msg>
   <msg key="Wordcount_Import">Wordcount Import</msg>
+  <msg key="Words">Words</msg>
+  <msg key="Workflow_deliv_directory">delif</msg>
+  <msg key="Workflow_edit_directory">editt</msg>
+  <msg key="Workflow_other_directory">oter</msg>
+  <msg key="Workflow_proof_directory">prooof</msg>
+  <msg key="Workflow_source_directory">src</msg>
+  <msg key="Workflow_trans_directory">transs</msg>
   <msg key="X_Trans">X Trans</msg>
   <msg key="XTr">XTr</msg>
 </message_catalog>

@@ -29,12 +29,7 @@
 --
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (2023,20,NULL,'Size',
-'[if {"" == $trans_project_words} {
-        set t ""
-} else {
-        set t "${trans_project_words}w ${trans_project_hours}h"
-}]','','',15,'');
-
+'$trans_size','','',90,'im_permission $user_id view_trans_proj_detail');
 
 
 
@@ -83,6 +78,14 @@ extra_select, extra_where, sort_order, visible_for) values (9013,90,NULL,'Units'
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (9015,90,NULL,'Bill. Units','$billable_items_input',
 '','',15,'expr $project_write');
+-- for those who can not write on the project...
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (9014,90,NULL,'End Date','$end_date_formatted',
+'','',14,'expr !$project_write');
+-- for those who _can_ write on the project...
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (9016,90,NULL,'End Date','$end_date_input',
+'','',16,'expr $project_write');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (9017,90,NULL,'Task Type','$type_select',
 '','',17,'expr $project_write');
@@ -117,6 +120,14 @@ where category_type = 'Intranet Translation Task Status';
 -- Categories
 -- -------------------------------------------------------------------
 
+# Fixed thanks to Bohumil Gorcic:
+# Maybe these lines have got here as part of testing the code?
+#
+# delete from im_biz_object_role_map where object_type_id in (
+# 	select category_id from im_categories where category_type = 'Intranet Project Type');
+# delete from im_category_hierarchy where parent_id in (
+#	select category_id from im_categories where category_type = 'Intranet Project Type');
+#delete from im_categories where category_type = 'Intranet Project Type';
 
 insert into im_categories values (87,  'Trans + Edit',  
 '',  'Intranet Project Type','category','t','f');
@@ -148,6 +159,7 @@ insert into im_categories values (96,  'Glossary Compilation',
 
 insert into im_categories values (2500,  'Translation Project',  
 '',  'Intranet Project Type','category','t','f');
+delete from im_category_hierarchy where parent_id = 2500;
 
 insert into im_category_hierarchy values (2500,87);
 insert into im_category_hierarchy values (2500,88);
@@ -164,7 +176,7 @@ insert into im_category_hierarchy values (2500,96);
 -- -------------------------------------------------------------------
 -- Other Categories
 -- -------------------------------------------------------------------
-
+delete from im_categories where category_type = 'Intranet Quality';
 -- Intranet Quality
 INSERT INTO im_categories VALUES (110,'Premium Quality','Premium Quality','Intranet Quality','category','t','f');
 INSERT INTO im_categories VALUES (111,'High Quality','High Quality','Intranet Quality','category','t','f');
@@ -172,6 +184,7 @@ INSERT INTO im_categories VALUES (112,'Average Quality','Average Quality','Intra
 INSERT INTO im_categories VALUES (113,'Draft Quality','Draft Quality','Intranet Quality','category','t','f');
 
 
+delete from im_categories where category_type = 'Intranet Translation Language';
 -- Setup the most frequently used language (lang, sort_key, name)
 INSERT INTO im_categories VALUES (250,'es','Spanish','Intranet Translation Language','category','t','f');
 INSERT INTO im_categories VALUES (251,'es_ES','Spanish (Spain)','Intranet Translation Language','category','t','f');
@@ -248,6 +261,8 @@ INSERT INTO im_categories (category_id, category, category_type,category_descrip
 INSERT INTO im_categories VALUES (299,'none','No Language','Intranet Translation Language','category','t','f');
 
 
+delete from im_categories where category_type = 'Intranet UoM';
+
 -- Additional UoM categories for translation
 INSERT INTO im_categories VALUES (323,'Page','','Intranet UoM','category','t','f');
 INSERT INTO im_categories VALUES (324,'S-Word','','Intranet UoM','category','t','f');
@@ -257,6 +272,8 @@ INSERT INTO im_categories VALUES (327,'T-Line','','Intranet UoM','category','t',
 
 
 -- Task Status
+delete from im_categories where category_type = 'Intranet Translation Task Status';
+
 INSERT INTO im_categories VALUES (340,'Created','','Intranet Translation Task Status','category','t','f');
 INSERT INTO im_categories VALUES (342,'for Trans','','Intranet Translation Task Status','category','t','f');
 INSERT INTO im_categories VALUES (344,'Trans-ing','','Intranet Translation Task Status','category','t','f');
@@ -275,6 +292,8 @@ INSERT INTO im_categories VALUES (372,'Deleted','','Intranet Translation Task St
 
 
 -- Subject Areas
+delete from im_categories where category_type = 'Intranet Translation Subject Area';
+
 INSERT INTO im_categories VALUES (500,'Bio','','Intranet Translation Subject Area','category','t','f');
 INSERT INTO im_categories VALUES (505,'Biz','','Intranet Translation Subject Area','category','t','f');
 INSERT INTO im_categories VALUES (510,'Com','','Intranet Translation Subject Area','category','t','f');

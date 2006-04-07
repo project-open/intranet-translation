@@ -12,8 +12,10 @@ ad_page_contract {
     task_id:integer
     return_url
     upload_file
+    {notify_project_manager_p ""}
     {file_title:trim ""}
-} 
+    {comment_body:trim "" }
+}
 
 # ---------------------------------------------------------------------
 # Defaults & Security
@@ -30,7 +32,6 @@ if {[im_permission $user_id view_projects]} {
     set context_bar [im_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] $page_title]
 }
 
-
 # ---------------------------------------------------------------------
 # SQL
 # ---------------------------------------------------------------------
@@ -39,14 +40,17 @@ if {[im_permission $user_id view_projects]} {
 set task_sql "
 select
 	t.*,
+	p.project_name,
 	im_category_from_id(t.task_status_id) as task_status,
 	im_category_from_id(t.source_language_id) as source_language,
 	im_category_from_id(t.target_language_id) as target_language
 from
-	im_trans_tasks t
+	im_trans_tasks t,
+	im_projects p
 where
 	t.task_id=:task_id
-	and t.project_id=:project_id"
+	and t.project_id = p.project_id 
+	and p.project_id = :project_id"
 
 if {![db_0or1row task_info_query $task_sql] } {
     ad_return_complaint 1 "<li>[_ intranet-translation.lt_Couldnt_find_the_spec]"
@@ -70,8 +74,43 @@ if {"" == $upload_folder} {
     return
 }
 
+
+# -----------------------------------------------------------------
+# Notify the Project Manager(s) about the upload
+# -----------------------------------------------------------------
+
+if {1 == $notify_project_manager_p} {
+
+    set subject [lang::message::lookup "" intranet-translation.Notify_PM_About_Task_Upload_Subject "Task Upload of %upload_folder% into %task_name% for %project_name%"]
+    set message [lang::message::lookup "" intranet-translation.Notify_PM_About_Task_Upload_Message "
+A new file has been uploaded:
+Folder: %upload_folder%
+Task Name: %task_name%
+Project: %project_name%
+    "]
+
+    set project_managers_sql "
+	select
+		r.object_id_two as pm_id
+	from
+		acs_rels r,
+		im_biz_object_members m
+	where
+		r.rel_id = m.rel_id
+		and r.object_id_one = :project_id
+		and m.object_role_id = [im_biz_object_role_project_manager]
+    "
+    db_foreach notify_project_managers $project_managers_sql {
+	im_send_alert $pm_id "hourly" $subject $message
+    }
+
+}
+
+# -------------------------------------------------------------------
 # Get the file from the user.
 # number_of_bytes is the upper-limit
+# -------------------------------------------------------------------
+
 set max_n_bytes [ad_parameter -package_id [im_package_filestorage_id] MaxNumberOfBytes "" 0]
 set tmp_filename [ns_queryget upload_file.tmpfile]
 set filesize [file size $tmp_filename]
@@ -102,7 +141,8 @@ ns_log Notice "task_name_body=$task_name_body"
 
 # Make sure both filenames coincide to avoid translator errors
 #
-if {![string equal $upload_file_body $task_name_body]} {
+set check_filename_equal_p [ad_parameter -package_id [im_package_translation_id] CheckTaskUploadFilenamesEqualP "" 1]
+if {![string equal $upload_file_body $task_name_body] && $check_filename_equal_p} {
     set error "<li>[_ intranet-translation.lt_Your_file_doesnt_coin]<br>
     [_ intranet-translation.lt_Your_file_upload_file]<br>
     [_ intranet-translation.lt_Expected_file_task_na]<br>
@@ -158,12 +198,58 @@ if { [catch {
 im_trans_upload_action $task_id $task_status_id $task_type_id $user_id
 
 
-set page_body "
-<H2>[_ intranet-translation.Upload_Successful]</H2>
-[_ intranet-translation.lt_Your_have_successfull]
-<P><A href=\"$return_url\">[_ intranet-translation.lt_Return_to_Project_Pag]</A></P>
-"
+# -----------------------------------------------------------------
+# Create an Forum Topic if there was atleast a subject
+# -----------------------------------------------------------------
 
-ad_return_template
-return
+set upload_html ""
+set comment_html ""
+
+if {"" != $comment_body} {
+
+    set topic_id [db_nextval "im_forum_topics_seq"]
+    set parent_id ""
+    set owner_id $user_id
+    # This comment is only visible to members of the company
+    set scope "staff"
+    set subject $task_name
+    set message "$comment_body"
+
+    # Limit Subject and message to their field sizes
+    set subject [string_truncate -len 200 $subject]
+    set message [string_truncate -len 4000 $message]
+
+    set priority 3
+
+    # 1102 is "Incident"
+    # 1108 is "Note"
+    set topic_type_id 1108
+    
+    # 1202 is "Open"
+    set topic_status_id 1202
+
+
+    db_transaction {
+
+        db_dml topic_insert "
+	INSERT INTO im_forum_topics (
+	        topic_id, object_id, parent_id, topic_type_id, topic_status_id,
+	        posting_date, owner_id, scope, subject, message, priority,
+	        asignee_id, due_date
+	) VALUES (
+	        :topic_id, :project_id, :parent_id, :topic_type_id, :topic_status_id,
+	        now(), :owner_id, :scope, :subject, :message, null,
+	        null, null
+	)"
+
+    } on_error {
+	ad_return_error "Error adding a new topic" "
+        <LI>There was an error adding your ticket to our system.<br>
+        Please send an email to <A href=\"mailto:[ad_parameter "SystemOwner" "" ""]\">
+        our webmaster</a>, thanks."
+    }
+
+    set comment_html "<p>[lang::message::lookup "" intranet-translation.Your_comment_has_been_accepted "Your comment is appreciated.."]</p>"
+}
+
 

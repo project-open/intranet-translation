@@ -2,7 +2,10 @@
 <property name="title">#intranet-translation.lt_Translation_Assignmen#</property>
 <property name="main_navbar_label">projects</property>
 
-<%= [im_sub_navbar $parent_menu_id $bind_vars] %>
+
+<br>
+<%= [im_sub_navbar $parent_menu_id $bind_vars "" "pagedesriptionbar" "project_trans_tasks_assignments"] %>
+
 
 @autoassignment_html;noquote@
 @task_html;noquote@
