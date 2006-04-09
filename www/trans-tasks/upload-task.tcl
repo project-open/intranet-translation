@@ -8,7 +8,7 @@
 ad_page_contract {
     Serve the user a form to upload a new file or URL
 
-    @author fraber@fraber.de
+    @author frank.bergmann@project-open.com
     @creation-date 030909
 } {
     project_id:integer
