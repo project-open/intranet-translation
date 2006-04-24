@@ -302,26 +302,30 @@ select im_component_plugin__new (
 
 -- Create Translation specific privileges
 
-    -- Freelancers should normally not see the translation tasks(?)
-select acs_privilege__create_privilege(	'view_trans_tasks',	'View Trans Tasks',	'View Trans Tasks');
+-- Freelancers should normally not see the translation tasks(?)
+select acs_privilege__create_privilege('view_trans_tasks',
+	'View Trans Tasks','View Trans Tasks');
 select acs_privilege__add_child('admin', 'view_trans_tasks');
 
 
-    -- Should Freelancers see the Trados matrix for the translation tasks?
-select acs_privilege__create_privilege(	'view_trans_task_matrix','View Trans Task Matrix','View Trans Task Matrix');
-select acs_privilege__add_child('admin', 'view_trans_task_matrix');
+-- Should Freelancers see the Trados matrix for the translation tasks?
+select acs_privilege__create_privilege('view_trans_task_matrix',
+	'View Trans Task Matrix','View Trans Task Matrix');
+select acs_privilege__add_child('admin','view_trans_task_matrix');
 
-    -- Should Freelancers see the translation status report?
-select acs_privilege__create_privilege(	'view_trans_task_status','View Trans Task Status','View Trans Task Status');
-select acs_privilege__add_child('admin', 'view_trans_task_status');
+-- Should Freelancers see the translation status report?
+select acs_privilege__create_privilege('view_trans_task_status',
+	'View Trans Task Status','View Trans Task Status');
+select acs_privilege__add_child('admin','view_trans_task_status');
 
 
-    -- Should Freelancers see the translation project details?
-    -- Everybody can see subject area, source and target language,
-    -- but the company project#, delivery date and company contact
-    -- are normally reserved for employees__
-select acs_privilege__create_privilege(	'view_trans_proj_detail','View Trans Project Details','View Trans Project Details');
-select acs_privilege__add_child('admin', 'view_trans_proj_detail');
+-- Should Freelancers see the translation project details?
+-- Everybody can see subject area, source and target language,
+-- but the company project#, delivery date and company contact
+-- are normally reserved for employees__
+select acs_privilege__create_privilege('view_trans_proj_detail',
+	'View Trans Project Details','View Trans Project Details');
+select acs_privilege__add_child('admin','view_trans_proj_detail');
 
 select im_priv_create('view_trans_tasks', 'Employees');
 select im_priv_create('view_trans_tasks', 'Project Managers');
@@ -388,7 +392,7 @@ begin
         null,                   -- context_id
         ''intranet'',     -- package_name
         ''project_trans_tasks'', -- label
-        ''Tasks'',               -- name
+        ''Trans Tasks'',               -- name
         ''/intranet-translation/trans-tasks/task-list?view_name=trans_tasks'', -- url
         50,                     -- sort_order
         v_project_menu,         -- parent_menu_id
@@ -455,8 +459,7 @@ create table im_trans_task_progress (
 
 
 create unique index im_trans_task_progress_idx 
-on im_trans_task_progress
-(task_type_id, task_status_id);
+on im_trans_task_progress (task_type_id, task_status_id);
 
 -- Task Status
 --
