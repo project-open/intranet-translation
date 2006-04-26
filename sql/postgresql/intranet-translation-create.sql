@@ -57,18 +57,35 @@ alter table im_projects add	trans_size		varchar(200);
 
 
 -----------------------------------------------------------
--- Tasks
+-- Intranet Translation Tasks
 --
 -- - Every project can have any number of "Tasks".
 -- - Each task represents a work unit that can be billed
 --   independently and that will appear as a line in
 --   the final invoice to be printed.
 
-create sequence im_trans_tasks_seq start 1;
+-- Create a new Object Type
+select acs_object_type__create_type (
+	'im_trans_task',	-- object_type
+	'Translation Task',	-- pretty_name
+	'Translation Tasks',	-- pretty_plural
+	'acs_object',		-- supertype
+	'im_trans_tasks',	-- table_name
+	'task_id',		-- id_column
+	'im_trans_task',	-- package_name
+	'f',			-- abstract_p
+	null,			-- type_extension_table
+	'im_trans_task__name'	-- name_method
+);
+
+
+-- Main Object Table
 create table im_trans_tasks (
 	task_id			integer 
 				constraint im_trans_tasks_pk
-				primary key,
+				primary key
+				constraint im_trans_task_id_fk
+				references acs_objects,
 	project_id		integer not null 
 				constraint im_trans_tasks_project_fk
 				references im_projects,
@@ -135,7 +152,7 @@ create table im_trans_tasks (
 				-- New field to indicate translators when
 				-- this task should be finished.
 				-- Defaults to project end_date
-        end_date                timestamptz
+	end_date		timestamptz
 );
 -- make sure a task doesn't get defined twice for a project:
 create unique index im_trans_tasks_unique_idx on im_trans_tasks 
@@ -145,6 +162,107 @@ create unique index im_trans_tasks_unique_idx on im_trans_tasks
 create index im_trans_tasks_project_id_idx on im_trans_tasks(project_id);
 
 
+
+
+-- ------------------------------------------------------------
+-- Translation Task Methods
+-- ------------------------------------------------------------
+
+create or replace function im_trans_task__new (
+	integer, varchar, timestamptz, integer, varchar, integer,
+	integer, integer, integer, integer, integer, integer
+) returns integer as '
+DECLARE
+	p_task_id		alias for $1;
+	p_object_type		alias for $2;
+	p_creation_date		alias for $3;
+	p_creation_user		alias for $4;
+	p_creation_ip		alias for $5;
+	p_context_id		alias for $6;
+
+	p_project_id		alias for $7;
+	p_task_type_id		alias for $8;
+	p_task_status_id	alias for $9;
+	p_source_language_id	alias for $10;
+	p_target_language_id	alias for $11;
+	p_task_uom_id		alias for $12;
+
+	v_task_id      integer;
+BEGIN
+       v_task_id := acs_object__new (
+		p_task_id,
+		p_object_type,
+		p_creation_date,
+		p_creation_user,
+		p_creation_ip,
+		p_context_id
+	);
+
+	insert into im_trans_tasks (
+		task_id, project_id,
+		task_type_id, task_status_id,
+		source_language_id, target_language_id,
+		task_uom_id
+	) values (
+		v_task_id, v_project_id,
+		v_task_type_id, v_task_status_id,
+		v_source_language_id, v_target_language_id,
+		v_task_uom_id
+	);
+
+	return v_task_id;
+end;' language 'plpgsql';
+
+create or replace function im_trans_task__delete (integer) returns integer as '
+DECLARE
+	v_task_id	 alias for $1;
+BEGIN
+	-- Erase the im_trans_tasks item associated with the id
+	delete from     im_trans_tasks
+	where	   task_id = v_task_id;
+
+	-- Erase all the priviledges
+	delete from     acs_permissions
+	where	   object_id = v_task_id;
+
+	PERFORM acs_object__delete(v_task_id);
+
+	return 0;
+end;' language 'plpgsql';
+
+create or replace function im_trans_task__name (integer) returns varchar as '
+DECLARE
+	v_task_id    alias for $1;
+	v_name	  varchar;
+BEGIN
+	select  task_name
+	into    v_name
+	from    im_trans_tasks
+	where   task_id = v_task_id;
+
+	return v_name;
+end;' language 'plpgsql';
+
+
+
+
+-- Create entries for URL to allow editing TransTasks in
+-- list pages with mixed object types
+--
+insert into im_biz_object_urls (object_type, url_type, url) values (
+'im_trans_task','view','/intranet-translation/view?task_id=');
+insert into im_biz_object_urls (object_type, url_type, url) values (
+'im_trans_task','edit','/intranet-translation/new?task_id=');
+
+
+
+
+
+
+-- ------------------------------------------------------------
+-- Trados Matrix
+-- ------------------------------------------------------------
+
 -- Trados Matrix by object (normally by company)
 create table im_trans_trados_matrix (
 	object_id		integer 
@@ -152,14 +270,14 @@ create table im_trans_trados_matrix (
 				references acs_objects
 				constraint im_trans_matrix_pk
 				primary key,
-        match_x			numeric(12,4),
-        match_rep		numeric(12,4),
-        match100                numeric(12,4),
-        match95                 numeric(12,4),
-        match85                 numeric(12,4),
+	match_x			numeric(12,4),
+	match_rep		numeric(12,4),
+	match100		numeric(12,4),
+	match95		 numeric(12,4),
+	match85		 numeric(12,4),
 	match75			numeric(12,4),
 	match50			numeric(12,4),
-        match0                  numeric(12,4)
+	match0		  numeric(12,4)
 );
 
 
@@ -168,7 +286,7 @@ create sequence im_task_actions_seq start 1;
 create table im_task_actions (
 	action_id		integer constraint im_task_actions_pk primary key,
 	action_type_id		integer 
-	                        constraint im_task_action_type_fk
+				constraint im_task_action_type_fk
 				references im_categories,
 	user_id			integer	not null 
 				constraint im_task_action_user_fk
@@ -178,10 +296,10 @@ create table im_task_actions (
 				references im_trans_tasks,
 	action_date		date,
 	old_status_id		integer
-                                constraint im_task_action_old_fk
+				constraint im_task_action_old_fk
 				references im_categories,
 	new_status_id		integer
-                                constraint im_task_action_new_fk
+				constraint im_task_action_new_fk
 				references im_categories
 );
 
@@ -207,38 +325,38 @@ create table im_target_languages (
 -- Show the translation specific fields in the ProjectViewPage
 --
 select im_component_plugin__new (
-        null,                           -- plugin_id
-        'acs_object',                   -- object_type
-        now(),                          -- creation_date
-        null,                           -- creation_user
-        null,                           -- creation_ip
-        null,                           -- context_id
-        'Company Trados Matrix',        -- plugin_name
-        'intranet-translation',         -- package_name
-        'left',                         -- location
-        '/intranet/companies/view',     -- page_url
-        null,                           -- view_name
-        70,                             -- sort_order
-        'im_trans_trados_matrix_component $user_id $company_id $return_url'
+	null,			   -- plugin_id
+	'acs_object',		   -- object_type
+	now(),			  -- creation_date
+	null,			   -- creation_user
+	null,			   -- creation_ip
+	null,			   -- context_id
+	'Company Trados Matrix',	-- plugin_name
+	'intranet-translation',	 -- package_name
+	'left',			 -- location
+	'/intranet/companies/view',     -- page_url
+	null,			   -- view_name
+	70,			     -- sort_order
+	'im_trans_trados_matrix_component $user_id $company_id $return_url'
     );
 
 
 -- Show the translation specific fields in the ProjectViewPage
 --
 select im_component_plugin__new (
-        null,                           -- plugin_id
-        'acs_object',                   -- object_type
-        now(),                          -- creation_date
-        null,                           -- creation_user
-        null,                           -- creation_ip
-        null,                           -- context_id
-        'Project Translation Details',  -- plugin_name
-        'intranet-translation',         -- package_name
-        'left',                         -- location
-        '/intranet/projects/view',      -- page_url
-        null,                           -- view_name
-        10,                             -- sort_order
-        'im_trans_project_details_component $user_id $project_id $return_url'
+	null,			   -- plugin_id
+	'acs_object',		   -- object_type
+	now(),			  -- creation_date
+	null,			   -- creation_user
+	null,			   -- creation_ip
+	null,			   -- context_id
+	'Project Translation Details',  -- plugin_name
+	'intranet-translation',	 -- package_name
+	'left',			 -- location
+	'/intranet/projects/view',      -- page_url
+	null,			   -- view_name
+	10,			     -- sort_order
+	'im_trans_project_details_component $user_id $project_id $return_url'
     );
 
 
@@ -246,37 +364,37 @@ select im_component_plugin__new (
 -- Show the translation tasks for freelancers on the first page
 --
 select im_component_plugin__new (
-        null,                           -- plugin_id
-        'acs_object',                   -- object_type
-        now(),                          -- creation_date
-        null,                           -- creation_user
-        null,                           -- creation_ip
-        null,                           -- context_id
-        'Project Freelance Tasks',      -- plugin_name
-        'intranet-translation',         -- package_name
-        'left',                         -- location
-        '/intranet/projects/view',       -- page_url
-        null,                           -- view_name
-        70,                             -- sort_order
-        'im_task_freelance_component $user_id $project_id $return_url'
+	null,			   -- plugin_id
+	'acs_object',		   -- object_type
+	now(),			  -- creation_date
+	null,			   -- creation_user
+	null,			   -- creation_ip
+	null,			   -- context_id
+	'Project Freelance Tasks',      -- plugin_name
+	'intranet-translation',	 -- package_name
+	'left',			 -- location
+	'/intranet/projects/view',       -- page_url
+	null,			   -- view_name
+	70,			     -- sort_order
+	'im_task_freelance_component $user_id $project_id $return_url'
     );
 
 
 -- Show the task component in project page
 --
 select im_component_plugin__new (
-        null,                           -- plugin_id
-        'acs_object',                   -- object_type
-        now(),                          -- creation_date
-        null,                           -- creation_user
-        null,                           -- creation_ip
-        null,                           -- context_id
-        'Project Translation Task Status',  -- plugin_name
-        'intranet-translation',         -- package_name
-        'bottom',                       -- location
-        '/intranet/projects/view',       -- page_url
-        null,                           -- view_name
-        10,                             -- sort_order
+	null,			   -- plugin_id
+	'acs_object',		   -- object_type
+	now(),			  -- creation_date
+	null,			   -- creation_user
+	null,			   -- creation_ip
+	null,			   -- context_id
+	'Project Translation Task Status',  -- plugin_name
+	'intranet-translation',	 -- package_name
+	'bottom',		       -- location
+	'/intranet/projects/view',       -- page_url
+	null,			   -- view_name
+	10,			     -- sort_order
 	'im_task_status_component $user_id $project_id $return_url'
     );
 
@@ -284,18 +402,18 @@ select im_component_plugin__new (
 -- Show the upload task component in project page
 
 select im_component_plugin__new (
-        null,                           -- plugin_id
-        'acs_object',                   -- object_type
-        now(),                          -- creation_date
-        null,                           -- creation_user
-        null,                           -- creation_ip
-        null,                           -- context_id
-        'Project Translation Error Component',  -- plugin_name
-        'intranet-translation',         -- package_name
-        'bottom',                       -- location
-        '/intranet/projects/view',      -- page_url
-        null,                           -- view_name
-        20,                             -- sort_order
+	null,			   -- plugin_id
+	'acs_object',		   -- object_type
+	now(),			  -- creation_date
+	null,			   -- creation_user
+	null,			   -- creation_ip
+	null,			   -- context_id
+	'Project Translation Error Component',  -- plugin_name
+	'intranet-translation',	 -- package_name
+	'bottom',		       -- location
+	'/intranet/projects/view',      -- page_url
+	null,			   -- view_name
+	20,			     -- sort_order
 	'im_task_error_component $user_id $project_id $return_url'
     );
 
@@ -384,19 +502,19 @@ begin
     where label=''project'';
 
     v_menu := im_menu__new (
-        null,                   -- p_menu_id
-        ''acs_object'',         -- object_type
-        now(),                  -- creation_date
-        null,                   -- creation_user
-        null,                   -- creation_ip
-        null,                   -- context_id
-        ''intranet'',     -- package_name
-        ''project_trans_tasks'', -- label
-        ''Trans Tasks'',               -- name
-        ''/intranet-translation/trans-tasks/task-list?view_name=trans_tasks'', -- url
-        50,                     -- sort_order
-        v_project_menu,         -- parent_menu_id
-        ''[im_project_has_type [ns_set get $bind_vars project_id] "Translation Project"]'' -- p_visible_tcl
+	null,		   -- p_menu_id
+	''acs_object'',	 -- object_type
+	now(),		  -- creation_date
+	null,		   -- creation_user
+	null,		   -- creation_ip
+	null,		   -- context_id
+	''intranet'',     -- package_name
+	''project_trans_tasks'', -- label
+	''Trans Tasks'',	       -- name
+	''/intranet-translation/trans-tasks/task-list?view_name=trans_tasks'', -- url
+	50,		     -- sort_order
+	v_project_menu,	 -- parent_menu_id
+	''[im_project_has_type [ns_set get $bind_vars project_id] "Translation Project"]'' -- p_visible_tcl
     );
 
     PERFORM acs_permission__grant_permission(v_menu, v_admins, ''read'');
@@ -409,19 +527,19 @@ begin
 
 
     v_menu := im_menu__new (
-        null,                   -- p_menu_id
-        ''acs_object'',         -- object_type
-        now(),                  -- creation_date
-        null,                   -- creation_user
-        null,                   -- creation_ip
-        null,                   -- context_id
-        ''intranet'',     -- package_name
-        ''project_trans_tasks_assignments'', -- label
-        ''Assignments'',        -- name
-        ''/intranet-translation/trans-tasks/task-assignments?view=standard'', -- url
-        60,                     -- sort_order
-        v_project_menu,         -- parent_menu_id
-        ''[im_project_has_type [ns_set get $bind_vars project_id] "Translation Project"]''  -- p_visible_tcl
+	null,		   -- p_menu_id
+	''acs_object'',	 -- object_type
+	now(),		  -- creation_date
+	null,		   -- creation_user
+	null,		   -- creation_ip
+	null,		   -- context_id
+	''intranet'',     -- package_name
+	''project_trans_tasks_assignments'', -- label
+	''Assignments'',	-- name
+	''/intranet-translation/trans-tasks/task-assignments?view=standard'', -- url
+	60,		     -- sort_order
+	v_project_menu,	 -- parent_menu_id
+	''[im_project_has_type [ns_set get $bind_vars project_id] "Translation Project"]''  -- p_visible_tcl
     );
 
     PERFORM acs_permission__grant_permission(v_menu, v_admins, ''read'');
@@ -453,8 +571,8 @@ create table im_trans_task_progress (
 				constraint im_trans_task_progres_status_fk
 				references im_categories,
 	percent_completed	numeric(6,2)
-                                constraint im_trans_task_progress_ck
-                                check(percent_completed >= 0 and percent_completed <= 100)
+				constraint im_trans_task_progress_ck
+				check(percent_completed >= 0 and percent_completed <= 100)
 );
 
 
