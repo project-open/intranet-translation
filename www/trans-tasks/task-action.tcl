@@ -49,6 +49,8 @@ if {0 == [llength $target_language_ids]} {
     set target_language_ids [list ""]
 }
 
+# Compatibility with code before L10n.
+# ToDo: Remove this and replace by cleaner code
 if {"" != $submit_view} { set submit "View Tasks" }
 if {"" != $submit_assign} { set submit "Assign Tasks" }
 if {"" != $submit_trados} { set submit "Trados Import" }
@@ -142,21 +144,10 @@ switch -glob $submit {
 	#
 	foreach task_id $delete_task {
 	    ns_log Notice "delete task: $task_id"
-	    ns_log Notice "delete from im_trans_tasks where task_id = $task_id and project_id=$project_id"
-
-	    set delete_task_actions_sql "
-		delete	from im_task_actions
-		where	task_id=:task_id"
-
-	    set delete_tasks_sql "
-		delete	from im_trans_tasks
-		where	task_id = :task_id
-			and project_id=:project_id"
 
 	    if { [catch {
 
-		db_dml delete_task_actions $delete_task_actions_sql
-		db_dml delete_tasks $delete_tasks_sql
+		im_exec_dml new_task "im_trans_task__delete(:task_id)"
 
 	    } err_msg] } {
 		ad_return_complaint 1 "<b>[_ intranet-translation.Database_Error]</b><br>

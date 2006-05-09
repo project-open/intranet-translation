@@ -160,16 +160,26 @@ where
 }
 
 
-ad_proc im_task_insert {project_id task_name task_filename task_units task_uom task_type target_language_ids} {
+ad_proc im_task_insert {
+    project_id 
+    task_name 
+    task_filename 
+    task_units 
+    task_uom 
+    task_type 
+    target_language_ids
+} {
     Add a new task into the DB
 } {
+    set user_id [ad_get_user_id]
+    set ip_address [ad_conn peeraddr]
 
     # Get some variable of the project:
     set query "
-		select p.source_language_id
-		from im_projects p
-		where p.project_id=:project_id"
-
+	select	p.source_language_id
+	from	im_projects p
+	where	p.project_id=:project_id
+    "
     if { ![db_0or1row projects_info_query $query] } {
 	append page_body "Can't find the project $project_id"
 	doc_return  200 text/html [im_return_template]
@@ -177,7 +187,8 @@ ad_proc im_task_insert {project_id task_name task_filename task_units task_uom t
     }
     
     if {"" == $source_language_id} {
-	ad_return_complaint 1 "<li>[_ intranet-translation.lt_You_havent_defined_th]<br>[_ intranet-translation.lt_Please_edit_your_proj]"
+	ad_return_complaint 1 "<li>[_ intranet-translation.lt_You_havent_defined_th]<br>
+	[_ intranet-translation.lt_Please_edit_your_proj]"
 	return
     }
 
@@ -189,20 +200,6 @@ ad_proc im_task_insert {project_id task_name task_filename task_units task_uom t
     set match95 ""
     set match85 ""
     set match0 ""
-
-
-    set sql "
-	INSERT INTO im_trans_tasks (
-		task_id, task_name, task_filename, project_id, task_type_id, 
-		task_status_id, description, source_language_id, target_language_id, 
-		task_units, billable_units, task_uom_id, match100, match95, match85, 
-		match0
-	) VALUES (
-		:new_task_id, :task_name, :task_filename, :project_id, :task_type, 
- 		:task_status_id, :task_description, :source_language_id, :target_language_id, 
- 		:task_units, :task_units, :task_uom, :match100, :match95, :match85, :match0
- 	)"
-
 
     # Add a new task for every project target language
     foreach target_language_id $target_language_ids {
@@ -221,14 +218,42 @@ ad_proc im_task_insert {project_id task_name task_filename task_units task_uom t
 	    return
 	}
 
-	set new_task_id [db_nextval im_trans_tasks_seq]
+	if { [catch {
+	    set new_task_id [im_exec_dml new_task "im_trans_task__new (
+		null,			-- task_id
+		'im_trans_task',	-- object_type
+		now(),			-- creation_date
+		:user_id,		-- creation_user
+		:ip_address,		-- creation_ip	
+		null,			-- context_id	
 
-        if { [catch {
-	    db_dml insert_tasks $sql
-        } err_msg] } {
+		:project_id,		-- project_id	
+		:task_type,		-- task_type_id	
+		:task_status_id,	-- task_status_id
+		:source_language_id,	-- source_language_id
+		:target_language_id,	-- target_language_id
+		:task_uom		-- task_uom_id
+		
+	    )"]
+
+	    db_dml update_task "
+		UPDATE im_trans_tasks SET
+			task_name = :task_name,
+			task_filename = :task_filename,
+			description = :task_description,
+			task_units = :task_units,
+			billable_units = :task_units,
+			match100 = :match100,
+			match95 = :match95,
+			match85 = :match85,
+			match0 = :match0
+		WHERE 
+			task_id = :new_task_id
+	    "
+	} err_msg] } {
 	    ad_return_complaint "[_ intranet-translation.Database_Error]" "[_ intranet-translation.lt_Did_you_enter_the_sam]<BR>
-            Here is the error:<BR> <P>$err_msg"
-        }
+	    Here is the error:<BR> <pre>$err_msg</pre>"
+	}
     }
 }
 
@@ -246,7 +271,7 @@ ad_proc -public im_trans_trados_matrix_component { user_id object_id return_url 
 } {
 
     if {![im_permission $user_id view_costs]} {
-        return ""
+	return ""
     }
 
     array set matrix [im_trans_trados_matrix $object_id]
@@ -283,7 +308,7 @@ ad_proc -public im_trans_trados_matrix_component { user_id object_id return_url 
 
     if {[im_permission $user_id add_costs]} {
 
-        append html "
+	append html "
 <tr class=rowplain>
   <td colspan=9 align=right>
     <input type=submit value=\"Edit\">
@@ -366,14 +391,14 @@ ad_proc -public im_trans_trados_matrix_project { project_id } {
     # Get match100, match95, ...
 db_1row matrix_select "
 select
-        m.*,
-        acs_object.name(o.object_id) as object_name
+	m.*,
+	acs_object.name(o.object_id) as object_name
 from
-        acs_objects o,
-        im_trans_trados_matrix m
+	acs_objects o,
+	im_trans_trados_matrix m
 where
-        o.object_id = :project_id
-        and o.object_id = m.object_id(+)
+	o.object_id = :project_id
+	and o.object_id = m.object_id(+)
 "
 
     set matrix(x) $match_x
@@ -400,14 +425,14 @@ ad_proc -public im_trans_trados_matrix_company { company_id } {
     # Get match100, match95, ...
 db_1row matrix_select "
 select
-        m.*,
-        acs_object.name(o.object_id) as object_name
+	m.*,
+	acs_object.name(o.object_id) as object_name
 from
-        acs_objects o,
-        im_trans_trados_matrix m
+	acs_objects o,
+	im_trans_trados_matrix m
 where
-        o.object_id = :company_id
-        and o.object_id = m.object_id(+)
+	o.object_id = :company_id
+	and o.object_id = m.object_id(+)
 "
 
     set matrix(x) $match_x
@@ -435,14 +460,14 @@ ad_proc -public im_trans_trados_matrix_internal { } {
     # Get match100, match95, ...
 db_1row matrix_select "
 select
-        m.*,
-        acs_object.name(o.object_id) as object_name
+	m.*,
+	acs_object.name(o.object_id) as object_name
 from
-        acs_objects o,
-        im_trans_trados_matrix m
+	acs_objects o,
+	im_trans_trados_matrix m
 where
-        o.object_id = :company_id
-        and o.object_id = m.object_id(+)
+	o.object_id = :company_id
+	and o.object_id = m.object_id(+)
 "
 
     set matrix(x) $match_x
@@ -603,12 +628,12 @@ ad_proc -public im_trans_project_details_component { user_id project_id return_u
 
     set query "
 select
-        p.*,
+	p.*,
 	im_name_from_user_id(p.company_contact_id) as company_contact_name
 from
-        im_projects p
+	im_projects p
 where
-        p.project_id=:project_id
+	p.project_id=:project_id
 "
 
     if { ![db_0or1row projects_info_query $query] } {
@@ -775,13 +800,13 @@ ad_proc im_trans_upload_action {
     set action_id [db_nextval im_task_actions_seq]
     set sysdate [db_string sysdate "select sysdate from dual"]
     db_dml register_action "insert into im_task_actions (
-	        action_id,
-	        action_type_id,
-	        user_id,
-	        task_id,
-	        action_date,
-	        old_status_id,
-	        new_status_id
+		action_id,
+		action_type_id,
+		user_id,
+		task_id,
+		action_date,
+		old_status_id,
+		new_status_id
 	    ) values (
 		:action_id,
 		$upload_action_id,
@@ -841,13 +866,13 @@ ad_proc im_trans_download_action {task_id task_status_id task_type_id user_id} {
     set download_action_id [db_string upload_action_id "select category_id from im_categories where category_type='Intranet File Action Type' and lower(category)='download'" -default ""]
     set action_id [db_nextval im_task_actions_seq]
     db_dml register_action "insert into im_task_actions (
-	        action_id,
-	        action_type_id,
-	        user_id,
-	        task_id,
-	        action_date,
-	        old_status_id,
-	        new_status_id
+		action_id,
+		action_type_id,
+		user_id,
+		task_id,
+		action_date,
+		old_status_id,
+		new_status_id
 	    ) values (
 		:action_id,
 		$download_action_id,
@@ -973,7 +998,7 @@ ad_proc im_trans_task_project_advance { project_id } {
 
     set advance ""
     if {[db_table_exists im_trans_task_progress]} {
-        set advance [db_string project_advance "
+	set advance [db_string project_advance "
 	    select
 		sum(volume_completed) / (0.000001 + sum(volume)) * 100 as percent_completed
 	    from
@@ -1005,15 +1030,15 @@ ad_proc im_trans_task_project_advance { project_id } {
 			and t.task_status_id = ttp.task_status_id
 			and t.task_uom_id = uom_weights.id
 		) volume
-        "]
+	"]
     }
 
     if {"" != $advance} {
-        db_dml update_project_advance "
+	db_dml update_project_advance "
 		update im_projects
 		set percent_completed = :advance
 		where project_id = :project_id
-        "
+	"
     }
 
     return $advance

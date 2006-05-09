@@ -168,6 +168,7 @@ create index im_trans_tasks_project_id_idx on im_trans_tasks(project_id);
 -- Translation Task Methods
 -- ------------------------------------------------------------
 
+
 create or replace function im_trans_task__new (
 	integer, varchar, timestamptz, integer, varchar, integer,
 	integer, integer, integer, integer, integer, integer
@@ -187,9 +188,9 @@ DECLARE
 	p_target_language_id	alias for $11;
 	p_task_uom_id		alias for $12;
 
-	v_task_id      integer;
+	v_task_id	integer;
 BEGIN
-       v_task_id := acs_object__new (
+	v_task_id := acs_object__new (
 		p_task_id,
 		p_object_type,
 		p_creation_date,
@@ -204,10 +205,10 @@ BEGIN
 		source_language_id, target_language_id,
 		task_uom_id
 	) values (
-		v_task_id, v_project_id,
-		v_task_type_id, v_task_status_id,
-		v_source_language_id, v_target_language_id,
-		v_task_uom_id
+		v_task_id, p_project_id,
+		p_task_type_id, p_task_status_id,
+		p_source_language_id, p_target_language_id,
+		p_task_uom_id
 	);
 
 	return v_task_id;
