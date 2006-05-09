@@ -452,7 +452,7 @@ ns_log Notice "trados-import: common_filename_comps=$common_filename_comps"
 			match85 = :p85_words,
 			match75 = :p75_words, 
 			match50 = :p50_words,
-			match0 = :p0_words,
+			match0 = :p0_words
 		    WHERE 
 			task_id = :new_task_id
 		"

@@ -114,8 +114,9 @@ drop table im_target_languages;
 drop table im_task_actions;
 drop sequence im_task_actions_seq;
 drop table im_trans_tasks;
-drop sequence im_trans_tasks_seq;
 drop table im_trans_trados_matrix;
+
+-- ToDo: Add drop for im_trans_task object type
 
 
 -- Delete intranet views

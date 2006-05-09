@@ -314,26 +314,43 @@ for {set i 1} {$i < $freebudget_files_len} {incr i} {
     set insert_sql ""
     foreach target_language_id $target_language_ids {
 
-	set insert_sql "<tr><td colspan=10>INSERT INTO im_trans_tasks VALUES
-(im_trans_tasks_seq.nextval, $task_name, $project_id, $task_type_id, 
-$task_status_id, $task_description, $source_language_id, $target_language_id, 
-$task_units, $billable_units, $task_uom_id)</td></tr>\n"
-
-        set sql "
-INSERT INTO im_trans_tasks (
-	task_id, task_name, task_filename, project_id, task_type_id, 
-	task_status_id, description, source_language_id, target_language_id, 
-	task_units, billable_units, task_uom_id,
-	match_x, match_rep, match100, match95, match85, match75, match50, match0
-) VALUES (
-	[db_nextval im_trans_tasks_seq], :task_name, :task_name, :project_id, :task_type_id, 
-	:task_status_id, :task_description, :source_language_id, :target_language_id, 
-	:task_units, :billable_units, :task_uom_id, 
-	:px_words, :prep_words, :p100_words, :p95_words, :p85_words, :p75_words, :p50_words, :p0_words
-)"
-
         if { [catch {
-            db_dml insert_tasks $sql
+
+		set new_task_id [im_exec_dml new_task "im_trans_task__new (
+			null,			-- task_id
+			'im_trans_task',	-- object_type
+			now(),			-- creation_date
+			:user_id,		-- creation_user
+			:ip_address,		-- creation_ip	
+			null,			-- context_id	
+
+			:project_id,		-- project_id	
+			:task_type_id,		-- task_type_id	
+			:task_status_id,	-- task_status_id
+			:source_language_id,	-- source_language_id
+			:target_language_id,	-- target_language_id
+			:task_uom_id		-- task_uom_id
+		)"]
+
+		db_dml update_task "
+		    UPDATE im_trans_tasks SET
+			task_name = :task_name,
+			task_filename = :task_name,
+			description = :task_description,
+			task_units = :billable_units,
+			billable_units = :task_units,
+			match_x = :px_words,
+			match_rep = :prep_words,
+			match100 = :p100_words, 
+			match95 = :p95_words,
+			match85 = :p85_words,
+			match75 = :p75_words, 
+			match50 = :p50_words,
+			match0 = :p0_words
+		    WHERE 
+			task_id = :new_task_id
+		"
+
         } err_msg] } {
 	    incr err_count
 	    append page_body "
