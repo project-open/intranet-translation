@@ -251,8 +251,16 @@ ad_proc im_task_insert {
 			task_id = :new_task_id
 	    "
 	} err_msg] } {
+
 	    ad_return_complaint "[_ intranet-translation.Database_Error]" "[_ intranet-translation.lt_Did_you_enter_the_sam]<BR>
 	    Here is the error:<BR> <pre>$err_msg</pre>"
+
+	} else {
+
+	    # Successfully created translation task
+	    # Call user_exit to let TM know about the event
+	    im_user_exit_call trans_task_create $new_task_id
+
 	}
     }
 }
@@ -737,14 +745,6 @@ ad_proc im_trans_upload_action {
 } {
     set new_status_id $task_status_id
 
-    # Task Types
-    set trans_only 85
-    set trans_ed 86
-    set edit_only 87
-    set trans_ed_proof 88
-    set trans_spot 94
-    set proof_only 95
-
     switch $task_status_id {
 	340 { 
 	    # Created: Maybe in the future there maybe a step between
@@ -755,7 +755,7 @@ ad_proc im_trans_upload_action {
 	342 { # for Trans: 
 	}
 	344 { # Translating: 
-	    if {$task_type_id == $trans_only} {
+	    if {$task_type_id == [im_project_type_trans]} {
 		# we are done, because this task is translation only.
 		set new_status_id 358
 	    } else {
@@ -765,7 +765,7 @@ ad_proc im_trans_upload_action {
 	346 { # for Edit: 
 	}
 	348 { # Editing: 
-	    if {$task_type_id == $edit_only || $task_type_id == $trans_ed || $task_type_id == $trans_spot} {
+	    if {$task_type_id == [im_project_type_edit] || $task_type_id == [im_project_type_trans_edit] || $task_type_id == [im_project_type_trans_spot]} {
 		# we are done, because this task is only until editing
 		# (spotcheck = short editing)
 		set new_status_id 358
@@ -793,6 +793,15 @@ ad_proc im_trans_upload_action {
 		set task_status_id=:new_status_id 
 		where task_id=:task_id
 	"
+
+	# Successfully modified translation task
+	# Call user_exit to let TM know about the event
+	if {358 == $new_status_id} {
+	    im_user_exit_call trans_task_complete $task_id
+	} else {
+	    im_user_exit_call trans_task_update $task_id
+	}
+
     }
 
     # Always register the user-action
@@ -860,6 +869,11 @@ ad_proc im_trans_download_action {task_id task_status_id task_type_id user_id} {
 		set task_status_id=:new_status_id 
 		where task_id=:task_id
 	"
+
+        # Successfully modified translation task
+        # Call user_exit to let TM know about the event
+        im_user_exit_call trans_task_update $task_id
+
     }
 
     # Always register the user-action

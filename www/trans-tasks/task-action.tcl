@@ -133,6 +133,11 @@ switch -glob $submit {
 		   db_dml update_billable_units $update_sql
 		}
 	    }
+	    
+	    # Successfully updated translation task
+	    # Call user_exit to let TM know about the event
+	    im_user_exit_call trans_task_update $task_id
+
 	}
 	
 	ad_returnredirect $return_url
@@ -155,6 +160,12 @@ switch -glob $submit {
                 <br>&nbsp;<br>
                 [lang::message::lookup "" intranet-translation.Here_is_the_error "Here is the error. You may copy this text and send it to your system administrator for reference."]
                 <br><pre>$err_msg</pre>"
+	    } else {
+
+                # Successfully deleted translation task
+                # Call user_exit to let TM know about the event
+                im_user_exit_call trans_task_delete $task_id
+
 	    }
 
        }

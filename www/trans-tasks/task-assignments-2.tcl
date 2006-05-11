@@ -46,7 +46,11 @@ update im_trans_tasks set
 where
 	task_id=:task_id
 "
-	db_dml update_workflow $task_workflow_update_sql
+    db_dml update_workflow $task_workflow_update_sql
+
+    # Notify system about the joyful act
+    im_user_exit_call trans_task_assign $task_id
+
 }
 
 db_release_unused_handles

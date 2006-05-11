@@ -352,12 +352,19 @@ for {set i 1} {$i < $freebudget_files_len} {incr i} {
 		"
 
         } err_msg] } {
+
 	    incr err_count
 	    append page_body "
 <tr><td colspan=10>$insert_sql</td></tr>
 <tr><td colspan=10><font color=red>$err_msg</font></td></tr>
 "
-        }
+        } else {
+
+	    # Successfully created translation task
+	    # Call user_exit to let TM know about the event
+	    im_user_exit_call trans_task_create $new_task_id
+	    
+	}
     }
 }
 
