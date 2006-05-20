@@ -650,7 +650,6 @@ where
     }
 
     set html "
-<table cellpadding=0 cellspacing=2 border=0>
   <tr> 
     <td colspan=2 class=rowtitle align=middle>
       [_ intranet-translation.Project_Details]
@@ -708,11 +707,14 @@ where
 </form>
     </td>
   </tr>
-</table>
 "
     }
 
-    return $html
+    return "
+<table cellpadding=0 cellspacing=2 border=0>
+$html
+</table>
+"
 }
 
 
