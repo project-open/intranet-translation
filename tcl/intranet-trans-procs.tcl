@@ -901,7 +901,17 @@ ad_proc im_trans_download_action {task_id task_status_id task_type_id user_id} {
 }
 
 
-ad_proc im_task_component_upload {user_id user_admin_p task_status_id source_language target_language trans_id edit_id proof_id other_id} {
+ad_proc im_task_component_upload {
+    user_id
+    user_admin_p
+    task_status_id
+    source_language
+    target_language
+    trans_id
+    edit_id
+    proof_id
+    other_id
+} {
     Determine if the user $user_id is allows to upload a file in the current
     status of a task.
     Returns a list composed by:
@@ -1427,6 +1437,10 @@ ad_proc im_task_component { user_id project_id return_url {view_name "trans_task
     # Get the permissions for the current _project_
     im_project_permissions $user_id $project_id project_view project_read project_write project_admin
 
+    # Ophelia translation Memory Integration?
+    # Then we need links to Opehelia instead of upload/download buttons
+    set ophelia_installed_p [llength [info procs im_package_ophelia_id]]
+
     # Get the projects end date as a default for the tasks
     set project_end_date [db_string project_end_date "select to_char(end_date, :date_format) from im_projects where project_id = :project_id" -default ""]
 
@@ -1540,6 +1554,7 @@ append task_table "
 	# upload a file for this task, depending on the task
 	# status (engine) and the assignment to a specific phase.
 	set upload_list [im_task_component_upload $user_id $project_admin $task_status_id $source_language $target_language $trans_id $edit_id $proof_id $other_id]
+
 	set download_folder [lindex $upload_list 0]
 	set upload_folder [lindex $upload_list 1]
 	set message [lindex $upload_list 2]
@@ -1551,19 +1566,34 @@ append task_table "
 	# Download Link - where to get the task file
 	set download_link ""
 	if {$download_folder != ""} {
-	    set download_link "
-  <A HREF='/intranet-translation/download-task/$task_id/$download_folder/$task_name'>
-    [im_gif save "Click right and choose \"Save target as\" to download the file"]
-  </A>\n"
+
+	    if {!$ophelia_installed_p} {
+		# Standard - Download to start editing
+		set download_url "/intranet-translation/download-task/$task_id/$download_folder/$task_name"
+		set download_gif [im_gif save "Click right and choose \"Save target as\" to download the file"]
+	    } else {
+		# Ophelia - Redirect to Ophelia page
+		set download_url [export_vars -base "/intranet-ophelia/task-start" {task_id project_id return_url}]
+		set download_gif [im_gif control_play_blue "Start Editing with Ophelia"]
+	    }
+	    set download_link "<A HREF='$download_url'>$download_gif</A>\n"
 	}
 
 	# Upload Link
 	set upload_link ""
 	if {$upload_folder != ""} {
-	    set upload_link "
-  <A HREF='/intranet-translation/trans-tasks/upload-task?[export_url_vars project_id task_id return_url]'>
-    [im_gif open "Upload file"]
-  </A>\n"
+
+	    if {!$ophelia_installed_p} {
+		# Standard - Upload to start editing
+		set upload_url "/intranet-translation/trans-tasks/upload-task?"
+		append upload_url [export_url_vars project_id task_id return_url]
+		set upload_gif [im_gif open "Upload File"]
+	    } else {
+		# Ophelia - Redirect to Ophelia page
+		set upload_url [export_vars -base "/intranet-ophelia/task-end" {task_id project_id return_url}]
+		set upload_gif [im_gif control_stop_blue "Start Editing with Ophelia"]
+	    }
+	    set upload_link "<A HREF='$upload_url'>$upload_gif</A>\n"
 	}
 	
 	# Append together a line of data based on the "column_vars" parameter list
