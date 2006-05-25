@@ -176,6 +176,7 @@ ad_proc im_task_insert {
 
     # Is the dynamic WorkFlow module installed?
     set wf_installed_p [llength [info proc im_package_workflow_id]]
+    set wf_installed_p 0
 
     # Get some variable of the project:
     set query "

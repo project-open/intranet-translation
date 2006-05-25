@@ -45,7 +45,11 @@ if {"" == $return_url} { set return_url [im_url_with_query] }
 set bgcolor(0) " class=roweven"
 set bgcolor(1) " class=rowodd"
 
-# ----------------- Security for auto assign ----------------------
+
+# -------------------------------------------------------------------------
+# Auto assign
+# -------------------------------------------------------------------------
+
 set error 0
 
 # Check that there is only a single role being assigned
@@ -300,6 +304,133 @@ append task_html "
 <input type=submit value=Submit>
 </form>
 "
+
+
+# -------------------------------------------------------------------
+# Extract the Headers
+# for each of the different workflows that might occur in 
+# the list of tasks of one project
+# -------------------------------------------------------------------
+
+set wf_header_sql "
+	select distinct
+	        wfc.workflow_key,
+	        wft.transition_key,
+		wft.transition_name,
+	        wft.sort_order
+	from
+	        im_trans_tasks t
+	        LEFT OUTER JOIN wf_cases wfc ON (t.task_id = wfc.object_id)
+	        LEFT OUTER JOIN wf_transitions wft ON (wfc.workflow_key = wft.workflow_key)
+	where
+	        t.project_id = :project_id
+	        and wft.trigger_type != 'automatic'
+	order by
+	        wfc.workflow_key,
+	        wft.sort_order
+"
+
+# Determine the header fields for each workflow key
+# Data Structures:
+#	transitions(workflow_key) => [orderd list of transition_keys]
+#	name(transition_key) => transition_name
+#
+db_foreach wf_header $wf_header_sql {
+
+    ns_log Notice "task-assignments: header: wf=$workflow_key, trans=$transition_key"
+
+    set trans_key "$workflow_key $transition_key"
+    set name($trans_key) $transition_name
+
+    set trans_list [list]
+    if {[info exists transitions($workflow_key)]} { 
+	set trans_list $transitions($workflow_key) 
+    }
+    lappend trans_list $transition_key
+    set transitions($workflow_key) $trans_list
+}
+
+
+# -------------------------------------------------------------------
+# Render the assignments table
+# -------------------------------------------------------------------
+
+set wf_assignments_sql "
+	select distinct
+	        t.*,
+	        wfc.workflow_key,
+	        wft.transition_key,
+	        wft.trigger_type,
+	        wft.sort_order,
+	        wfca.party_id
+	from
+	        im_trans_tasks t
+	        LEFT OUTER JOIN wf_cases wfc ON (t.task_id = wfc.object_id)
+	        LEFT OUTER JOIN wf_transitions wft ON (wfc.workflow_key = wft.workflow_key)
+	        LEFT OUTER JOIN wf_case_assignments wfca ON (
+	                wfca.case_id = wfc.case_id
+	                and wfca.role_key = wft.role_key
+	        )
+	where
+	        t.project_id = :project_id
+	        and wft.trigger_type != 'automatic'
+	order by
+	        wfc.workflow_key,
+	        wft.sort_order
+"
+
+set ass_html "
+<form method=POST action=task-assignments-2>
+[export_form_vars project_id return_url]
+<table border=0>
+"
+
+set last_task_id 0
+set last_wf_key ""
+db_foreach wf_assignment $wf_assignments_sql {
+
+
+    # Write out the assignments after the task_id has changed.
+    # This must happen _before_ drawing a new header line in
+    # case that the workflow_key has changed as well.
+    if {$task_id != $last_task_id} {
+	if {0 != $last_task_id} {
+
+	}
+	set last_task_id $task_id
+    }
+
+
+    # Render a new header line for evey type of Workflow
+    if {$last_wf_key != $workflow_key} {
+	append ass_html "
+	<tr>
+	<td class=rowtitle align=center>[_ intranet-translation.Task_Name]</td>
+	<td class=rowtitle align=center>[_ intranet-translation.Target_Lang]</td>
+	<td class=rowtitle align=center>[_ intranet-translation.Task_Type]</td>
+	<td class=rowtitle align=center>[_ intranet-translation.Size]</td>
+	<td class=rowtitle align=center>[_ intranet-translation.UoM]</td>\n"
+
+	set transition_list $transitions($workflow_key)
+	foreach trans $transition_list {
+	    set trans_key "$workflow_key $trans"
+	    append ass_html "<td class=rowtitle align=center
+		>[lang::message::lookup "" intranet-translation.$trans $name($trans_key)]</td>\n"
+	}
+	append ass_html "</tr>\n"
+	set last_wf_key $workflow_key
+    }
+
+    # Process the assignments
+    set ass_key "$task_id $transition_key"
+    set ass($ass_key) $party_id
+
+
+
+}
+
+
+
 
 # -------------------------------------------------------------------
 # Autoassign HTML Component
