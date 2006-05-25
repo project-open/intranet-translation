@@ -140,20 +140,19 @@ select
         im_category_from_id(t.source_language_id) as source_language,
         im_category_from_id(t.target_language_id) as target_language,
         im_category_from_id(t.task_status_id) as task_status,
-	uom_c.category as uom_name,
-	type_c.category as type_name,
+	im_category_from_id(t.task_uom_id) as uom_name,
+	im_category_from_id(t.task_type_id) as type_name,
         im_initials_from_user_id (t.trans_id) as trans_name,
         im_initials_from_user_id (t.edit_id) as edit_name,
         im_initials_from_user_id (t.proof_id) as proof_name,
         im_initials_from_user_id (t.other_id) as other_name
+	$extra_select
 from 
 	im_trans_tasks t
-      LEFT JOIN
-	im_categories uom_c ON t.task_uom_id=uom_c.category_id
-      LEFT JOIN
-	im_categories type_c ON t.task_type_id=type_c.category_id
+	$extra_from
 where
 	t.project_id=:project_id
+	$extra_where
 order by
 	t.task_name,
 	t.target_language_id

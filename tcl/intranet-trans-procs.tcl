@@ -161,18 +161,21 @@ where
 
 
 ad_proc im_task_insert {
-    project_id 
-    task_name 
-    task_filename 
-    task_units 
-    task_uom 
-    task_type 
+    project_id
+    task_name
+    task_filename
+    task_units
+    task_uom
+    task_type
     target_language_ids
 } {
     Add a new task into the DB
 } {
     set user_id [ad_get_user_id]
     set ip_address [ad_conn peeraddr]
+
+    # Is the dynamic WorkFlow module installed?
+    set wf_installed_p [llength [info proc im_package_workflow_id]]
 
     # Get some variable of the project:
     set query "
@@ -250,6 +253,39 @@ ad_proc im_task_insert {
 		WHERE 
 			task_id = :new_task_id
 	    "
+
+	    if {$wf_installed_p} {
+		# Check if there is a valid workflow_key for the
+		# given task type and start the corresponding WF
+
+		# ToDo: Ugly: currenly saved in "description"
+		set workflow_key [db_string wf_key "
+			select trim(category_description)
+			from im_categories
+			where category_id = :task_type
+		" -default ""]
+		ns_log Notice "im_task_insert: workflow_key=$workflow_key for task_type=$task_type"
+		# Check that the workflow_key is available
+		set wf_valid_p [db_string wf_valid_check "
+			select count(*)
+			from acs_object_types
+			where object_type = :workflow_key
+		"]
+		
+
+		if {$wf_valid_p} {
+		    # Context_key not used aparently...
+		    set context_key ""
+		    set case_id [wf_case_new \
+			$workflow_key \
+			$context_key \
+			$new_task_id
+		    ]
+		}
+
+	    }
+
+
 	} err_msg] } {
 
 	    ad_return_complaint "[_ intranet-translation.Database_Error]" "[_ intranet-translation.lt_Did_you_enter_the_sam]<BR>
@@ -1423,7 +1459,12 @@ ad_proc im_task_freelance_component { user_id project_id return_url } {
 }
 
 
-ad_proc im_task_component { user_id project_id return_url {view_name "trans_task_list"} } {
+ad_proc im_task_component { 
+    user_id 
+    project_id 
+    return_url 
+    {view_name "trans_task_list"} 
+} {
     Return a piece of HTML for the project view page,
     containing the list of tasks of a project.
 } {
@@ -1440,6 +1481,9 @@ ad_proc im_task_component { user_id project_id return_url {view_name "trans_task
     # Ophelia translation Memory Integration?
     # Then we need links to Opehelia instead of upload/download buttons
     set ophelia_installed_p [llength [info procs im_package_ophelia_id]]
+
+    # Is the dynamic WorkFlow module installed?
+    set wf_installed_p [llength [info proc im_package_workflow_id]]
 
     # Get the projects end date as a default for the tasks
     set project_end_date [db_string project_end_date "select to_char(end_date, :date_format) from im_projects where project_id = :project_id" -default ""]
@@ -1472,24 +1516,24 @@ order by sort_order"
 
     # -------------------- Header ---------------------------------
     set task_table "
-<form action=/intranet-translation/trans-tasks/task-action method=POST>
-[export_form_vars project_id return_url]
-<table border=0>
-<tr>\n"
+	<form action=/intranet-translation/trans-tasks/task-action method=POST>
+	[export_form_vars project_id return_url]
+	<table border=0>
+	<tr>
+    "
 
-foreach col $column_headers {
-    set header ""
-    set header_cmd "set header \"$col\""
-    eval $header_cmd
-    if { [regexp "im_gif" $col] } {
-	set header_tr $header
-    } else {
-	set header_tr [_ intranet-translation.[lang::util::suggest_key $header]]
+    foreach col $column_headers {
+        set header ""
+	set header_cmd "set header \"$col\""
+	eval $header_cmd
+	if { [regexp "im_gif" $col] } {
+	    set header_tr $header
+	} else {
+	    set header_tr [lang::message::lookup "" intranet-translation.[lang::util::suggest_key $header] $header]
+	}
+	append task_table "<td class=rowtitle>$header_tr</td>\n"
     }
-    append task_table "<td class=rowtitle>$header_tr</td>\n"
-}
-append task_table "
-</tr>\n"
+    append task_table "\n</tr>\n"
 
     # -------------------- SQL -----------------------------------
 
@@ -1501,8 +1545,40 @@ append task_table "
     set task_table_rows ""
 
     # Initialize the counters for all UoMs
-    db_foreach init_uom_counters "select category_id as uom_id from im_categories where category_type = 'Intranet UoM'" {
+    db_foreach init_uom_counters "
+	select category_id as uom_id 
+	from im_categories 
+	where category_type = 'Intranet UoM'
+    " {
 	set project_size_uom_counter($uom_id) 0
+    }
+
+    set extra_select ""
+    set extra_from ""
+    set extra_where ""
+    if {$wf_installed_p} {
+	set extra_select ",
+		wft.*
+	"
+	set extra_from "
+        LEFT OUTER JOIN (
+                select  wfc.object_id,
+                        wft.place_key,
+                        wft.state,
+			wft.workflow_key
+                from    wf_tokens wft,
+                        (select *
+                        from    wf_cases
+                        where   object_id in (
+                                        select task_id
+                                        from im_trans_tasks
+                                        where project_id = :project_id
+                                )
+                        ) wfc
+                where   wft.case_id = wfc.case_id
+                        and wft.state != 'consumed'
+        ) wft on (t.task_id = wft.object_id)
+	"
     }
 
     db_foreach select_tasks "" {
@@ -1542,12 +1618,30 @@ append task_table "
 	if {"" == $end_date_formatted} { set end_date_formatted $project_end_date }
 	set end_date_input "<input type=text size=10 maxlength=10 name=end_date.$task_id value=$end_date_formatted>"
 
+	# ------------------------------------------
 	# Status Select Box
 	set status_select [im_category_select "Intranet Translation Task Status" task_status.$task_id $task_status_id]
 
+	if {$wf_installed_p && "" != $workflow_key} {
+	    set status_select [im_workflow_status_select \
+		-include_empty 0 \
+		$workflow_key \
+		task_status.$task_id \
+		$task_status_id
+	    ]
+	}
+
+	# ------------------------------------------
 	# Type Select Box
 	# ToDo: Introduce its own "Intranet Translation Task Type".
 	set type_select [im_category_select "Intranet Project Type" task_type.$task_id $task_type_id]
+	if {$wf_installed_p && "" != $workflow_key} {
+	    set wf_pretty_name [im_workflow_pretty_name $workflow_key]
+	    set workflow_view_url "/intranet-workflow/workflow?workflow_key=$workflow_key"
+	    set type_select "
+		<a href=\"$workflow_view_url\">$wf_pretty_name</a>
+            "
+	}
 
 	# Message - Tell the freelancer what to do...
 	# Check if the user is a freelance who is allowed to
@@ -1584,14 +1678,14 @@ append task_table "
 	if {$upload_folder != ""} {
 
 	    if {!$ophelia_installed_p} {
-		# Standard - Upload to start editing
+		# Standard - Upload to stop editing
 		set upload_url "/intranet-translation/trans-tasks/upload-task?"
 		append upload_url [export_url_vars project_id task_id return_url]
 		set upload_gif [im_gif open "Upload File"]
 	    } else {
 		# Ophelia - Redirect to Ophelia page
 		set upload_url [export_vars -base "/intranet-ophelia/task-end" {task_id project_id return_url}]
-		set upload_gif [im_gif control_stop_blue "Start Editing with Ophelia"]
+		set upload_gif [im_gif control_stop_blue "Stop Editing with Ophelia"]
 	    }
 	    set upload_link "<A HREF='$upload_url'>$upload_gif</A>\n"
 	}
@@ -1604,7 +1698,11 @@ append task_table "
 	    eval $cmd
 	    append task_table "</td>\n"
 	}
+	append task_table "<td>$place_key $state</td>\n"
+
+
 	append task_table "</tr>\n"
+
 
 	incr ctr
 	set uom_size $project_size_uom_counter($task_uom_id)
