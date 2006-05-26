@@ -20,6 +20,7 @@ ad_page_contract {
     end_date:array,optional
     task_status:array,optional
     task_type:array,optional
+    task_wf_status:array,optional
     { task_name_file "" }
     { task_units_file ""}
     { task_uom_file "" }
@@ -48,6 +49,11 @@ if {0 == [llength $target_language_ids]} {
     # so that the task is added (=> foreach $target_language_ids...)
     set target_language_ids [list ""]
 }
+
+
+# Is the dynamic WorkFlow module installed?
+set wf_installed_p [im_workflow_installed_p]
+
 
 # Compatibility with code before L10n.
 # ToDo: Remove this and replace by cleaner code
@@ -106,20 +112,63 @@ switch -glob $submit {
 	    append page_body "task_status($task_id)=$task_status($task_id)\n"
 	    append page_body "task_type($task_id)=$task_type($task_id)\n"
 	    append page_body "b._units($task_id)=$billable_units($task_id)\n"
+
+	    # Static Workflow - just save the values
+	    # The values for status and type are irrelevant
+	    # for the dynamic WF, but they are there for
+	    # compatibility reasons.
 	    set sql "
-                update im_trans_tasks set
+                    update im_trans_tasks set
                 	task_status_id= '$task_status($task_id)',
-                	task_type_id= '$task_type($task_id)'
-                where project_id=:project_id
-                and task_id=:task_id"
+                	task_type_id= '$task_type($task_id)',
+			billable_units = '$billable_units($task_id)'
+                    where project_id=:project_id
+                    and task_id=:task_id"
 	    db_dml update_task_status $sql
 
-	    set update_sql "
-                update im_trans_tasks set 
-			billable_units = '$billable_units($task_id)'
-                where project_id=:project_id
-                and task_id=:task_id"
-	    db_dml update_billable_units $update_sql
+	    # Dynamic Workflow
+	    set task_with_workflow_p 0
+	    if {$wf_installed_p} {
+		set task_with_workflow_p [db_string workflow_p "
+			select count(*) 
+			from wf_cases wfc 
+			where wfc.object_id = :task_id
+		"]
+	    }
+	    ns_log Notice "task-action: wf_installed_p=$wf_installed_p, task_with_workflow_p=$task_with_workflow_p"
+
+	    # There is a WF associated with this task - go and set
+	    # the workflow status/token
+	    if {$task_with_workflow_p} {
+		# - Abort any currently active transitions
+		# - Delete all tokens for this case
+		# - Create a new token in the target location with type "free"
+
+		set case_id [db_string wf_key "select case_id from wf_cases where object_id = :task_id" -default 0]
+		ns_log Notice "task-action: case_id=$case_id"
+		set journal_id ""
+		set tasks_sql "
+			select task_id as transition_task_id
+			from wf_tasks 
+			where case_id = :case_id
+			      and state in ('started')
+		"
+		db_foreach tasks $tasks_sql {
+		    ns_log Notice "task-action: canceling task $transition_task_id"
+		    set journal_id [wf_task_action $transition_task_id cancel]
+		}
+
+		db_dml delete_tokens "
+			delete from wf_tokens
+			where case_id = :case_id
+			and state in ('free', 'locked')
+		"
+
+		set place_key $task_wf_status($task_id)
+		ns_log Notice "task-action: adding a token to place=$place_key"
+		im_exec_dml add_token "workflow_case__add_token (:case_id, :place_key, :journal_id)"
+
+	    } 
 
 
 	    # Check whether there is a end-date...
