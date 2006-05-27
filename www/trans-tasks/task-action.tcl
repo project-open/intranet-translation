@@ -141,7 +141,7 @@ switch -glob $submit {
 	    # the workflow status/token
 	    if {$task_with_workflow_p} {
 		# - Abort any currently active transitions
-		# - Delete all tokens for this case
+		# - Delete tokens for this case (only: free, locked)
 		# - Create a new token in the target location with type "free"
 
 		set case_id [db_string wf_key "select case_id from wf_cases where object_id = :task_id" -default 0]

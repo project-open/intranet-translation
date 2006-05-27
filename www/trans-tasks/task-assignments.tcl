@@ -92,9 +92,9 @@ where
 
 
 # Add all users into a list
-set users [list]
+set project_resource_list [list]
 db_foreach resource_select $resource_sql {
-    lappend users [list $user_id $user_name $role]
+    lappend project_resource_list [list $user_id $user_name $role]
 }
 
 # ---------------------------------------------------------------------
@@ -265,7 +265,7 @@ db_foreach select_tasks $task_sql {
 
     # Render the 4 possible workflow roles to assign
     if {$trans} {
-	append task_html [im_task_user_select task_trans.$task_id $users $trans_id translator]
+	append task_html [im_task_user_select task_trans.$task_id $project_resource_list $trans_id translator]
     } else {
 	append task_html "<input type=hidden name='task_trans.$task_id' value=''>"
     }
@@ -273,7 +273,7 @@ db_foreach select_tasks $task_sql {
     append task_html "</td><td>"
 
     if {$edit} {
-	append task_html [im_task_user_select task_edit.$task_id $users $edit_id editor]
+	append task_html [im_task_user_select task_edit.$task_id $project_resource_list $edit_id editor]
     } else {
 	append task_html "<input type=hidden name='task_edit.$task_id' value=''>"
     }
@@ -281,7 +281,7 @@ db_foreach select_tasks $task_sql {
     append task_html "</td><td>"
 
     if {$proof} {
-	append task_html [im_task_user_select task_proof.$task_id $users $proof_id proofer]
+	append task_html [im_task_user_select task_proof.$task_id $project_resource_list $proof_id proofer]
     } else {
 	append task_html "<input type=hidden name='task_proof.$task_id' value=''>"
     }
@@ -289,7 +289,7 @@ db_foreach select_tasks $task_sql {
     append task_html "</td><td>"
 
     if {$other} {
-	append task_html [im_task_user_select task_other.$task_id $users $other_id]
+	append task_html [im_task_user_select task_other.$task_id $project_resource_list $other_id]
     } else {
 	append task_html "<input type=hidden name='task_other.$task_id' value=''>"
     }
@@ -358,6 +358,7 @@ db_foreach wf_header $wf_header_sql {
 set wf_assignments_sql "
 	select distinct
 	        t.*,
+		wfc.case_id,
 	        wfc.workflow_key,
 	        wft.transition_key,
 	        wft.trigger_type,
@@ -369,7 +370,7 @@ set wf_assignments_sql "
 	        LEFT OUTER JOIN wf_transitions wft ON (wfc.workflow_key = wft.workflow_key)
 	        LEFT OUTER JOIN wf_case_assignments wfca ON (
 	                wfca.case_id = wfc.case_id
-	                and wfca.role_key = wft.role_key
+			and wfca.role_key = wft.role_key
 	        )
 	where
 	        t.project_id = :project_id
@@ -387,19 +388,19 @@ set ass_html "
 
 set last_task_id 0
 set last_wf_key ""
+set ctr 0
 db_foreach wf_assignment $wf_assignments_sql {
-
+    incr ctr
 
     # Write out the assignments after the task_id has changed.
     # This must happen _before_ drawing a new header line in
     # case that the workflow_key has changed as well.
     if {$task_id != $last_task_id} {
 	if {0 != $last_task_id} {
-
+	    append ass_html "<tr><td colspan=5>asdf</td></tr>\n"
 	}
 	set last_task_id $task_id
     }
-
 
     # Render a new header line for evey type of Workflow
     if {$last_wf_key != $workflow_key} {
@@ -424,12 +425,36 @@ db_foreach wf_assignment $wf_assignments_sql {
     # Process the assignments
     set ass_key "$task_id $transition_key"
     set ass($ass_key) $party_id
-
-
-
+    ns_log Notice "task-assignments: '$ass_key' -> '$party_id'"
+    # Writing out these values is done at the top of this routines...
 }
 
+append ass_html "
+<tr $bgcolor([expr $ctr % 2])>
+        <td>$task_name $task_id</td>
+        <td>$target_language</td>
+        <td>$task_type</td>
+        <td>$task_units</td>
+        <td>$task_uom</td>
+"
+foreach trans $transition_list {
+    set ass_key "$task_id $trans"
+    set ass_val $ass($ass_key)
+    append ass_html "
+	<td>
+	[im_task_user_select wf_task.$case_id $project_resource_list $ass_val]
+	$party_id
+	</td>
+    "
+}
+append ass_html "</tr>\n"
 
+
+append ass_html "
+</table>
+<input type=submit value=Submit>
+</form>
+"
 
 
 # -------------------------------------------------------------------
@@ -444,19 +469,19 @@ append autoassignment_html_body "<td><input type=text size=6 name=auto_assigned_
 
 if { $n_trans > 0 } {
     append autoassignment_html_header "<td class=rowtitle>[_ intranet-translation.Trans]</td>\n"
-    append autoassignment_html_body "<td>[im_task_user_select trans_auto_id $users "" translator]</td>\n"
+    append autoassignment_html_body "<td>[im_task_user_select trans_auto_id $project_resource_list "" translator]</td>\n"
 }
 if { $n_edit > 0 } {
     append autoassignment_html_header "<td class=rowtitle>[_ intranet-translation.Edit]</td>\n"
-    append autoassignment_html_body "<td>[im_task_user_select edit_auto_id $users "" editor]</td>\n"
+    append autoassignment_html_body "<td>[im_task_user_select edit_auto_id $project_resource_list "" editor]</td>\n"
 }
 if { $n_proof > 0} {
     append autoassignment_html_header "<td class=rowtitle>[_ intranet-translation.Proof]</td>\n"
-    append autoassignment_html_body "<td>[im_task_user_select proof_auto_id $users "" proof]</td>\n"
+    append autoassignment_html_body "<td>[im_task_user_select proof_auto_id $project_resource_list "" proof]</td>\n"
 }
 if { $n_other > 0 } {
     append autoassignment_html_header "<td class=rowtitle>[_ intranet-translation.Other]</td\n>"
-    append autoassignment_html_body "<td>[im_task_user_select other_auto_id $users ""]</td>\n"
+    append autoassignment_html_body "<td>[im_task_user_select other_auto_id $project_resource_list ""]</td>\n"
 }
 
 set autoassignment_html "

@@ -47,6 +47,14 @@ ad_proc -private im_package_translation_id_helper {} {
     } -default 0]
 }
 
+
+ad_proc -public im_workflow_installed_p { } {
+    Is the dynamic WorkFlow module installed?
+} {
+    set wf_installed_p [llength [info proc im_package_workflow_id]]
+}
+
+
 # -------------------------------------------------------------------
 # Serve the abstract URLs to download im_trans_tasks files and
 # to advance the task status.
@@ -175,8 +183,7 @@ ad_proc im_task_insert {
     set ip_address [ad_conn peeraddr]
 
     # Is the dynamic WorkFlow module installed?
-    set wf_installed_p [llength [info proc im_package_workflow_id]]
-    set wf_installed_p 0
+    set wf_installed_p [im_workflow_installed_p]
 
     # Get some variable of the project:
     set query "
@@ -265,6 +272,7 @@ ad_proc im_task_insert {
 			from im_categories
 			where category_id = :task_type
 		" -default ""]
+
 		ns_log Notice "im_task_insert: workflow_key=$workflow_key for task_type=$task_type"
 		# Check that the workflow_key is available
 		set wf_valid_p [db_string wf_valid_check "
@@ -273,7 +281,6 @@ ad_proc im_task_insert {
 			where object_type = :workflow_key
 		"]
 		
-
 		if {$wf_valid_p} {
 		    # Context_key not used aparently...
 		    set context_key ""
@@ -1484,7 +1491,7 @@ ad_proc im_task_component {
     set ophelia_installed_p [llength [info procs im_package_ophelia_id]]
 
     # Is the dynamic WorkFlow module installed?
-    set wf_installed_p [llength [info proc im_package_workflow_id]]
+    set wf_installed_p [im_workflow_installed_p]
 
     # Get the projects end date as a default for the tasks
     set project_end_date [db_string project_end_date "select to_char(end_date, :date_format) from im_projects where project_id = :project_id" -default ""]
@@ -1582,7 +1589,17 @@ order by sort_order"
 	"
     }
 
+    set last_task_id 0
     db_foreach select_tasks "" {
+
+	if {$task_id == $last_task_id} {
+	    # Duplicated task - this is probably due to an error with
+	    # the dynamic workflow:
+	    # Issue an Error message, but continue
+	    ns_log Error "im_task_component: Found duplicated task=$task_id probably after task-action: skipping"
+	    continue
+	}
+	set last_task_id $task_id
 
 	# Determine if $user_id is assigned to some phase of this task
 	set user_assigned 0
@@ -1624,11 +1641,13 @@ order by sort_order"
 	set status_select [im_category_select "Intranet Translation Task Status" task_status.$task_id $task_status_id]
 
 	if {$wf_installed_p && "" != $workflow_key} {
-	    set status_select [im_workflow_status_select \
+	    set status_select "
+		<input type=hidden name=\"task_status.$task_id\" value=\"$task_status_id\">\n"
+	    append status_select [im_workflow_status_select \
 		-include_empty 0 \
 		$workflow_key \
-		task_status.$task_id \
-		$task_status_id
+		task_wf_status.$task_id \
+		$place_key
 	    ]
 	}
 
@@ -1640,6 +1659,7 @@ order by sort_order"
 	    set wf_pretty_name [im_workflow_pretty_name $workflow_key]
 	    set workflow_view_url "/intranet-workflow/workflow?workflow_key=$workflow_key"
 	    set type_select "
+		<input type=hidden name=\"task_type.$task_id\" value=\"$task_type_id\">
 		<a href=\"$workflow_view_url\">$wf_pretty_name</a>
             "
 	}
