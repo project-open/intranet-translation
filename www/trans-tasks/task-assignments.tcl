@@ -312,6 +312,11 @@ append task_html "
 # the list of tasks of one project
 # -------------------------------------------------------------------
 
+# Determine the header fields for each workflow key
+# Data Structures:
+#	transitions(workflow_key) => [orderd list of transition_keys]
+#	name(transition_key) => transition_name
+#
 set wf_header_sql "
 	select distinct
 	        wfc.workflow_key,
@@ -329,35 +334,29 @@ set wf_header_sql "
 	        wfc.workflow_key,
 	        wft.sort_order
 "
-
-# Determine the header fields for each workflow key
-# Data Structures:
-#	transitions(workflow_key) => [orderd list of transition_keys]
-#	name(transition_key) => transition_name
-#
 db_foreach wf_header $wf_header_sql {
-
-    ns_log Notice "task-assignments: header: wf=$workflow_key, trans=$transition_key"
-
     set trans_key "$workflow_key $transition_key"
     set name($trans_key) $transition_name
-
     set trans_list [list]
     if {[info exists transitions($workflow_key)]} { 
 	set trans_list $transitions($workflow_key) 
     }
     lappend trans_list $transition_key
+    ns_log Notice "task-assignments: header: wf=$workflow_key, trans=$transition_key: $trans_list"
     set transitions($workflow_key) $trans_list
 }
 
 
 # -------------------------------------------------------------------
-# Render the assignments table
+# Build the assignments table
+# 
+# This query extracts all tasks and all of the task assignments and
+# stores them in an two-dimensional matrix (implmented as a hash).
 # -------------------------------------------------------------------
 
 set wf_assignments_sql "
 	select distinct
-	        t.*,
+	        t.task_id,
 		wfc.case_id,
 	        wfc.workflow_key,
 	        wft.transition_key,
@@ -380,30 +379,42 @@ set wf_assignments_sql "
 	        wft.sort_order
 "
 
+db_foreach wf_assignment $wf_assignments_sql {
+    set ass_key "$task_id $transition_key"
+    set ass($ass_key) $party_id
+    ns_log Notice "task-assignments: $workflow_key: '$ass_key' -> '$party_id'"
+}
+
+
+# -------------------------------------------------------------------
+# Render the assignments table
+# -------------------------------------------------------------------
+
+set wf_assignments_render_sql "
+	select
+		t.*,
+		wfc.workflow_key
+	from
+		im_trans_tasks t,
+		wf_cases wfc
+	where
+		t.project_id = :project_id
+		and t.task_id = wfc.object_id
+"
+
 set ass_html "
-<form method=POST action=task-assignments-2>
+<form method=POST action=task-assignments-wf-2>
 [export_form_vars project_id return_url]
 <table border=0>
 "
 
-set last_task_id 0
-set last_wf_key ""
 set ctr 0
-db_foreach wf_assignment $wf_assignments_sql {
-    incr ctr
-
-    # Write out the assignments after the task_id has changed.
-    # This must happen _before_ drawing a new header line in
-    # case that the workflow_key has changed as well.
-    if {$task_id != $last_task_id} {
-	if {0 != $last_task_id} {
-	    append ass_html "<tr><td colspan=5>asdf</td></tr>\n"
-	}
-	set last_task_id $task_id
-    }
+set last_workflow_key ""
+db_foreach wf_assignment $wf_assignments_render_sql {
+    ns_log Notice "task-assignments: ctr=$ctr, wf_key='$workflow_key', task_id=$task_id"
 
     # Render a new header line for evey type of Workflow
-    if {$last_wf_key != $workflow_key} {
+    if {$last_workflow_key != $workflow_key} {
 	append ass_html "
 	<tr>
 	<td class=rowtitle align=center>[_ intranet-translation.Task_Name]</td>
@@ -419,42 +430,41 @@ db_foreach wf_assignment $wf_assignments_sql {
 		>[lang::message::lookup "" intranet-translation.$trans $name($trans_key)]</td>\n"
 	}
 	append ass_html "</tr>\n"
-	set last_wf_key $workflow_key
+	set last_workflow_key $workflow_key
     }
 
-    # Process the assignments
-    set ass_key "$task_id $transition_key"
-    set ass($ass_key) $party_id
-    ns_log Notice "task-assignments: '$ass_key' -> '$party_id'"
-    # Writing out these values is done at the top of this routines...
-}
-
-append ass_html "
-<tr $bgcolor([expr $ctr % 2])>
-        <td>$task_name $task_id</td>
-        <td>$target_language</td>
-        <td>$task_type</td>
-        <td>$task_units</td>
-        <td>$task_uom</td>
-"
-foreach trans $transition_list {
-    set ass_key "$task_id $trans"
-    set ass_val $ass($ass_key)
     append ass_html "
-	<td>
-	[im_task_user_select wf_task.$case_id $project_resource_list $ass_val]
-	$party_id
-	</td>
+	    <tr $bgcolor([expr $ctr % 2])>
+	        <td>
+		  $task_name $task_id
+		  <input type=hidden name=task_id value=\"$task_id\">
+		</td>
+	        <td>$target_language</td>
+	        <td>$task_type</td>
+	        <td>$task_units</td>
+	        <td>$task_uom</td>
     "
+    foreach trans $transitions($workflow_key) {
+	set ass_key "$task_id $trans"
+	set ass_val $ass($ass_key)
+	append ass_html "<td>\n"
+	append ass_html [im_task_user_select "assignment.${trans}-$task_id" $project_resource_list $ass_val]
+	append ass_html "\n"
+    }
+    append ass_html "</tr>\n"
+    incr ctr
 }
-append ass_html "</tr>\n"
-
 
 append ass_html "
 </table>
 <input type=submit value=Submit>
 </form>
 "
+
+# Skip the dynamic workflow component completely if there was
+# no dynamic WF task:
+#
+if {0 == $ctr} { set ass_html "" }
 
 
 # -------------------------------------------------------------------
