@@ -1689,7 +1689,8 @@ order by sort_order"
 	    } else {
 		# Ophelia - Redirect to Ophelia page
 		set download_url [export_vars -base "/intranet-ophelia/task-start" {task_id project_id return_url}]
-		set download_gif [im_gif control_play_blue "Start Editing with Ophelia"]
+		set download_help [lang::message::lookup "" intranet-translation.Start_task "Start the task"]
+		set download_gif [im_gif control_play_blue $download_help]
 	    }
 	    set download_link "<A HREF='$download_url'>$download_gif</A>\n"
 	}
@@ -1706,7 +1707,8 @@ order by sort_order"
 	    } else {
 		# Ophelia - Redirect to Ophelia page
 		set upload_url [export_vars -base "/intranet-ophelia/task-end" {task_id project_id return_url}]
-		set upload_gif [im_gif control_stop_blue "Stop Editing with Ophelia"]
+		set upload_help [lang::message::lookup "" intranet-translation.Mark_task_as_finished "Mark the task as finished"]
+		set upload_gif [im_gif control_stop_blue $upload_help]
 	    }
 	    set upload_link "<A HREF='$upload_url'>$upload_gif</A>\n"
 	}
