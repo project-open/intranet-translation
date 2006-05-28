@@ -974,77 +974,108 @@ ad_proc im_task_component_upload {
     set deliv [lang::message::lookup $locale intranet-translation.Workflow_deliv_directory "deliv"]
     set other [lang::message::lookup $locale intranet-translation.Workflow_other_directory "other"]
 
+
+    # Download
+
+    set msg_please_download_source [lang::message::lookup "" intranet-translation.Please_download_the_source_file "Please download the source file"]
+    set msg_please_download_translated [lang::message::lookup "" intranet-translation.Please_download_the_translated_file "Please download the translated file"]
+    set msg_please_download_edited [lang::message::lookup "" intranet-translation.Please_download_the_edited_file "Please download the edited file"]
+
+    # Translation
+
+    set msg_ready_to_be_trans_by_other [lang::message::lookup "" intranet-translation.The_file_is_ready_to_be_trans_by_other "The file is ready to be translated by another person."]
+    set msg_file_translated_by_other [lang::message::lookup "" intranet-translation.The_file_is_trans_by_another_person "The file is being translated by another person"]
+    set msg_please_upload_translated [lang::message::lookup "" intranet-translation.Please_upload_the_translated_file "Please upload the translated file"]
+
+    # Edit
+
+    set msg_please_upload_the_edited_file [lang::message::lookup "" intranet-translation.Please_upload_the_edited_file "Please upload the edited file"]
+    set msg_you_are_allowed_to_upload_again [lang::message::lookup "" intranet-translation.You_are_allowed_to_upload_again "You are allowed to upload the file again while the Editor has not started editing yet..."]
+    set msg_file_is_ready_to_be_edited_by_other [lang::message::lookup "" intranet-translation.File_is_ready_to_be_edited_by_other "The file is ready to be edited by another person"]
+    set msg_file_is_being_edited_by_other [lang::message::lookup "" intranet-translation.File_is_being_edited_by_other "The file is being edited by another person"]
+
+    # Proof
+    set msg_please_upload_the_proofed_file [lang::message::lookup "" intranet-translation.Please_upload_the_proofed_file "Please upload the proofed file"]
+    set msg_upload_again_while_proof_reader_hasnt_started [lang::message::lookup "" intranet-translation.You_can_upload_again_while_proof_reader_hasnt_started "You are allowed to upload the file again while the Proof Reader has not started editing yet..."]
+    set msg_file_is_ready_to_be_proofed_by_other [lang::message::lookup "" intranet-translation.File_is_ready_to_be_proofed_by_other "The file is ready to be proofed by another person"]
+
+
+    # Other
+
+    set msg_you_are_the_admin [lang::message::lookup "" intranet-translation.You_are_the_admin "You are the administrator..."]
+
+
     switch $task_status_id {
-	340 { 
+	340 { # Created:
 	    # The user is admin, so he may upload the file
 	    if {$user_admin_p} {
-		return [list "${source}_$source_language" "${source}_$source_language" "You are the administrator..."]
+		return [list "${source}_$source_language" "${source}_$source_language" $msg_you_are_the_admin]
 	    }
 
 	    # Created: In the future there maybe a step between
 	    # created and "for Trans", but today it's the same.
 	    if {$user_id == $trans_id} {
-		return [list "${source}_$source_language" "" "Please download the source file."]
+		return [list "${source}_$source_language" "" $msg_please_download_source]
 	    } 
 
 	    if {"" != $trans_id} {
-		return [list "" "" "The file is ready to be translated by another person."]
+		return [list "" "" $msg_ready_to_be_trans_by_other]
 	    }
 	    return [list "" "" ""]
 
 	}
 	342 { # for Trans: 
 	    if {$user_id == $trans_id} {
-		return [list "${source}_$source_language" "" "Please download the source file."]
+		return [list "${source}_$source_language" "" $msg_please_download_source]
 	    }
 	    if {"" != $trans_id} {
-		return [list "" "" "The file is ready to be translated by another person."]
+		return [list "" "" $msg_ready_to_be_trans_by_other]
 	    }
 	    return [list "" "" ""]
 	}
 	344 { # Translating: Allow to upload a file into the trans folder
 	    if {$user_id == $trans_id} {
-		return [list "${source}_$source_language" "${trans}_$target_language" "Please upload the translated file"]
+		return [list "${source}_$source_language" "${trans}_$target_language" $msg_please_upload_translated]
 	    } else {
-		return [list "" "" "The file is being translated by another person"]
+		return [list "" "" $msg_file_translated_by_other]
 	    }
 	}
 	346 { # for Edit: 
 	    if {$user_id == $edit_id} {
-		return [list "${trans}_$target_language" "" "Please download the translated file."]
+		return [list "${trans}_$target_language" "" $msg_please_download_translated]
 	    }
 	    if {$user_id == $trans_id} {
 		# The translator may upload the file again, while the Editor has not
 		# downloaded the file yet.
-		return [list "" "${trans}_$target_language" "You are allowed to upload the file again while the Editor has not started editing yet..."]
+		return [list "" "${trans}_$target_language" $msg_you_are_allowed_to_upload_again]
 	    } else {
-		return [list "" "" "The file is ready to be edited by another person"]
+		return [list "" "" $msg_file_is_ready_to_be_edited_by_other]
 	    }
 	}
 	348 { # Editing: Allow to upload a file into the edit folder
 	    if {$user_id == $edit_id} {
-		return [list "${trans}_$target_language" "${edit}_$target_language" "Please upload the edited file"]
+		return [list "${trans}_$target_language" "${edit}_$target_language" $msg_please_upload_the_edited_file]
 	    } else {
-		return [list "" "" "The file is being edited by another person"]
+		return [list "" "" $msg_file_is_being_edited_by_other]
 	    }
 	}
 	350 { # for Proof: 
 	    if {$user_id == $proof_id} {
-		return [list "${edit}_$target_language" "" "Please download the edited file."]
+		return [list "${edit}_$target_language" "" $msg_please_download_edited]
 	    }
 	    if {$user_id == $edit_id} {
 		# The editor may upload the file again, while the Proofer has not
 		# downloaded the file yet.
-		return [list "" "${edit}_$target_language" "You are allowed to upload the file again while the Proof Reader has not started editing yet..."]
+		return [list "" "${edit}_$target_language" $msg_upload_again_while_proof_reader_hasnt_started]
 	    } else {
-		return [list "" "" "The file is ready to be proofed by another person"]
+		return [list "" "" $msg_file_is_ready_to_be_proofed_by_other]
 	    }
 	}
 	352 { # Proofing: Allow to upload a file into the proof folder
 	    if {$user_id == $proof_id} {
-		return [list "${edit}_$target_language" "${proof}_$target_language" "Please upload the proofed file"]
+		return [list "${edit}_$target_language" "${proof}_$target_language" $msg_please_upload_the_proofed_file]
 	    } else {
-		return [list "" "" "The file is being proofed by another person"]
+		return [list "" "" $msg_file_is_ready_to_be_proofed_by_other]
 	    }
 	}
 	default {
