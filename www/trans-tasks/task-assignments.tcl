@@ -121,6 +121,9 @@ from
 where
 	t.project_id=:project_id
         and t.task_status_id <> 372
+order by
+        t.task_name,
+        t.target_language_id
 "
 
 set task_colspan 9
