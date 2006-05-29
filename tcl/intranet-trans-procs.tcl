@@ -266,9 +266,8 @@ ad_proc im_task_insert {
 		# Check if there is a valid workflow_key for the
 		# given task type and start the corresponding WF
 
-		# ToDo: Ugly: currenly saved in "description"
 		set workflow_key [db_string wf_key "
-			select trim(category_description)
+			select aux_string1
 			from im_categories
 			where category_id = :task_type
 		" -default ""]
@@ -624,6 +623,46 @@ ad_proc im_task_user_select {select_name user_list default_user_id {role ""}} {
     append select_html "</select>\n"
     return $select_html
 }
+
+
+
+
+ad_proc im_trans_language_select {
+    {-translate_p 0}
+    {-include_empty_p 1}
+    {-include_empty_name "--_Please_select_--"}
+    {-include_country_locale 0}
+    select_name
+    { default "" }
+} {
+    set bind_vars [ns_set create]
+    set category_type "Intranet Translation Language"
+    ns_set put $bind_vars category_type $category_type
+
+    set country_locale_sql ""
+    if {!$include_country_locale} {
+	set country_locale_sql "and length(category) < 5"
+    }
+
+    set sql "
+        select *
+        from
+                (select
+                        category_id,
+                        category,
+                        category_description
+                from
+                        im_categories
+                where
+                        category_type = :category_type
+			$country_locale_sql
+                ) c
+        order by lower(category)
+    "
+
+    return [im_selection_to_select_box -translate_p $translate_p -include_empty_p $include_empty_p -include_empty_name $include_empty_name $bind_vars category_select $sql $select_name $default]
+}
+
 
 
 
@@ -1602,6 +1641,7 @@ order by sort_order"
 	set extra_from "
         LEFT OUTER JOIN (
                 select  wfc.object_id,
+			wft.case_id,
                         wft.place_key,
                         wft.state,
 			wft.workflow_key
@@ -1622,6 +1662,11 @@ order by sort_order"
 
     set last_task_id 0
     db_foreach select_tasks "" {
+
+	set dynamic_task_p 0
+	if {$wf_installed_p} {
+	    if {"" != $workflow_key} { set dynamic_task_p 1 }
+	}
 
 	if {$task_id == $last_task_id} {
 	    # Duplicated task - this is probably due to an error with
@@ -1670,8 +1715,7 @@ order by sort_order"
 	# ------------------------------------------
 	# Status Select Box
 	set status_select [im_category_select "Intranet Translation Task Status" task_status.$task_id $task_status_id]
-
-	if {$wf_installed_p && "" != $workflow_key} {
+	if {$dynamic_task_p} {
 	    set status_select "
 		<input type=hidden name=\"task_status.$task_id\" value=\"$task_status_id\">\n"
 	    append status_select [im_workflow_status_select \
@@ -1686,65 +1730,121 @@ order by sort_order"
 	# Type Select Box
 	# ToDo: Introduce its own "Intranet Translation Task Type".
 	set type_select [im_category_select "Intranet Project Type" task_type.$task_id $task_type_id]
-	if {$wf_installed_p && "" != $workflow_key} {
+	if {$dynamic_task_p} {
 	    set wf_pretty_name [im_workflow_pretty_name $workflow_key]
-	    set workflow_view_url "/intranet-workflow/workflow?workflow_key=$workflow_key"
+	    set workflow_view_url "/workflow/case?case_id=$case_id"
 	    set type_select "
 		<input type=hidden name=\"task_type.$task_id\" value=\"$task_type_id\">
 		<a href=\"$workflow_view_url\">$wf_pretty_name</a>
             "
 	}
 
-	# Message - Tell the freelancer what to do...
-	# Check if the user is a freelance who is allowed to
-	# upload a file for this task, depending on the task
-	# status (engine) and the assignment to a specific phase.
-	set upload_list [im_task_component_upload $user_id $project_admin $task_status_id $source_language $target_language $trans_id $edit_id $proof_id $other_id]
-
-	set download_folder [lindex $upload_list 0]
-	set upload_folder [lindex $upload_list 1]
-	set message [lindex $upload_list 2]
-	ns_log Notice "download_folder=$download_folder, upload_folder=$upload_folder"
-
 	# Delete Checkbox
 	set del_checkbox "<input type=checkbox name=delete_task value=$task_id>"
 
-	# Download Link - where to get the task file
-	set download_link ""
-	if {$download_folder != ""} {
 
-	    if {!$ophelia_installed_p} {
-		# Standard - Download to start editing
-		set download_url "/intranet-translation/download-task/$task_id/$download_folder/$task_name"
-		set download_gif [im_gif save "Click right and choose \"Save target as\" to download the file"]
-	    } else {
-		# Ophelia - Redirect to Ophelia page
-		set download_url [export_vars -base "/intranet-ophelia/task-start" {task_id project_id return_url}]
-		set download_help [lang::message::lookup "" intranet-translation.Start_task "Start the task"]
-		set download_gif [im_gif control_play_blue $download_help]
+	# ------------------------------------------
+	# The Static Workflow -
+	# Call im_task_component_upload to determine workflow status and message
+	#
+	if {!$dynamic_task_p} {
+
+	    # Message - Tell the freelancer what to do...
+	    # Check if the user is a freelance who is allowed to
+	    # upload a file for this task, depending on the task
+	    # status (engine) and the assignment to a specific phase.
+	    set upload_list [im_task_component_upload $user_id $project_admin $task_status_id $source_language $target_language $trans_id $edit_id $proof_id $other_id]
+
+	    set download_folder [lindex $upload_list 0]
+	    set upload_folder [lindex $upload_list 1]
+	    set message [lindex $upload_list 2]
+	    ns_log Notice "download_folder=$download_folder, upload_folder=$upload_folder"
+	    
+	    # Download Link - where to get the task file
+	    set download_link ""
+	    if {$download_folder != ""} {
+
+		if {!$ophelia_installed_p} {
+		    # Standard - Download to start editing
+		    set download_url "/intranet-translation/download-task/$task_id/$download_folder/$task_name"
+		    set download_gif [im_gif save "Click right and choose \"Save target as\" to download the file"]
+		} else {
+		    # Ophelia - Redirect to Ophelia page
+		    set download_url [export_vars -base "/intranet-ophelia/task-start" {task_id project_id return_url}]
+		    set download_help [lang::message::lookup "" intranet-translation.Start_task "Start the task"]
+		    set download_gif [im_gif control_play_blue $download_help]
+		}
+		set download_link "<A HREF='$download_url'>$download_gif</A>\n"
 	    }
-	    set download_link "<A HREF='$download_url'>$download_gif</A>\n"
+
+	    # Upload Link
+	    set upload_link ""
+	    if {$upload_folder != ""} {
+		
+		if {!$ophelia_installed_p} {
+		    # Standard - Upload to stop editing
+		    set upload_url "/intranet-translation/trans-tasks/upload-task?"
+		    append upload_url [export_url_vars project_id task_id return_url]
+		    set upload_gif [im_gif open "Upload File"]
+		} else {
+		    # Ophelia - Redirect to Ophelia page
+		    set upload_url [export_vars -base "/intranet-ophelia/task-end" {task_id project_id return_url}]
+		    set upload_help [lang::message::lookup "" intranet-translation.Mark_task_as_finished "Mark the task as finished"]
+		    set upload_gif [im_gif control_stop_blue $upload_help]
+		}
+		set upload_link "<A HREF='$upload_url'>$upload_gif</A>\n"
+	    }
 	}
 
-	# Upload Link
-	set upload_link ""
-	if {$upload_folder != ""} {
 
-	    if {!$ophelia_installed_p} {
-		# Standard - Upload to stop editing
-		set upload_url "/intranet-translation/trans-tasks/upload-task?"
-		append upload_url [export_url_vars project_id task_id return_url]
-		set upload_gif [im_gif open "Upload File"]
-	    } else {
-		# Ophelia - Redirect to Ophelia page
-		set upload_url [export_vars -base "/intranet-ophelia/task-end" {task_id project_id return_url}]
-		set upload_help [lang::message::lookup "" intranet-translation.Mark_task_as_finished "Mark the task as finished"]
-		set upload_gif [im_gif control_stop_blue $upload_help]
-	    }
+	# ------------------------------------------
+	# The Dynamic Workflow -
+	# - Check if the current user is assigned to the task
+	# - Display a Start or End button, depending on the status
+	# - Show a message with the task
+	if {$dynamic_task_p} {
+	    
+	    set task_id 51
+
+	    # Ugly: ad_parse_template is wrong with the stack level, so we've have to tweak
+	    upvar task task
+	    upvar task_assigned_users task_assigned_users
+	    template::multirow create task_assigned_users
+
+	    array set task [wf_task_info $task_id]
+	    set wf_base_url "/workflow"
+	    set task(add_assignee_url) "$wf_base_url/assignee-add?[export_url_vars task_id]"
+	    set task(assign_yourself_url) "$wf_base_url/assign-yourself?[export_vars -url {task_id return_url}]"
+	    set task(manage_assignments_url) "$wf_base_url/task-assignees?[export_vars -url {task_id return_url}]"
+	    set task(action_url) "$wf_base_url/task"
+	    set task(cancel_url) "$wf_base_url/task?[export_vars -url {task_id return_url {action.cancel Cancel}}]"
+
+	    set template_path "/packages/acs-workflow/www/task-action"
+	    set export_form_vars [export_vars -form {task_id return_url}]
+
+	    set message [ad_parse_template -params [list \
+		[list &task task] \
+		[list &task_assigned_users task_assigned_users] \
+		[list return_url $return_url] \
+		[list export_form_vars $export_form_vars]\
+	    ] $template_path]
+
+	    set message "\n</form>\n$message\n<form>\n"
+
+	    set upload_help [lang::message::lookup "" intranet-translation.Mark_task_as_finished "Mark the task as finished"]
+	    set upload_gif [im_gif control_stop_blue $upload_help]
+	    set upload_url [export_vars -base "/intranet-ophelia/task-end" {task_id project_id return_url}]
 	    set upload_link "<A HREF='$upload_url'>$upload_gif</A>\n"
+
+	    set download_help [lang::message::lookup "" intranet-translation.Start_task "Start the task"]
+	    set download_gif [im_gif control_play_blue $download_help]
+	    set download_url [export_vars -base "/intranet-ophelia/task-start" {task_id project_id return_url}]
+	    set download_link "<A HREF='$download_url'>$download_gif</A>\n"
+
 	}
-	
-	# Append together a line of data based on the "column_vars" parameter list
+	    
+
+	# Render the line using the dynamic columns from the database im_views
 	append table_body_html "<tr$bgcolor([expr $ctr % 2])>\n"
 	foreach column_var $column_vars {
 	    append task_table "\t<td$bgcolor([expr $ctr % 2]) valign=top>"
@@ -1752,11 +1852,7 @@ order by sort_order"
 	    eval $cmd
 	    append task_table "</td>\n"
 	}
-	append task_table "<td>$place_key $state</td>\n"
-
-
 	append task_table "</tr>\n"
-
 
 	incr ctr
 	set uom_size $project_size_uom_counter($task_uom_id)

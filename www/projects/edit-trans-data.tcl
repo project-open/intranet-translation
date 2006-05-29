@@ -32,19 +32,6 @@ if {!$write} {
 
 set target_language_ids [im_target_language_ids $project_id]
 
-#db_1row projects_info_query { 
-#select 
-#        p.*,
-#        p.company_project_nr,
-#        c.company_name
-#from
-#	im_projects p,
-#	im_companies c
-#where 
-#	p.project_id=:project_id 
-#        and p.project_id=c.company_id(+)
-#}
-
 db_1row projects_info_query { 
 select 
         p.*,
@@ -94,7 +81,7 @@ set page_body "
                    <tr>
                       <td>[_ intranet-translation.Source_Language] $required_field </td>
                       <td>
-[im_category_select_plain -translate_p 0 "Intranet Translation Language" source_language_id $source_language_id]
+[im_trans_language_select source_language_id $source_language_id]
 [im_admin_category_gif "Intranet Translation Language"]
 [im_gif help "Translation source language"]
                       </td>
