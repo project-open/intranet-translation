@@ -1901,31 +1901,59 @@ order by sort_order"
 	# - Display a Start or End button, depending on the status
 	# - Show a message with the task
 	if {$dynamic_task_p} {
-	    
-	    set task_id 51
 
-	    array set task [wf_task_info $task_id]
-	    set wf_base_url "/workflow"
-	    set task(add_assignee_url) "$wf_base_url/assignee-add?[export_url_vars task_id]"
-	    set task(assign_yourself_url) "$wf_base_url/assign-yourself?[export_vars -url {task_id return_url}]"
-	    set task(manage_assignments_url) "$wf_base_url/task-assignees?[export_vars -url {task_id return_url}]"
-	    set task(action_url) "$wf_base_url/task"
-	    set task(cancel_url) "$wf_base_url/task?[export_vars -url {task_id return_url {action.cancel Cancel}}]"
+	    # Check for the currently enabled Tasks
+	    # This should be only one task at a time in a simplified
+	    # PetriNet without parallelism
+	    #
+	    set transitions [db_list_of_lists enabled_tasks "
+		select
+			wft.task_id,
+			wft.state as task_state,
+			wftr.transition_name
+		from
+			wf_tasks wft,
+			wf_transitions wftr
+		where
+			wft.transition_key = wftr.transition_key
+			and wft.workflow_key = wftr.workflow_key
+			and case_id = :case_id
+			and state in ('enabled', 'started')
+	    "]
 
-	    set template_path "/packages/acs-workflow/www/task-action"
-	    set export_form_vars [export_vars -form {task_id return_url}]
+	    if {[llength $transitions] > 1} {
+		ad_return_complaint 1 "More then one task 'enabled' or 'started':<br>
+		There is currently more then one task active in case# $case_id.
+		This should not occure in normal operations. Please check why there
+		is more then one task active at the same time and notify your
+		system administrator."
+		return
+	    }
 
-	    set message "Message"
+	    set transition [lindex $transitions 0]
+	    set transition_id [lindex $transition 0]
+	    set transition_state [lindex $transition 1]
+	    set transition_name [lindex $transition 2]
 
-	    set upload_help [lang::message::lookup "" intranet-translation.Mark_task_as_finished "Mark the task as finished"]
-	    set upload_gif [im_gif control_stop_blue $upload_help]
-	    set upload_url [export_vars -base "/intranet-ophelia/task-end" {task_id project_id return_url}]
-	    set upload_link "<A HREF='$upload_url'>$upload_gif</A>\n"
+	    if {[string equal 'enabled' $transition_state]} {
 
-	    set download_help [lang::message::lookup "" intranet-translation.Start_task "Start the task"]
-	    set download_gif [im_gif control_play_blue $download_help]
-	    set download_url [export_vars -base "/intranet-ophelia/task-start" {task_id project_id return_url}]
-	    set download_link "<A HREF='$download_url'>$download_gif</A>\n"
+		set message "Press 'Start' to start '$transition_name'"
+		set download_help $message
+		set download_gif [im_gif control_play_blue $download_help]
+		set download_url [export_vars -base "/intranet-ophelia/task-start" {task_id project_id return_url}]
+		set download_link "<A HREF='$download_url'>$download_gif</A>\n"
+		
+	    } else {
+
+		set message "Press 'Stop' to finish '$transition_name'"
+		set upload_help $message
+		set upload_gif [im_gif control_stop_blue $upload_help]
+		set upload_url [export_vars -base "/intranet-ophelia/task-end" {task_id project_id return_url}]
+		set upload_link "<A HREF='$upload_url'>$upload_gif</A>\n"
+
+		set download_link ""
+
+	    }
 
 	}
 	    
