@@ -97,6 +97,32 @@ db_foreach resource_select $resource_sql {
     lappend project_resource_list [list $user_id $user_name $role]
 }
 
+
+
+# ---------------------------------------------------------------------
+# Get the list of available groups
+# ---------------------------------------------------------------------
+
+set groups_sql "
+select
+	g.group_id,
+	g.group_name,
+	0 as role
+from
+	groups g,
+	im_profiles p
+where
+	g.group_id = p.profile_id
+"
+
+
+# Add all groups into a list
+set group_list [list]
+db_foreach group_select $groups_sql {
+    lappend group_list [list $group_id $group_name $role]
+}
+
+
 # ---------------------------------------------------------------------
 # Select and format the list of tasks
 # ---------------------------------------------------------------------
@@ -125,6 +151,9 @@ order by
         t.task_name,
         t.target_language_id
 "
+
+# ToDo: Remove the DynamicWF tasks
+
 
 set task_colspan 9
 set task_html "
@@ -403,6 +432,9 @@ set wf_assignments_render_sql "
 	where
 		t.project_id = :project_id
 		and t.task_id = wfc.object_id
+	order by
+		wfc.workflow_key,
+		t.task_name
 "
 
 set ass_html "
@@ -410,6 +442,7 @@ set ass_html "
 [export_form_vars project_id return_url]
 <table border=0>
 "
+
 
 set ctr 0
 set last_workflow_key ""
@@ -451,7 +484,7 @@ db_foreach wf_assignment $wf_assignments_render_sql {
 	set ass_key "$task_id $trans"
 	set ass_val $ass($ass_key)
 	append ass_html "<td>\n"
-	append ass_html [im_task_user_select "assignment.${trans}-$task_id" $project_resource_list $ass_val]
+	append ass_html [im_task_user_select -group_list $group_list "assignment.${trans}-$task_id" $project_resource_list $ass_val]
 	append ass_html "\n"
     }
     append ass_html "</tr>\n"

@@ -612,7 +612,13 @@ ad_proc -public im_translation_task_permissions {user_id task_id view_var read_v
 # Drop-Down Components
 # -------------------------------------------------------------------
 
-ad_proc im_task_user_select {select_name user_list default_user_id {role ""}} {
+ad_proc im_task_user_select {
+    {-group_list {}}
+    select_name 
+    user_list 
+    default_user_id 
+    {role ""}
+} {
     Return a formatted HTML drop-down select component with the
     list of members of the current project.
 } {
@@ -631,6 +637,19 @@ ad_proc im_task_user_select {select_name user_list default_user_id {role ""}} {
 	if {$default_user_id == $user_id} { set selected "selected"}
 	append select_html "<option value='$user_id' $selected>$user_name</option>\n"
     }
+
+    if {[llength $group_list] > 0} {
+	append select_html "<option value=''></option>\n"
+    }
+
+    foreach group_list_entry $group_list {
+	set group_id [lindex $group_list_entry 0]
+	set group_name [lindex $group_list_entry 1]
+	set selected ""
+	if {$default_user_id == $group_id} { set selected "selected"}
+	append select_html "<option value='$group_id' $selected>$group_name</option>\n"
+    }
+
     append select_html "</select>\n"
     return $select_html
 }
@@ -1624,8 +1643,48 @@ order by sort_order"
     }
     append task_table "\n</tr>\n"
 
-    # -------------------- SQL -----------------------------------
 
+
+    # -------------------------------------------------------------------
+    # Build the assignments table
+    #
+    # This query extracts all tasks and all of the task assignments and
+    # stores them in an two-dimensional matrix (implmented as a hash).
+
+    set wf_assignments_sql "
+        select distinct
+                t.task_id,
+                wfc.case_id,
+                wfc.workflow_key,
+                wft.transition_key,
+                wft.trigger_type,
+                wft.sort_order,
+                wfca.party_id
+        from
+                im_trans_tasks t
+                LEFT OUTER JOIN wf_cases wfc ON (t.task_id = wfc.object_id)
+                LEFT OUTER JOIN wf_transitions wft ON (wfc.workflow_key = wft.workflow_key)
+                LEFT OUTER JOIN wf_case_assignments wfca ON (
+                        wfca.case_id = wfc.case_id
+                        and wfca.role_key = wft.role_key
+                )
+        where
+                t.project_id = :project_id
+                and wft.trigger_type != 'automatic'
+        order by
+                wfc.workflow_key,
+                wft.sort_order
+    "
+
+    db_foreach wf_assignment $wf_assignments_sql {
+	set ass_key "$task_id $transition_key"
+	set ass($ass_key) $party_id
+	ns_log Notice "task-assignments: $workflow_key: '$ass_key' -> '$party_id'"
+    }
+
+
+    # -------------------- SQL -----------------------------------
+    #
     set bgcolor(0) " class=roweven"
     set bgcolor(1) " class=rowodd"
     set trans_project_words 0
@@ -1677,6 +1736,11 @@ order by sort_order"
 	set dynamic_task_p 0
 	if {$wf_installed_p} {
 	    if {"" != $workflow_key} { set dynamic_task_p 1 }
+	}
+
+	set ophelia_task_p 0
+	if {$ophelia_installed_p} {
+	    if {$tm_type_id == [im_trans_tm_type_ophelia]} { set ophelia_task_p 1 }
 	}
 
 	if {$task_id == $last_task_id} {
@@ -1793,7 +1857,7 @@ order by sort_order"
 	    set download_link ""
 	    if {$download_folder != ""} {
 
-		if {!$ophelia_installed_p} {
+		if {!$ophelia_task_p} {
 
 		    # Standard - Download to start editing
 		    set download_url "/intranet-translation/download-task/$task_id/$download_folder/$task_name"
@@ -1812,12 +1876,15 @@ order by sort_order"
 	    set upload_link ""
 	    if {$upload_folder != ""} {
 		
-		if {!$ophelia_installed_p} {
+		if {!$ophelia_task_p} {
+
 		    # Standard - Upload to stop editing
 		    set upload_url "/intranet-translation/trans-tasks/upload-task?"
 		    append upload_url [export_url_vars project_id task_id return_url]
 		    set upload_gif [im_gif open "Upload File"]
+
 		} else {
+
 		    # Ophelia - Redirect to Ophelia page
 		    set upload_url [export_vars -base "/intranet-ophelia/task-end" {task_id project_id return_url}]
 		    set upload_help [lang::message::lookup "" intranet-translation.Mark_task_as_finished "Mark the task as finished"]
@@ -1837,11 +1904,6 @@ order by sort_order"
 	    
 	    set task_id 51
 
-	    # Ugly: ad_parse_template is wrong with the stack level, so we've have to tweak
-	    upvar task task
-	    upvar task_assigned_users task_assigned_users
-	    template::multirow create task_assigned_users
-
 	    array set task [wf_task_info $task_id]
 	    set wf_base_url "/workflow"
 	    set task(add_assignee_url) "$wf_base_url/assignee-add?[export_url_vars task_id]"
@@ -1853,14 +1915,7 @@ order by sort_order"
 	    set template_path "/packages/acs-workflow/www/task-action"
 	    set export_form_vars [export_vars -form {task_id return_url}]
 
-	    set message [ad_parse_template -params [list \
-		[list &task task] \
-		[list &task_assigned_users task_assigned_users] \
-		[list return_url $return_url] \
-		[list export_form_vars $export_form_vars]\
-	    ] $template_path]
-
-	    set message "\n</form>\n$message\n<form>\n"
+	    set message "Message"
 
 	    set upload_help [lang::message::lookup "" intranet-translation.Mark_task_as_finished "Mark the task as finished"]
 	    set upload_gif [im_gif control_stop_blue $upload_help]

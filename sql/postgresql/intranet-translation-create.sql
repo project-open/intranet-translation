@@ -103,6 +103,11 @@ create table im_trans_tasks (
 	task_status_id		integer not null 
 				constraint im_trans_tasks_status_fk
 				references im_categories,
+				-- Trados or Ophelia or Xxxx
+				-- not a Not Null constraint yet
+	tm_type_type		integer
+				constraint im_trans_tasks_tm_type_fk
+				references im_categories,
 	description		varchar(4000),
 	source_language_id	integer not null
 				constraint im_trans_tasks_source_fk
@@ -214,10 +219,13 @@ BEGIN
 	return v_task_id;
 end;' language 'plpgsql';
 
+
 create or replace function im_trans_task__delete (integer) returns integer as '
 DECLARE
 	v_task_id	 alias for $1;
 BEGIN
+	-- ToDo: Check if there is a WF case associated with the object(?)
+
 	-- Erase the im_trans_tasks item associated with the id
 	delete from     im_trans_tasks
 	where	   task_id = v_task_id;
@@ -230,6 +238,7 @@ BEGIN
 
 	return 0;
 end;' language 'plpgsql';
+
 
 create or replace function im_trans_task__name (integer) returns varchar as '
 DECLARE
@@ -845,3 +854,15 @@ insert into im_trans_task_progress values (96, 372, 100);
 
 \i ../common/intranet-translation-common.sql
 \i ../common/intranet-translation-backup.sql
+
+
+
+-- -------------------------------------------------------------------
+-- Set default only after sourcing the categories
+-- -------------------------------------------------------------------
+
+alter table im_trans_tasks
+alter column tm_type_id
+set default 4100;
+
+
