@@ -35,6 +35,17 @@ ad_proc -public im_uom_t_word {} { return 325 }
 ad_proc -public im_uom_s_line {} { return 326 }
 ad_proc -public im_uom_t_line {} { return 327 }
 
+
+ad_proc -public im_trans_tm_type_trados {} { return 4100 }
+ad_proc -public im_trans_tm_type_ophelia {} { return 4102 }
+
+
+
+# -------------------------------------------------------------------
+#
+# -------------------------------------------------------------------
+
+
 ad_proc -public im_package_translation_id { } {
 } {
     return [util_memoize "im_package_translation_id_helper"]
@@ -1670,8 +1681,11 @@ order by sort_order"
 
 	if {$task_id == $last_task_id} {
 	    # Duplicated task - this is probably due to an error with
-	    # the dynamic workflow:
-	    # Issue an Error message, but continue
+	    # the dynamic workflow. "Duplicated" tasks can be created
+	    # (only in the SQL query) if there is more then one token
+	    # active for the given task. That's fine with the generic
+	    # WF, but not with the way how we're using it here.
+	    # => Issue an Error message, but continue
 	    ns_log Error "im_task_component: Found duplicated task=$task_id probably after task-action: skipping"
 	    continue
 	}
@@ -1714,8 +1728,15 @@ order by sort_order"
 
 	# ------------------------------------------
 	# Status Select Box
-	set status_select [im_category_select "Intranet Translation Task Status" task_status.$task_id $task_status_id]
-	if {$dynamic_task_p} {
+
+	if {!$dynamic_task_p} {
+
+	    # Static  WF: Show the task status directly
+	    set status_select [im_category_select "Intranet Translation Task Status" task_status.$task_id $task_status_id]
+
+	} else {
+
+	    # Dynamic WF: Show the WF "Places" instead of task status
 	    set status_select "
 		<input type=hidden name=\"task_status.$task_id\" value=\"$task_status_id\">\n"
 	    append status_select [im_workflow_status_select \
@@ -1729,8 +1750,16 @@ order by sort_order"
 	# ------------------------------------------
 	# Type Select Box
 	# ToDo: Introduce its own "Intranet Translation Task Type".
-	set type_select [im_category_select "Intranet Project Type" task_type.$task_id $task_type_id]
-	if {$dynamic_task_p} {
+
+	if {!$dynamic_task_p} {
+
+	    # Static WF: Show drop-down to change the type
+	    set type_select [im_category_select "Intranet Project Type" task_type.$task_id $task_type_id]
+	} else {
+
+	    # Dynamic WF: We can't change the type for the WF while
+	    # executing the task. The user needs to delete and recreate
+	    # the task.
 	    set wf_pretty_name [im_workflow_pretty_name $workflow_key]
 	    set workflow_view_url "/workflow/case?case_id=$case_id"
 	    set type_select "
@@ -1765,10 +1794,12 @@ order by sort_order"
 	    if {$download_folder != ""} {
 
 		if {!$ophelia_installed_p} {
+
 		    # Standard - Download to start editing
 		    set download_url "/intranet-translation/download-task/$task_id/$download_folder/$task_name"
 		    set download_gif [im_gif save "Click right and choose \"Save target as\" to download the file"]
 		} else {
+
 		    # Ophelia - Redirect to Ophelia page
 		    set download_url [export_vars -base "/intranet-ophelia/task-start" {task_id project_id return_url}]
 		    set download_help [lang::message::lookup "" intranet-translation.Start_task "Start the task"]
