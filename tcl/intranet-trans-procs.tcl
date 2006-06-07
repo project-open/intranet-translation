@@ -36,9 +36,9 @@ ad_proc -public im_uom_s_line {} { return 326 }
 ad_proc -public im_uom_t_line {} { return 327 }
 
 
-ad_proc -public im_trans_tm_integration_type_external {} { return 4100 }
-ad_proc -public im_trans_tm_integration_type_ophelia {} { return 4102 }
-ad_proc -public im_trans_tm_integration_type_none {} { return 4104 }
+ad_proc -public im_trans_tm_integration_type_external {} { return 4200 }
+ad_proc -public im_trans_tm_integration_type_ophelia {} { return 4202 }
+ad_proc -public im_trans_tm_integration_type_none {} { return 4204 }
 
 
 
@@ -2342,46 +2342,58 @@ ad_proc im_new_task_component {
     }
 
 
-    # -------------------- Add an Intermediate Header -----------------------
-    append task_table "
-</table>
-<table border=0>
-<tr><td colspan=6></td></br>
-
-<tr>
-<td colspan=7 class=rowtitle align=center>
-[lang::message::lookup "" intranet-translation.Add_Individual_Files "Add Individual Files"]
-</td>
-</tr>
-<tr>
-  <td class=rowtitle align=center>
-    [_ intranet-translation.Task_Name]
-  </td>
-  <td class=rowtitle align=center>
-    [_ intranet-translation.Units]
-  </td>
-  <td class=rowtitle align=center>
-    [_ intranet-translation.UoM]
-  </td>
-  <td class=rowtitle align=center>
-    [_ intranet-translation.Task_Type]
-  </td>
-  <td class=rowtitle align=center>
-   [lang::message::lookup "" intranet-translation.Integration_Type "Integration"]
-  </td>
-  <td class=rowtitle align=center>
-    [_ intranet-translation.Task_Action]
-  </td>
-  <td class=rowtitle align=center>&nbsp;</td>
-</tr>
-"
-
+    # -------------------- Ophelia or Not -----------------------
+    set ext [im_trans_tm_integration_type_external]
     if {$ophelia_installed_p} {
-	set integration_type_html [im_category_select "Intranet TM Integration Type" tm_integration_type_id 4100]
+	set integration_type_html [im_category_select "Intranet TM Integration Type" tm_integration_type_id $ext]
+	set integration_type_html "<td>$integration_type_html</td>"
+	set colspan 7
     } else {
-	set integration_type_html "<input type=hidden name=tm_integration_type_id value=[im_trans_tm_integration_type_external]>"
+	set integration_type_html "<input type=hidden name=tm_integration_type_id value=$ext>"
+	set colspan 6
     }
 
+
+    # -------------------- Add an Intermediate Header -----------------------
+    append task_table "
+	</table>
+	<table border=0>
+	<tr><td colspan=$colspan></td></br>
+	
+	<tr>
+	<td colspan=$colspan class=rowtitle align=center>
+	[lang::message::lookup "" intranet-translation.Add_Individual_Files "Add Individual Files"]
+	</td>
+	</tr>
+	<tr>
+	  <td class=rowtitle align=center>
+	    [_ intranet-translation.Task_Name]
+	  </td>
+	  <td class=rowtitle align=center>
+	    [_ intranet-translation.Units]
+	  </td>
+	  <td class=rowtitle align=center>
+	    [_ intranet-translation.UoM]
+	  </td>
+	  <td class=rowtitle align=center>
+	    [_ intranet-translation.Task_Type]
+	  </td>
+	"
+
+    if {$ophelia_installed_p} {
+	append task_table "
+	  <td class=rowtitle align=center>
+	   [lang::message::lookup "" intranet-translation.Integration_Type "Integration"]
+	  </td>
+	"
+    }
+    append task_table "
+	  <td class=rowtitle align=center>
+	    [_ intranet-translation.Task_Action]
+	  </td>
+	  <td class=rowtitle align=center>&nbsp;</td>
+	</tr>
+        "
 
     # -------------------- Add a new File  --------------------------
 
@@ -2394,8 +2406,8 @@ ad_proc im_new_task_component {
     <td>[im_select -translate_p 0 "task_name_file" $task_list]</td>
     <td><input type=text size=2 value=0 name=task_units_file></td>
     <td>[im_category_select "Intranet UoM" "task_uom_file" 324]</td>
-    <td>[im_category_select "Intranet Project Type" task_type_file 86]</td>
-    <td>$integration_type_html</td>
+    <td>[im_category_select "Intranet Project Type" task_type_file $project_type_id]</td>
+    $integration_type_html
     <td><input type=submit value=\"[_ intranet-translation.Add_File]\" name=submit_add_file></td>
     <td>[im_gif help "Add a new file to the list of tasks. \n New files need to be located in the \"source_xx\" folder to appear in the drop-down box on the left."]</td>
   </tr>
@@ -2412,8 +2424,8 @@ ad_proc im_new_task_component {
     <td><input type=text size=20 value=\"\" name=task_name_manual></td>
     <td><input type=text size=2 value=0 name=task_units_manual></td>
     <td>[im_category_select "Intranet UoM" "task_uom_manual" 324]</td>
-    <td>[im_category_select "Intranet Project Type" task_type_manual 86]</td>
-    <td>[im_category_select "Intranet TM Integration Type" tm_integration_type_id 4100]</td>
+    <td>[im_category_select "Intranet Project Type" task_type_manual $project_type_id]</td>
+    $integration_type_html
     <td><input type=submit value=\"[_ intranet-translation.Add]\" name=submit_add_manual></td>
     <td>[im_gif help "Add a \"manual\" task to the project. \n This task is not going to controled by the translation workflow."]</td>
   </tr>
