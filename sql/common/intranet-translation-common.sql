@@ -318,16 +318,16 @@ INSERT INTO im_categories VALUES (570,'Tec-Mech. eng','','Intranet Translation S
 -- Translation Memory (TM) Types for the translation workflow
 -- -------------------------------------------------------------------
 
--- 4100-4199    Intranet Trans TM Type
+-- 4200-4299    Intranet Trans TM Type
 
 
 
 INSERT INTO im_categories (category_id, category, category_type, category_description) VALUES
-(4100,'External', 'Intranet TM Integration Type','Trados is integrated by up/downloading files');
+(4200,'External', 'Intranet TM Integration Type','Trados is integrated by up/downloading files');
 INSERT INTO im_categories (category_id, category, category_type, category_description) VALUES
-(4102,'Ophelia', 'Intranet TM Integration Type','Ophelia in integrated via UserExists');
+(4202,'Ophelia', 'Intranet TM Integration Type','Ophelia in integrated via UserExists');
 INSERT INTO im_categories (category_id, category, category_type, category_description) VALUES
-(4104,'None', 'Intranet TM Integration Type','No integration - not a TM task');
+(4204,'None', 'Intranet TM Integration Type','No integration - not a TM task');
 
 
 
