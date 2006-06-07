@@ -36,8 +36,9 @@ ad_proc -public im_uom_s_line {} { return 326 }
 ad_proc -public im_uom_t_line {} { return 327 }
 
 
-ad_proc -public im_trans_tm_type_trados {} { return 4100 }
-ad_proc -public im_trans_tm_type_ophelia {} { return 4102 }
+ad_proc -public im_trans_tm_integration_type_external {} { return 4100 }
+ad_proc -public im_trans_tm_integration_type_ophelia {} { return 4102 }
+ad_proc -public im_trans_tm_integration_type_none {} { return 4104 }
 
 
 
@@ -1643,8 +1644,6 @@ order by sort_order"
     }
     append task_table "\n</tr>\n"
 
-
-
     # -------------------------------------------------------------------
     # Build the assignments table
     #
@@ -1738,11 +1737,6 @@ order by sort_order"
 	    if {"" != $workflow_key} { set dynamic_task_p 1 }
 	}
 
-	set ophelia_task_p 0
-	if {$ophelia_installed_p} {
-	    if {$tm_type_id == [im_trans_tm_type_ophelia]} { set ophelia_task_p 1 }
-	}
-
 	if {$task_id == $last_task_id} {
 	    # Duplicated task - this is probably due to an error with
 	    # the dynamic workflow. "Duplicated" tasks can be created
@@ -1754,6 +1748,12 @@ order by sort_order"
 	    continue
 	}
 	set last_task_id $task_id
+
+	# Deal with incomplete task information - may occur after 
+	# an error condition when uploading tasks or by an external
+	# application
+	if {"" == $task_units} { set task_units 0 }
+
 
 	# Determine if $user_id is assigned to some phase of this task
 	set user_assigned 0
@@ -1857,18 +1857,31 @@ order by sort_order"
 	    set download_link ""
 	    if {$download_folder != ""} {
 
-		if {!$ophelia_task_p} {
+		switch $tm_integration_type {
+		    External {
 
-		    # Standard - Download to start editing
-		    set download_url "/intranet-translation/download-task/$task_id/$download_folder/$task_name"
-		    set download_gif [im_gif save "Click right and choose \"Save target as\" to download the file"]
-		} else {
+			# Standard - Download to start editing
+			set download_url "/intranet-translation/download-task/$task_id/$download_folder/$task_name"
+			set download_gif [im_gif save "Click right and choose \"Save target as\" to download the file"]
+		    }
 
-		    # Ophelia - Redirect to Ophelia page
-		    set download_url [export_vars -base "/intranet-ophelia/task-start" {task_id project_id return_url}]
-		    set download_help [lang::message::lookup "" intranet-translation.Start_task "Start the task"]
-		    set download_gif [im_gif control_play_blue $download_help]
+		    Ophelia {
+			
+			# Ophelia - Redirect to Ophelia page
+			set download_url [export_vars -base "/intranet-ophelia/task-start" {task_id project_id return_url}]
+			set download_help [lang::message::lookup "" intranet-translation.Start_task "Start the task"]
+			set download_gif [im_gif control_play_blue $download_help]
+		    }
+
+		    default {
+
+			set download_url ""
+			set download_gif ""
+			set message ""
+
+		    }
 		}
+
 		set download_link "<A HREF='$download_url'>$download_gif</A>\n"
 	    }
 
@@ -1876,19 +1889,24 @@ order by sort_order"
 	    set upload_link ""
 	    if {$upload_folder != ""} {
 		
-		if {!$ophelia_task_p} {
+                switch $tm_integration_type {
+                    External {
+			# Standard - Upload to stop editing
+			set upload_url "/intranet-translation/trans-tasks/upload-task?"
+			append upload_url [export_url_vars project_id task_id case_id transition_key return_url]
+			set upload_gif [im_gif open "Upload File"]
+		    }
+		    Ophelia {
+			# Ophelia - Redirect to Ophelia page
+			set upload_url [export_vars -base "/intranet-ophelia/task-end" {task_id project_id case_id transition_key return_url}]
+			set upload_help [lang::message::lookup "" intranet-translation.Mark_task_as_finished "Mark the task as finished"]
+			set upload_gif [im_gif control_stop_blue $upload_help]
+		    }
+		    default {
+			set upload_url ""
+                        set upload_gif ""
 
-		    # Standard - Upload to stop editing
-		    set upload_url "/intranet-translation/trans-tasks/upload-task?"
-		    append upload_url [export_url_vars project_id task_id return_url]
-		    set upload_gif [im_gif open "Upload File"]
-
-		} else {
-
-		    # Ophelia - Redirect to Ophelia page
-		    set upload_url [export_vars -base "/intranet-ophelia/task-end" {task_id project_id return_url}]
-		    set upload_help [lang::message::lookup "" intranet-translation.Mark_task_as_finished "Mark the task as finished"]
-		    set upload_gif [im_gif control_stop_blue $upload_help]
+		    }
 		}
 		set upload_link "<A HREF='$upload_url'>$upload_gif</A>\n"
 	    }
@@ -1910,7 +1928,8 @@ order by sort_order"
 		select
 			wft.task_id,
 			wft.state as task_state,
-			wftr.transition_name
+			wftr.transition_name,
+			wft.transition_key
 		from
 			wf_tasks wft,
 			wf_transitions wftr
@@ -1934,23 +1953,24 @@ order by sort_order"
 	    set transition_id [lindex $transition 0]
 	    set transition_state [lindex $transition 1]
 	    set transition_name [lindex $transition 2]
+	    set transition_key [lindex $transition 3]
 
-	    if {[string equal 'enabled' $transition_state]} {
+	    if {[string equal "enabled" $transition_state]} {
 
 		set message "Press 'Start' to start '$transition_name'"
 		set download_help $message
 		set download_gif [im_gif control_play_blue $download_help]
-		set download_url [export_vars -base "/intranet-ophelia/task-start" {task_id project_id return_url}]
+		set download_url [export_vars -base "/intranet-ophelia/task-start" {task_id project_id case_id transition_key return_url}]
 		set download_link "<A HREF='$download_url'>$download_gif</A>\n"
-		
+		set upload_link ""
+
 	    } else {
 
 		set message "Press 'Stop' to finish '$transition_name'"
 		set upload_help $message
 		set upload_gif [im_gif control_stop_blue $upload_help]
-		set upload_url [export_vars -base "/intranet-ophelia/task-end" {task_id project_id return_url}]
+		set upload_url [export_vars -base "/intranet-ophelia/task-end" {task_id project_id case_id transition_key return_url}]
 		set upload_link "<A HREF='$upload_url'>$upload_gif</A>\n"
-
 		set download_link ""
 
 	    }
@@ -1960,11 +1980,13 @@ order by sort_order"
 
 	# Render the line using the dynamic columns from the database im_views
 	append table_body_html "<tr$bgcolor([expr $ctr % 2])>\n"
+	set col_ctr 0
 	foreach column_var $column_vars {
 	    append task_table "\t<td$bgcolor([expr $ctr % 2]) valign=top>"
 	    set cmd "append task_table $column_var"
 	    eval $cmd
 	    append task_table "</td>\n"
+	    incr col_ctr
 	}
 	append task_table "</tr>\n"
 
@@ -2013,7 +2035,7 @@ order by sort_order"
 <tr align=right> 
   <td align=left>
   </td>
-  <td colspan=12 align=right>&nbsp;</td>
+  <td colspan=13 align=right>&nbsp;</td>
   <td align=center><input type=submit value=\"[_ intranet-translation.Save]\" name=submit></td>
   <td align=center><input type=submit value=\"[_ intranet-translation.Del]\" name=submit></td>
 <!--  <td align=center><input type=submit value=\"[_ intranet-translation.Assign]\" name=submit></td> -->
@@ -2182,12 +2204,18 @@ $task_table_rows
 # New Tasks Component
 # -------------------------------------------------------------------
 
-ad_proc im_new_task_component { user_id project_id return_url } {
+ad_proc im_new_task_component { 
+    user_id 
+    project_id 
+    return_url 
+} {
     Return a piece of HTML to allow to add new tasks
 } {
-
     if {![im_permission $user_id view_trans_proj_detail]} { return "" }
 
+    # More then one option for a TM?
+    # Then we'll have to show a few more fields later.
+    set ophelia_installed_p [llength [info procs im_package_ophelia_id]]
 
     # Localize the workflow stage directories
     set locale "en_US"
@@ -2205,6 +2233,14 @@ ad_proc im_new_task_component { user_id project_id return_url } {
     # --------- Get a list of files "source_xx_XX" dir---------------
     # $file_list is a sorted list of all files in "source_xx_XX":
     set task_list [list]
+
+    # Get some basic information about our current project
+    db_1row project_info "
+	select	project_type_id
+	from	im_projects
+	where	project_id = :project_id
+    "
+
 
     # Get the sorted list of files in the directory
     set files [lsort [im_filestorage_find_files $project_id]]
@@ -2255,7 +2291,7 @@ ad_proc im_new_task_component { user_id project_id return_url } {
 <table border=0>
 <tr>
   <td colspan=1 class=rowtitle align=center>
-    [_ intranet-translation.Add_a_New_Task]
+    [lang::message::lookup "" intranet-translation.Add_Tasks_From_TM_Analysis "Add New Tasks From a Translation Memory Analysis"]
   </td>
   <td class=rowtitle align=center>
     [_ intranet-translation.Help]
@@ -2289,6 +2325,12 @@ ad_proc im_new_task_component { user_id project_id return_url } {
 	<option value=\"freebudget\" $freebudget_selected>FreeBudget (4.0 - 5.0)</option>
 	<option value=\"freebudget\" $webbudget_selected>WebBudget (4.0 - 5.0)</option>
     </select>
+"
+	append task_table "<input type=hidden name='tm_integration_type_id' value='[im_trans_tm_integration_type_external]'>\n"
+
+	append task_table [im_project_type_select task_type_id $project_type_id]
+
+	append task_table "
     <input type=submit value='[lang::message::lookup "" intranet-translation.Add_Wordcount "Add Wordcount"]' name=submit_trados>
     </form>
   </td>
@@ -2304,6 +2346,13 @@ ad_proc im_new_task_component { user_id project_id return_url } {
     append task_table "
 </table>
 <table border=0>
+<tr><td colspan=6></td></br>
+
+<tr>
+<td colspan=7 class=rowtitle align=center>
+[lang::message::lookup "" intranet-translation.Add_Individual_Files "Add Individual Files"]
+</td>
+</tr>
 <tr>
   <td class=rowtitle align=center>
     [_ intranet-translation.Task_Name]
@@ -2318,10 +2367,20 @@ ad_proc im_new_task_component { user_id project_id return_url } {
     [_ intranet-translation.Task_Type]
   </td>
   <td class=rowtitle align=center>
+   [lang::message::lookup "" intranet-translation.Integration_Type "Integration"]
+  </td>
+  <td class=rowtitle align=center>
     [_ intranet-translation.Task_Action]
   </td>
+  <td class=rowtitle align=center>&nbsp;</td>
 </tr>
 "
+
+    if {$ophelia_installed_p} {
+	set integration_type_html [im_category_select "Intranet TM Integration Type" tm_integration_type_id 4100]
+    } else {
+	set integration_type_html "<input type=hidden name=tm_integration_type_id value=[im_trans_tm_integration_type_external]>"
+    }
 
 
     # -------------------- Add a new File  --------------------------
@@ -2336,6 +2395,7 @@ ad_proc im_new_task_component { user_id project_id return_url } {
     <td><input type=text size=2 value=0 name=task_units_file></td>
     <td>[im_category_select "Intranet UoM" "task_uom_file" 324]</td>
     <td>[im_category_select "Intranet Project Type" task_type_file 86]</td>
+    <td>$integration_type_html</td>
     <td><input type=submit value=\"[_ intranet-translation.Add_File]\" name=submit_add_file></td>
     <td>[im_gif help "Add a new file to the list of tasks. \n New files need to be located in the \"source_xx\" folder to appear in the drop-down box on the left."]</td>
   </tr>
@@ -2353,6 +2413,7 @@ ad_proc im_new_task_component { user_id project_id return_url } {
     <td><input type=text size=2 value=0 name=task_units_manual></td>
     <td>[im_category_select "Intranet UoM" "task_uom_manual" 324]</td>
     <td>[im_category_select "Intranet Project Type" task_type_manual 86]</td>
+    <td>[im_category_select "Intranet TM Integration Type" tm_integration_type_id 4100]</td>
     <td><input type=submit value=\"[_ intranet-translation.Add]\" name=submit_add_manual></td>
     <td>[im_gif help "Add a \"manual\" task to the project. \n This task is not going to controled by the translation workflow."]</td>
   </tr>

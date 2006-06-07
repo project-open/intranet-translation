@@ -26,29 +26,44 @@ set user_id [ad_maybe_redirect_for_registration]
 set ass [list]
 foreach assig [array names assignment] {
     
-    if {[regexp {([a-z0-9_]*)\-([a-z0-9_]*)} $assig match transition_key task_id]} {
+    if {[regexp {([a-z0-9_]*)\-([a-z0-9_]*)} $assig match transition_key trans_task_id]} {
+	ns_log Notice "task-assignments-wf-2: transition_key=$transition_key, trans_task_id=$trans_task_id"
 
     	db_1row case_info "
 		select	case_id,
 			workflow_key
 		from	wf_cases 
-		where	object_id = :task_id
+		where	object_id = :trans_task_id
 	"
 
-    set asignee_id [string trim $assignment($assig)]
-	ns_log Notice "task-assignments-wf-2: $transition_key, $task_id -> $asignee_id"
-
-	# Delete the assignment
-	db_dml unassign "
+	set asignee_id [string trim $assignment($assig)]
+	ns_log Notice "task-assignments-wf-2: $transition_key, $trans_task_id -> $asignee_id"
+	
+	# Delete the case assignment
+	db_dml unassign_case "
 		delete from wf_case_assignments
 		where
 			case_id = :case_id
 			and role_key = :transition_key
 	"	    
 
+	set tasks_sql "
+		select  task_id
+		from    wf_tasks
+		where   case_id = :case_id
+			and transition_key = :transition_key
+	"
+
+	# Delete the task assignment
+	db_dml unassign_tasks "
+		delete from wf_task_assignments
+		where task_id in ($tasks_sql)
+	"
+
 	if {"" != $asignee_id} {
-	    # Assign the dude
-	    db_dml assign "
+
+	    # Assign the dude to the Transition
+	    db_dml assign_case "
 		insert into wf_case_assignments (
 			case_id, workflow_key,
 			role_key, party_id
@@ -57,6 +72,19 @@ foreach assig [array names assignment] {
 			:transition_key, :asignee_id
 		)
 	    "
+
+	    # Assign the dude to any Task of the current Case
+	    db_foreach task_to_be_assigned $tasks_sql {
+		db_dml assign_task "
+			insert into wf_task_assignments (
+				task_id, party_id
+			) values (
+				:task_id, :asignee_id
+			)
+		"
+	    }
+
+
 	}
     }
 }

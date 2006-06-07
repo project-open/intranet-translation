@@ -323,8 +323,12 @@ INSERT INTO im_categories VALUES (570,'Tec-Mech. eng','','Intranet Translation S
 
 
 INSERT INTO im_categories (category_id, category, category_type, category_description) VALUES
-(4100,'Trados', 'Intranet Translation TM Type','Trados is integrated by up/downloading files');
+(4100,'External', 'Intranet TM Integration Type','Trados is integrated by up/downloading files');
 INSERT INTO im_categories (category_id, category, category_type, category_description) VALUES
-(4102,'Ophelia', 'Intranet Translation TM Type','Ophelia in integrated via UserExists');
+(4102,'Ophelia', 'Intranet TM Integration Type','Ophelia in integrated via UserExists');
+INSERT INTO im_categories (category_id, category, category_type, category_description) VALUES
+(4104,'None', 'Intranet TM Integration Type','No integration - not a TM task');
+
+
 
 

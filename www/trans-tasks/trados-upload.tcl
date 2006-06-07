@@ -12,11 +12,22 @@ ad_page_contract {
     The main work is done by "trados-import.tcl", so we
     basicly only have to provide the trados file.
 
+    @param project_id The parent project
+    @param return_url Where to go after the work is done?
+    @param wordcount_application Allows to upload data from
+           various Translation Memories
+    @param tm_type_id Really necessary? Not used yet, 
+           because the TM type is given from the wordcount_app
+    @param task_type_id determines the task type
+    @param upload_file The filename to be uploaded - according
+           to AOLServer conventions
+
     @author frank.bergmann@project-open.com
 } {
     project_id:integer
     return_url
     { wordcount_application "trados" }
+    { task_type_id 0 }
     upload_file
 } 
 
@@ -67,12 +78,12 @@ set import_method "Asp"
 
 switch $wordcount_application {
     trados {
-	ad_returnredirect trados-import?[export_url_vars project_id return_url wordcount_file import_method]
+	ad_returnredirect trados-import?[export_url_vars project_id task_type_id return_url wordcount_file import_method]
     }
     freebudget {
-	ad_returnredirect freebudget-import?[export_url_vars project_id return_url wordcount_file import_method]
+	ad_returnredirect freebudget-import?[export_url_vars project_id task_type_id return_url wordcount_file import_method]
     }
     webbudget {
-	ad_returnredirect freebudget-import?[export_url_vars project_id return_url wordcount_file import_method]
+	ad_returnredirect freebudget-import?[export_url_vars project_id task_type_id return_url wordcount_file import_method]
     }
 }

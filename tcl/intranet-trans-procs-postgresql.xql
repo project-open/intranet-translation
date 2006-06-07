@@ -136,6 +136,7 @@ group by
     <querytext>
 select 
 	t.*,
+	im_category_from_id(t.tm_integration_type_id) as tm_integration_type,
 	to_char(t.end_date, :date_format) as end_date_formatted,
         im_category_from_id(t.source_language_id) as source_language,
         im_category_from_id(t.target_language_id) as target_language,

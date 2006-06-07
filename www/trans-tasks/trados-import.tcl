@@ -27,6 +27,7 @@ ad_page_contract {
 } {
     return_url
     project_id:integer
+    task_type_id:integer
     wordcount_file
     {import_method "Asp"}
 }
@@ -391,7 +392,10 @@ ns_log Notice "trados-import: common_filename_comps=$common_filename_comps"
         set task_units [im_trans_trados_matrix_calculate $company_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
 
 	set billable_units $task_units
-	set task_type_id $project_type_id
+
+# 060605 fraber: Not necesary anymore: We now have a specific task type
+#	set task_type_id $project_type_id
+
 	set task_status_id 340
 	set task_description ""
 	# source_language_id defined by im_project
@@ -440,6 +444,7 @@ ns_log Notice "trados-import: common_filename_comps=$common_filename_comps"
 
 		db_dml update_task "
 		    UPDATE im_trans_tasks SET
+			tm_integration_type_id = [im_trans_tm_integration_type_external],
 			task_name = :task_name,
 			task_filename = :task_name,
 			description = :task_description,
