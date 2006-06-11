@@ -1582,6 +1582,7 @@ ad_proc im_task_component {
 	return ""
     }
 
+    set current_user_id $user_id
     set date_format "YYYY-MM-DD"
 
     # Get the permissions for the current _project_
@@ -1650,6 +1651,7 @@ order by sort_order"
     # This query extracts all tasks and all of the task assignments and
     # stores them in an two-dimensional matrix (implmented as a hash).
 
+    # ToDo: Use this ass(...) field instead of the SQL for each task line
     set wf_assignments_sql "
         select distinct
                 t.task_id,
@@ -1678,7 +1680,7 @@ order by sort_order"
     db_foreach wf_assignment $wf_assignments_sql {
 	set ass_key "$task_id $transition_key"
 	set ass($ass_key) $party_id
-	ns_log Notice "task-assignments: $workflow_key: '$ass_key' -> '$party_id'"
+	ns_log Notice "im_task_component: DynWF Assig: wf='$workflow_key': '$ass_key' -> '$party_id'"
     }
 
 
@@ -1842,6 +1844,7 @@ order by sort_order"
 	#
 	if {!$dynamic_task_p} {
 
+	    ns_log Notice "im_task_component: Static WF"
 	    # Message - Tell the freelancer what to do...
 	    # Check if the user is a freelance who is allowed to
 	    # upload a file for this task, depending on the task
@@ -1851,7 +1854,7 @@ order by sort_order"
 	    set download_folder [lindex $upload_list 0]
 	    set upload_folder [lindex $upload_list 1]
 	    set message [lindex $upload_list 2]
-	    ns_log Notice "download_folder=$download_folder, upload_folder=$upload_folder"
+	    ns_log Notice "im_task_component: download_folder=$download_folder, upload_folder=$upload_folder"
 	    
 	    # Download Link - where to get the task file
 	    set download_link ""
@@ -1877,7 +1880,7 @@ order by sort_order"
 
 			set download_url ""
 			set download_gif ""
-			set message ""
+			set message "Bad TM Integration Type: '$tm_integration_type'"
 
 		    }
 		}
@@ -1920,25 +1923,27 @@ order by sort_order"
 	# - Show a message with the task
 	if {$dynamic_task_p} {
 
+	    ns_log Notice "im_task_component: Dynamic WF"
 	    # Check for the currently enabled Tasks
 	    # This should be only one task at a time in a simplified
 	    # PetriNet without parallelism
 	    #
 	    set transitions [db_list_of_lists enabled_tasks "
-		select
-			wft.task_id,
-			wft.state as task_state,
-			wftr.transition_name,
-			wft.transition_key
+		select distinct
+			t.task_id,
+			t.state as task_state,
+			t.transition_name,
+			t.transition_key
 		from
-			wf_tasks wft,
-			wf_transitions wftr
+			wf_cases c,
+			wf_user_tasks t
 		where
-			wft.transition_key = wftr.transition_key
-			and wft.workflow_key = wftr.workflow_key
-			and case_id = :case_id
-			and state in ('enabled', 'started')
-	    "]
+			c.case_id = :case_id
+			and t.user_id = :current_user_id
+			and c.case_id = t.case_id
+			and t.state in ('enabled', 'started')
+		"]
+
 
 	    if {[llength $transitions] > 1} {
 		ad_return_complaint 1 "More then one task 'enabled' or 'started':<br>
@@ -1949,32 +1954,46 @@ order by sort_order"
 		return
 	    }
 
+	    # Get the first task only
 	    set transition [lindex $transitions 0]
-	    set transition_id [lindex $transition 0]
+
+	    # Retreive the variables
+	    set transition_task_id [lindex $transition 0]
 	    set transition_state [lindex $transition 1]
 	    set transition_name [lindex $transition 2]
 	    set transition_key [lindex $transition 3]
 
-	    if {[string equal "enabled" $transition_state]} {
-
-		set message "Press 'Start' to start '$transition_name'"
-		set download_help $message
-		set download_gif [im_gif control_play_blue $download_help]
-		set download_url [export_vars -base "/intranet-ophelia/task-start" {task_id project_id case_id transition_key return_url}]
-		set download_link "<A HREF='$download_url'>$download_gif</A>\n"
-		set upload_link ""
-
-	    } else {
-
-		set message "Press 'Stop' to finish '$transition_name'"
-		set upload_help $message
-		set upload_gif [im_gif control_stop_blue $upload_help]
-		set upload_url [export_vars -base "/intranet-ophelia/task-end" {task_id project_id case_id transition_key return_url}]
-		set upload_link "<A HREF='$upload_url'>$upload_gif</A>\n"
-		set download_link ""
-
+	    switch $transition_state {
+		"enabled" {
+		    set message "Press 'Start' to start '$transition_name'"
+		    set download_help $message
+		    set download_gif [im_gif control_play_blue $download_help]
+		    set download_url [export_vars -base "/workflow/task" {{task_id $transition_task_id} return_url}]
+		    set download_link "<A HREF='$download_url'>$download_gif</A>\n"
+		    set upload_link ""
+		}
+		"started" {
+		    set message "Press 'Stop' to finish '$transition_name'"
+		    set upload_help $message
+		    set upload_gif [im_gif control_stop_blue $upload_help]
+		    set upload_url [export_vars -base "/workflow/task" {{task_id $transition_task_id} return_url}]
+		    set upload_link "<A HREF='$upload_url'>$upload_gif</A>\n"
+		    set download_link ""
+		}
+		"" {
+		    # No activity 
+		    set message ""
+		    set upload_help $message
+		    set upload_link ""
+		    set download_link ""
+		}
+		default {
+		    set message "Error with task in state '$transition_state'"
+		    set upload_help $message
+		    set upload_link ""
+		    set download_link ""
+		}
 	    }
-
 	}
 	    
 
