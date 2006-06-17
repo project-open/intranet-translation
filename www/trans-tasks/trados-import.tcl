@@ -29,6 +29,7 @@ ad_page_contract {
     project_id:integer
     task_type_id:integer
     wordcount_file
+    { target_language_id "" }
     {import_method "Asp"}
 }
 
@@ -86,6 +87,12 @@ if {0 == [llength $target_language_ids]} {
     return
 }
 
+# Explicitly specified? Then just take that one...
+if {"" != $target_language_id} { 
+    set target_language_ids $target_language_id 
+}
+
+
 set project_path [im_filestorage_project_path $project_id]
 
 set page_title "[_ intranet-translation.Trados_Upload]"
@@ -104,7 +111,7 @@ set err_count 0
 set project_query "
 select
         p.project_nr as project_short_name,
-	p.company_id,
+	p.company_id as customer_id,
         c.company_name as company_short_name,
         p.source_language_id,
         p.project_type_id
@@ -388,10 +395,16 @@ ns_log Notice "trados-import: common_filename_comps=$common_filename_comps"
 	# Calculate the number of "effective" words based on
 	# a valuation of repetitions
 
-        ns_log Notice "trados-import: im_trans_trados_matrix_calculate $company_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words"
-        set task_units [im_trans_trados_matrix_calculate $company_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
+	
+	# Determine the wordcount of the task:
+	# Get the "task_units" from the company "default_freelance"
+	# and the "billable_units" form the project's customer:
+	#
+        set task_units [im_trans_trados_matrix_calculate [im_company_freelance] $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
 
-	set billable_units $task_units
+        set billable_units [im_trans_trados_matrix_calculate $customer_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
+
+
 
 # 060605 fraber: Not necesary anymore: We now have a specific task type
 #	set task_type_id $project_type_id
@@ -448,8 +461,8 @@ ns_log Notice "trados-import: common_filename_comps=$common_filename_comps"
 			task_name = :task_name,
 			task_filename = :task_name,
 			description = :task_description,
-			task_units = :billable_units,
-			billable_units = :task_units,
+			task_units = :task_units,
+			billable_units = :billable_units,
 			match_x = :px_words,
 			match_rep = :prep_words,
 			match100 = :p100_words, 

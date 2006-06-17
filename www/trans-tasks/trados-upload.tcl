@@ -28,6 +28,7 @@ ad_page_contract {
     return_url
     { wordcount_application "trados" }
     { task_type_id 0 }
+    { target_language_id "" }
     upload_file
 } 
 
@@ -78,12 +79,12 @@ set import_method "Asp"
 
 switch $wordcount_application {
     trados {
-	ad_returnredirect trados-import?[export_url_vars project_id task_type_id return_url wordcount_file import_method]
+	ad_returnredirect trados-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file import_method]
     }
     freebudget {
-	ad_returnredirect freebudget-import?[export_url_vars project_id task_type_id return_url wordcount_file import_method]
+	ad_returnredirect freebudget-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file import_method]
     }
     webbudget {
-	ad_returnredirect freebudget-import?[export_url_vars project_id task_type_id return_url wordcount_file import_method]
+	ad_returnredirect freebudget-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file import_method]
     }
 }

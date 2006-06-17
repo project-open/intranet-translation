@@ -19,7 +19,7 @@
 
 select
         p.project_nr as project_short_name,
-        p.company_id,
+        p.company_id as customer_id,
         c.company_name as company_short_name,
         p.source_language_id,
         p.project_type_id
