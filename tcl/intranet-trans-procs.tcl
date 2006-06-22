@@ -1564,11 +1564,12 @@ ad_proc im_task_freelance_component { user_id project_id return_url } {
     im_project_permissions $user_id $project_id project_view project_read project_write project_admin
 
     if {$project_write} { return "" }
-    return [im_task_component $user_id $project_id $return_url]
+    return [im_task_component -include_subprojects_p 1 $user_id $project_id $return_url]
 }
 
 
 ad_proc im_task_component { 
+    {-include_subprojects_p 0}
     user_id 
     project_id 
     return_url 
@@ -1702,6 +1703,23 @@ order by sort_order"
 	set project_size_uom_counter($uom_id) 0
     }
 
+    set project_where "t.project_id = :project_id"
+    if {$include_subprojects_p} {
+	set project_where "
+	    t.project_id in (
+		    select
+			children.project_id
+		    from
+			im_projects parent,
+			im_projects children
+		    where
+			children.project_status_id not in ([im_project_status_deleted],[im_project_status_canceled])
+			and children.tree_sortkey between parent.tree_sortkey and tree_right(parent.tree_sortkey)
+			and parent.project_id = :project_id
+	    )
+	"
+    }
+
     set extra_select ""
     set extra_from ""
     set extra_where ""
@@ -1710,24 +1728,24 @@ order by sort_order"
 		wft.*
 	"
 	set extra_from "
-        LEFT OUTER JOIN (
-                select  wfc.object_id,
+	LEFT OUTER JOIN (
+		select  wfc.object_id,
 			wft.case_id,
-                        wft.place_key,
-                        wft.state,
+			wft.place_key,
+			wft.state,
 			wft.workflow_key
-                from    wf_tokens wft,
-                        (select *
-                        from    wf_cases
-                        where   object_id in (
-                                        select task_id
-                                        from im_trans_tasks
-                                        where project_id = :project_id
-                                )
-                        ) wfc
-                where   wft.case_id = wfc.case_id
-                        and wft.state != 'consumed'
-        ) wft on (t.task_id = wft.object_id)
+		from    wf_tokens wft,
+			(select *
+			from    wf_cases
+			where   object_id in (
+					select task_id
+					from im_trans_tasks
+					where project_id = :project_id
+				)
+			) wfc
+		where   wft.case_id = wfc.case_id
+			and wft.state != 'consumed'
+	) wft on (t.task_id = wft.object_id)
 	"
     }
 
@@ -1831,7 +1849,7 @@ order by sort_order"
 	    set type_select "
 		<input type=hidden name=\"task_type.$task_id\" value=\"$task_type_id\">
 		<a href=\"$workflow_view_url\">$wf_pretty_name</a>
-            "
+	    "
 	}
 
 	# Delete Checkbox
@@ -1860,6 +1878,7 @@ order by sort_order"
 	    set download_link ""
 	    if {$download_folder != ""} {
 
+		if {"" == $tm_integration_type} { set tm_integration_type "External" }
 		switch $tm_integration_type {
 		    External {
 
@@ -1892,8 +1911,8 @@ order by sort_order"
 	    set upload_link ""
 	    if {$upload_folder != ""} {
 		
-                switch $tm_integration_type {
-                    External {
+		switch $tm_integration_type {
+		    External {
 			# Standard - Upload to stop editing
 			set upload_url "/intranet-translation/trans-tasks/upload-task?"
 			append upload_url [export_url_vars project_id task_id case_id transition_key return_url]
@@ -1907,7 +1926,7 @@ order by sort_order"
 		    }
 		    default {
 			set upload_url ""
-                        set upload_gif ""
+			set upload_gif ""
 
 		    }
 		}
@@ -2426,7 +2445,7 @@ ad_proc im_new_task_component {
 	  </td>
 	  <td class=rowtitle align=center>&nbsp;</td>
 	</tr>
-        "
+     "
 
     # -------------------- Add a new File  --------------------------
 

@@ -152,7 +152,7 @@ from
 	im_trans_tasks t
 	$extra_from
 where
-	t.project_id=:project_id
+	$project_where
 	$extra_where
 order by
 	t.task_name,
