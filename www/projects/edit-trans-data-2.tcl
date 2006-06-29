@@ -24,13 +24,34 @@ ad_page_contract {
     return_url
 }
 
+# ---------------------------------------------------------------------
+# Permissions
+# ---------------------------------------------------------------------
+
 set user_id [ad_maybe_redirect_for_registration]
+
+# get the current users permissions for this project
+im_project_permissions $user_id $project_id view read write admin
+
+if {!$write} {
+    ad_return_complaint 1 "<li>[_ intranet-core.lt_You_have_insufficient_6]"
+    return
+}
+
+# ---------------------------------------------------------------------
+# Defaults & Checks
+# ---------------------------------------------------------------------
 
 # Allow for empty target languages(?)
 if {![info exists target_language_ids]} {
     set target_language_ids [list]
 }
 
+set fs_installed_p [db_table_exists im_fs_folders]
+
+# ---------------------------------------------------------------------
+# 
+# ---------------------------------------------------------------------
 
 set sql "
 update im_projects set
@@ -86,25 +107,18 @@ db_transaction {
 # Create the directory structure necessary for the project
 # ---------------------------------------------------------------------
 
-if {[db_table_exists im_fs_folders]} {
+# If the filestorage module is installed...
+if {$fs_installed_p} {
 
-	# If the filestorage module is installed...
 	set create_err ""
-	set err_msg ""
 	if { [catch {
 	    set create_err [im_filestorage_create_directories $project_id]
 	} err_msg] } {
-	    # Nothing - Filestorage may not be enabled...
-	}
-	ns_log Notice "/project/edit-trans-data-2: err_msg=$err_msg"
-	ns_log Notice "/project/edit-trans-data-2: create_err=$create_err"
-	
-	if {"" != $create_err || "" != $err_msg} {
 	    ad_return_complaint 1 "<li>err_msg: $err_msg<br>create_err: $create_err<br>"
 	    return
 	}
-
-}
+	
+    }
 
 # ---------------------------------------------------------------------
 # Create Subprojects - one for each language
@@ -114,20 +128,17 @@ if {[db_table_exists im_fs_folders]} {
 # ---------------------------------------------------------------------
 
 db_1row project_info "
-select
-	*
-from
-	im_projects
-where
-	project_id=:project_id
+	select	*
+	from	im_projects
+	where	project_id=:project_id
 "
 
 
 if {[exists_and_not_null submit_subprojects]} {
     
     foreach lang $target_language_ids {
-	set lang_name [db_string get_language "select category from im_categories where category_id=:lang"]
 
+	set lang_name [db_string get_language "select category from im_categories where category_id=:lang"]
         ns_log Notice "target_language=$lang_name"
 	set sub_project_name "${project_name} - $lang_name"
 	set sub_project_nr "${project_nr}_$lang_name"
@@ -139,13 +150,13 @@ if {[exists_and_not_null submit_subprojects]} {
 	if {!$sub_project_id} {
 
 	    set sub_project_id [project::new \
-        -project_name           $sub_project_name \
-        -project_nr             $sub_project_nr \
-        -project_path           $sub_project_path \
-        -company_id            $company_id \
-        -parent_id              $project_id \
-        -project_type_id        $project_type_id \
-	-project_status_id      $project_status_id]
+	        -project_name           $sub_project_name \
+	        -project_nr             $sub_project_nr \
+	        -project_path           $sub_project_path \
+	        -company_id            $company_id \
+	        -parent_id              $project_id \
+	        -project_type_id        $project_type_id \
+		-project_status_id      $project_status_id]
 
 	    # add users to the project as PMs (1301):
 	    # - current_user (creator/owner)
@@ -159,23 +170,25 @@ if {[exists_and_not_null submit_subprojects]} {
 	    if {"" != $supervisor_id} {
 		im_biz_object_add_role $supervisor_id $sub_project_id $role_id
 	    }
+
 	}
 
 	# -----------------------------------------------------------------
 	# Update the Project
 
 	set project_update_sql "
-update im_projects set
-        requires_report_p =	:requires_report_p,
-	parent_id =		:project_id,
-	project_status_id =	:project_status_id,
-	source_language_id = 	:source_language_id,
-	subject_area_id = 	:subject_area_id,
-	expected_quality_id =	:expected_quality_id,
-        start_date =    	:start_date,
-        end_date =      	:end_date
-where
-        project_id = :sub_project_id"
+	update im_projects set
+	        requires_report_p =	:requires_report_p,
+		parent_id =		:project_id,
+		project_status_id =	:project_status_id,
+		source_language_id = 	:source_language_id,
+		subject_area_id = 	:subject_area_id,
+		expected_quality_id =	:expected_quality_id,
+	        start_date =    	:start_date,
+	        end_date =      	:end_date
+	where
+	        project_id = :sub_project_id
+	"
 
 	db_dml project_update $project_update_sql
 
@@ -189,6 +202,38 @@ where
 		(:sub_project_id, :lang)
 	"	
 
+	# -----------------------------------------------------------------
+	# Create Folder structure for the new project
+	set err_msg ""
+	if { [catch {
+	    set err_msg [im_filestorage_create_directories $sub_project_id]
+	} err_msg] } {
+	    #
+	}
+	if {"" != $err_msg} {
+
+	    ad_return_complaint 1 "<li>Unable to create folder structure for subproject: 
+	    <pre>$err_msg</pre>"
+	    return
+	}	
+
+
+	# -----------------------------------------------------------------
+	# Copy files from the "source_xx" folder of the current
+	# project to the target project
+	if { [catch {
+	    set err_msg [im_filestorage_copy_source_directory $project_id $sub_project_id]
+	} err_msg] } {
+	    # Pass-on err_msg
+	}
+
+	if {"" != $err_msg} {
+	    ad_return_complaint 1 "<li>Unable to copy 'source'-folder: 
+	    <pre>$err_msg</pre"
+	    return
+	}
+
+  
 
     }
 }
