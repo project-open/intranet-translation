@@ -29,7 +29,37 @@ if {!$write} {
 }
 
 # Compatibility with old message...
-set trados_wordcount_file $wordcount_file
+set freebudget_wordcount_file $wordcount_file
+
+# ---------------------------------------------------------------------
+# Get some more information about the project
+# ---------------------------------------------------------------------
+
+set customer_id ""
+set project_query "
+	select
+	        p.project_nr as project_short_name,
+	        p.company_id as customer_id,
+	        c.company_name as company_short_name,
+	        p.source_language_id,
+	        p.project_type_id
+	from
+	        im_projects p
+	      LEFT JOIN
+	        im_companies c on (p.company_id = c.company_id)
+	where
+	        p.project_id = :project_id
+"
+
+if { ![db_0or1row projects_info_query $project_query] } {
+    ad_return_complaint 1 "[_ intranet-translation.lt_Cant_find_the_project]"
+    return
+}
+
+if {"" == $customer_id} {
+    ad_return_complaint 1 "[_ intranet-translation.lt_Cant_find_the_project]"
+    return
+}
 
 # ---------------------------------------------------------------------
 # Get the file and deal with Unicode encoding...
@@ -81,15 +111,6 @@ set bgcolor(1) " class=rowodd"
 # Number of errors encountered
 set err_count 0
 
-# ---------------------------------------------------------------------
-# Get some more information about the project
-# ---------------------------------------------------------------------
-
-if { ![db_0or1row projects_info_query ""] } {
-    ad_return_complaint 1 "[_ intranet-translation.lt_Cant_find_the_project]"
-    return
-}
-
 
 # ---------------------------------------------------------------------
 # Start parsing the wordcount file
@@ -99,7 +120,6 @@ append page_body "
 <P><A HREF=$return_url>[_ intranet-translation.lt_Return_to_previous_pa]</A></P>
 <table cellpadding=0 cellspacing=2 border=0>
 "
-
 
 if {[catch {
     set fl [open $wordcount_file]
@@ -111,21 +131,107 @@ if {[catch {
     return
 }
 
-set separator ","
 
+# Extract the header line from the file
+set separator ","
 set freebudget_files [split $freebudget_files_content "\n"]
 set freebudget_files_len [llength $freebudget_files]
 set freebudget_header [lindex $freebudget_files 0]
-set freebudget_headers [split $freebudget_header $separator]
+set freebudget_headers [im_csv_split $freebudget_header $separator]
 set freebudget_header_len [llength $freebudget_headers]
 
-switch $freebudget_header_len {
-    14 { set freebudget_version "5.0" }
-    default { set freebudget_version "unknown" }
+ns_log Notice "freebudget-import: freebudget_header='$freebudget_header'"
+ns_log Notice "freebudget-import: freebudget_headers='$freebudget_headers'"
+ns_log Notice "freebudget-import: freebudget_header_len=$freebudget_header_len"
+
+
+# "Normalize" the header line to make the strings suitable as variables. 
+# There is an ugly double-space in the "Total  Words" string that we 
+# reduce to a single space. Also, we might want to normalize other 
+# changes in the next versions
+set headers [list]
+foreach h $freebudget_headers {
+    set h [string tolower [string map -nocase {"  " "_" " " "_" "'" "" "/" "_" "-" "_"} $h]]
+    lappend headers $h
+}
+set freebudget_headers $headers
+# ad_return_complaint 1 "<pre>$headers</pre>"
+
+
+# Determine the FreeBudget version -
+# Very easy right now, just check if "total_words" is there...
+set freebudget_version "unknown"
+if {[lsearch $freebudget_headers "total_words"] >= 0} { set freebudget_version "5.0" }
+ns_log Notice "freebudget-import: freebudget_version=$freebudget_version, freebudget_header_len=$freebudget_header_len, separator=$separator"
+if {[string equal "unknown" $freebudget_version]} {
+    ad_return_complaint 1 "
+        <li>[_ intranet-translation.Unknown_Freebudget_Version]<br>
+	[_ intranet-translation.Your_file_freebudget_word]<BR>
+	[_ intranet-translation.Please_repeat_your_ana]"
+    return
 }
 
-ns_log Notice "freebudget-import: freebudget_version=$freebudget_version, freebudget_header_len=$freebudget_header_len, separator=$separator"
+# ---------------------------------------------------------------------
+# Split the file into a two-dimensinal array
+# ---------------------------------------------------------------------
 
+set values_list_of_lists [im_csv_get_values $freebudget_files_content $separator]
+set values_list_len [llength $values_list_of_lists]
+
+
+# ---------------------------------------------------------------------
+# Determine the common filename components in the list of 
+# freebudget files. These components are chopped off later in
+# the loop.
+# ---------------------------------------------------------------------
+
+set first_line [lindex $values_list_of_lists 0]
+set first_filename [lindex $first_line 1]
+set first_filename_comps [split $first_filename "\\"]
+ns_log Notice "freebudget-import: first_filename=$first_filename"
+ns_log Notice "freebudget-import: first_filename_comps=$first_filename_comps"
+
+
+set common_filename_comps 0
+set all_the_same 1
+set ctr 0
+set first_filename_comps_len [llength $first_filename_comps]
+
+while {$all_the_same && $ctr < $first_filename_comps_len} {
+    set common_component [lindex $first_filename_comps $ctr]
+    ns_log Notice "freebudget-import: $ctr: first_filename_comps: prefix=$common_component"
+    ns_log Notice "freebudget-import: $ctr: num_of_lines: $values_list_len"
+
+    for {set i 1} {$i < $values_list_len} {incr i} {
+	set freebudget_fields [lindex $values_list_of_lists $i]
+	if {0 == [llength $freebudget_fields]} { continue }
+	set filename [lindex $freebudget_fields 1]
+	if {"\"\"\"\"" == $filename} { continue }
+	set filename_comps [split $filename "\\"]
+	set this_component [lindex $filename_comps $ctr]
+
+	ns_log Notice "freebudget-import: $ctr: $i: freebudget_fields=$freebudget_fields"
+	ns_log Notice "freebudget-import: $ctr: $i: filename=$filename"
+	ns_log Notice "freebudget-import: $ctr: $i: filename_comps=$filename_comps"
+	ns_log Notice "freebudget-import: $ctr: $i: this_component=$this_component"
+	ns_log Notice "freebudget-import: $ctr: $i: common_component=$common_component"
+	
+	if {![string equal $common_component $this_component]} {
+	    ns_log Notice "freebudget-import: $ctr: $i: Found '$this_component' which does not suit the common_component '$common_component', aborting"
+	    set all_the_same 0
+	    break
+	}
+    }
+    incr ctr
+}
+set common_filename_comps [expr $ctr - 1]
+ns_log Notice "freebudget-import: common_filename_comps=$common_filename_comps"
+
+
+
+# ---------------------------------------------------------------------
+# Start rendering the page
+# ---------------------------------------------------------------------
 
 append page_body "
 <P>
@@ -154,111 +260,67 @@ append page_body "
 </tr>
 "
 
-if {[string equal "unknown" $freebudget_version]} {
-    ad_return_complaint 1 "
-        <li>[_ intranet-translation.lt_Unknown_Freebudget_Versio]<br>
-	[_ intranet-translation.lt_Your_file_freebudget_word]<BR>
-	[_ intranet-translation.lt_Please_try_to_repeat_]"
-    return
-}
 
-# Determine the common filename components in the list of 
-# freebudget files. These components are chopped off later in
-# the loop.
-# This procedure is not necessary for LocalFs import.
-set common_filename_comps 0
+# ---------------------------------------------------------------------
+# Start processing the page
+# ---------------------------------------------------------------------
 
-set first_freebudget_line [lindex $freebudget_files 1]
-set first_freebudget_fields [split $first_freebudget_line $separator]
-set first_filename "[lindex $first_freebudget_fields 1][lindex $first_freebudget_fields 2]"
-set first_filename_comps [split $first_filename "\\"]
 
-ns_log Notice "freebudget-import: first_freebudget_line=$first_freebudget_line"
-ns_log Notice "freebudget-import: first_freebudget_fields=$first_freebudget_fields"
-ns_log Notice "freebudget-import: first_filename=$first_filename"
-ns_log Notice "freebudget-import: first_filename_comps=$first_filename_comps"
-
-set all_the_same 1
 set ctr 0
-set first_filename_comps_len [llength $first_filename_comps]
+foreach line_fields $values_list_of_lists {
 
-while {$all_the_same && $ctr < $first_filename_comps_len} {
-    set common_component [lindex $first_filename_comps $ctr]
-    ns_log Notice "freebudget-import: first_filename_comps: prefix=$common_component"
-    ns_log Notice "freebudget-import: freebudget_files_len=$freebudget_files_len"
+    ns_log Notice "freebudget-import: line='$line_fields'"
 
-    for {set i 1} {$i < $freebudget_files_len} {incr i} {
-	set freebudget_line [lindex $freebudget_files $i]
-	if {0 == [string length $freebudget_line]} { continue }
-	
-	set freebudget_fields [split $freebudget_line $separator]
-	set filename "[lindex $freebudget_fields 1][lindex $freebudget_fields 2]"
+    # Set the variables to "", because they might not be present
+    # in the CSV file. In FreeBudget you can choose the number of
+    # fields to export...
+    set info ""
+    set name ""
+    set total_words ""
+    set time ""
+    set repetitions ""
 
-	if {"\"\"\"\"" == $filename} { continue }
 
-	set filename_comps [split $filename "\\"]
-	set this_component [lindex $filename_comps $ctr]
+    # -------------------------------------------------------
+    # Extract variables from the CSV file
+    #
+    set var_name_list [list]
+    for {set j 0} {$j < $freebudget_header_len} {incr j} {
 
-	ns_log Notice "freebudget-import: filename=$filename"
-	ns_log Notice "freebudget-import: freebudget_line=$freebudget_line"
-	ns_log Notice "freebudget-import: filename_comps=$filename_comps"
-	ns_log Notice "freebudget-import: this_component=$this_component"
-	ns_log Notice "freebudget-import: common_component=$common_component"
-	
-	if {![string equal $common_component $this_component]} {
-	    set all_the_same 0
-	    break
-	}
+        set var_name [string trim [lindex $freebudget_headers $j]]
+        if {"" == $var_name} {
+            # No variable name - probably an empty column
+            continue
+        }
+
+        lappend var_name_list $var_name
+        ns_log notice "freebudget-import: varname([lindex $freebudget_headers $j]) = $var_name"
+
+        set var_value [string trim [lindex $line_fields $j]]
+        if {[string equal "NULL" $var_value]} { set var_value ""}
+
+	# Normalize the variable. Replace komma by dot (European decimals)
+	set var_value [string map -nocase {"," "."} $var_value]
+
+        set cmd "set $var_name \"$var_value\""
+        ns_log Notice "freebudget-import: cmd=$cmd"
+        set result [eval $cmd]
     }
-    incr ctr
-}
-set common_filename_comps [expr $ctr - 1]
 
-ns_log Notice "freebudget-import: common_filename_comps=$common_filename_comps"
-
-
-set ctr 0
-for {set i 1} {$i < $freebudget_files_len} {incr i} {
-    incr ctr
-    set freebudget_line [lindex $freebudget_files $i]
-    set freebudget_line "$freebudget_line $separator X"
-    if {0 == [string length $freebudget_line]} { continue }
-
-    set freebudget_fields [im_csv_split $freebudget_line $separator]
-
-    # Replace "," by "." with European format...
-    # May break with big files??
-    regsub -all {\,} $freebudget_fields "\." freebudget_fields
-
-    set status		[lindex $freebudget_fields 0]
-    set path		[lindex $freebudget_fields 1]
-    set file		[lindex $freebudget_fields 2]
-    set fb_text		[lindex $freebudget_fields 3]
-    set fb_headers	[lindex $freebudget_fields 4]
-    set fb_footers	[lindex $freebudget_fields 5]
-    set fb_footnotes	[lindex $freebudget_fields 6]
-    set fb_endnotes	[lindex $freebudget_fields 7]
-    set fb_text_in_shapes [lindex $freebudget_fields 8]
-    set fb_annotations	[lindex $freebudget_fields 9]
-    set fb_total_words	[lindex $freebudget_fields 10]
-    set fb_price	[lindex $freebudget_fields 11]
-    set fb_time		[lindex $freebudget_fields 12]
-    set fb_repetitions	[lindex $freebudget_fields 13]
-
-    if {"" == $fb_repetitions} { continue }
+    if {"" == $repetitions} { set repetitions 0 }
 
     set px_words 0
-    set prep_words $fb_repetitions
+    set prep_words $repetitions
     set p100_words 0
     set p95_words 0
     set p85_words 0
     set p75_words 0
     set p50_words 0
-    set p0_words [expr int($fb_total_words - $fb_repetitions)]
+    set p0_words [expr int($total_words - $repetitions)]
 
     # Remove all common filename components from the task names
 
-    set filename "$path$file"
+    set filename $name
     ns_log Notice "freebudget-import: filename='$filename', len=[string length $filename]"
     if {"" == $filename || "\"\"\"\"" == $filename} { continue }
 
@@ -269,22 +331,18 @@ for {set i 1} {$i < $freebudget_files_len} {incr i} {
 
     # Skip if it was an empty line
 
-    if {"" == $px_words && "" == $prep_words && "" == $p100_words} {
+    if {"" == $total_words && "" == $repetitions} {
 	ns_log Notice "freebudget-import: found an empty line - maybe the last one..."
 	continue
     }
 
     # Calculate the number of "effective" words based on
     # a valuation of repetitions
-    
-#    ad_return_complaint 1 "freebudget-import: im_trans_trados_matrix_calculate $company_id fb_total=$fb_total_words fb_rep=$fb_repetitions px=$px_words rep=$prep_words 100=$p100_words 95=$p95_words 85=$p85_words 75=$p75_words 50=$p50_words 0=$p0_words"
 
-    ns_log Notice "freebudget-import: im_trans_trados_matrix_calculate $company_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words"
+    set task_units [im_trans_trados_matrix_calculate [im_company_freelance] $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
 
+    set billable_units [im_trans_trados_matrix_calculate $customer_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
 
-    set task_units [im_trans_trados_matrix_calculate $company_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
-    
-    set billable_units $task_units
     set task_type_id $project_type_id
     set task_status_id 340
     set task_description ""
@@ -314,33 +372,57 @@ for {set i 1} {$i < $freebudget_files_len} {incr i} {
     set insert_sql ""
     foreach target_language_id $target_language_ids {
 
-	set insert_sql "<tr><td colspan=10>INSERT INTO im_trans_tasks VALUES
-(im_trans_tasks_seq.nextval, $task_name, $project_id, $task_type_id, 
-$task_status_id, $task_description, $source_language_id, $target_language_id, 
-$task_units, $billable_units, $task_uom_id)</td></tr>\n"
-
-        set sql "
-INSERT INTO im_trans_tasks (
-	task_id, task_name, task_filename, project_id, task_type_id, 
-	task_status_id, description, source_language_id, target_language_id, 
-	task_units, billable_units, task_uom_id,
-	match_x, match_rep, match100, match95, match85, match75, match50, match0
-) VALUES (
-	[db_nextval im_trans_tasks_seq], :task_name, :task_name, :project_id, :task_type_id, 
-	:task_status_id, :task_description, :source_language_id, :target_language_id, 
-	:task_units, :billable_units, :task_uom_id, 
-	:px_words, :prep_words, :p100_words, :p95_words, :p85_words, :p75_words, :p50_words, :p0_words
-)"
-
         if { [catch {
-            db_dml insert_tasks $sql
+
+		set new_task_id [im_exec_dml new_task "im_trans_task__new (
+			null,			-- task_id
+			'im_trans_task',	-- object_type
+			now(),			-- creation_date
+			:user_id,		-- creation_user
+			'0.0.0.0',		-- creation_ip	
+			null,			-- context_id	
+
+			:project_id,		-- project_id	
+			:task_type_id,		-- task_type_id	
+			:task_status_id,	-- task_status_id
+			:source_language_id,	-- source_language_id
+			:target_language_id,	-- target_language_id
+			:task_uom_id		-- task_uom_id
+		)"]
+
+		db_dml update_task "
+		    UPDATE im_trans_tasks SET
+			task_name = :task_name,
+			task_filename = :task_name,
+			description = :task_description,
+			task_units = :billable_units,
+			billable_units = :task_units,
+			match_x = :px_words,
+			match_rep = :prep_words,
+			match100 = :p100_words, 
+			match95 = :p95_words,
+			match85 = :p85_words,
+			match75 = :p75_words, 
+			match50 = :p50_words,
+			match0 = :p0_words
+		    WHERE 
+			task_id = :new_task_id
+		"
+
         } err_msg] } {
+
 	    incr err_count
 	    append page_body "
 <tr><td colspan=10>$insert_sql</td></tr>
 <tr><td colspan=10><font color=red>$err_msg</font></td></tr>
 "
-        }
+        } else {
+
+	    # Successfully created translation task
+	    # Call user_exit to let TM know about the event
+	    im_user_exit_call trans_task_create $new_task_id
+	    
+	}
     }
 }
 
