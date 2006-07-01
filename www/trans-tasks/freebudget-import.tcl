@@ -149,6 +149,10 @@ set freebudget_header [lindex $freebudget_files 0]
 set freebudget_headers [im_csv_split $freebudget_header $separator]
 set freebudget_header_len [llength $freebudget_headers]
 
+ns_log Notice "freebudget-import: freebudget_header='$freebudget_header'"
+ns_log Notice "freebudget-import: freebudget_headers='$freebudget_headers'"
+ns_log Notice "freebudget-import: freebudget_header_len=$freebudget_header_len"
+
 
 # "Normalize" the header line to make the strings suitable as variables. 
 # There is an ugly double-space in the "Total  Words" string that we 
@@ -273,6 +277,8 @@ append page_body "
 
 set ctr 0
 foreach line_fields $values_list_of_lists {
+
+    ns_log Notice "freebudget-import: line='$line_fields'"
 
     # Set the variables to "", because they might not be present
     # in the CSV file. In FreeBudget you can choose the number of
