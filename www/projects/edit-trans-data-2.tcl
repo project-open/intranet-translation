@@ -138,7 +138,12 @@ if {[exists_and_not_null submit_subprojects]} {
     
     foreach lang $target_language_ids {
 
-	set lang_name [db_string get_language "select category from im_categories where category_id=:lang"]
+	set lang_name [db_string get_language "
+		select category 
+		from im_categories 
+		where category_id=:lang
+	"]
+
         ns_log Notice "target_language=$lang_name"
 	set sub_project_name "${project_name} - $lang_name"
 	set sub_project_nr "${project_nr}_$lang_name"
@@ -146,7 +151,12 @@ if {[exists_and_not_null submit_subprojects]} {
 
 	# -------------------------------------------
 	# Create a new Project if it didn't exist yet
-	set sub_project_id [db_string sub_project_id "select project_id from im_projects where project_nr=:sub_project_nr" -default 0]
+	set sub_project_id [db_string sub_project_id "
+		select project_id 
+		from im_projects 
+		where project_nr=:sub_project_nr
+	" -default 0]
+
 	if {!$sub_project_id} {
 
 	    set sub_project_id [project::new \
@@ -175,8 +185,21 @@ if {[exists_and_not_null submit_subprojects]} {
 
 	# -----------------------------------------------------------------
 	# Update the Project
-
 	set project_update_sql "
+<<<<<<< edit-trans-data-2.tcl
+		update im_projects set
+		        requires_report_p =	:requires_report_p,
+			parent_id =		:project_id,
+			project_status_id =	:project_status_id,
+			source_language_id = 	:source_language_id,
+			subject_area_id = 	:subject_area_id,
+			expected_quality_id =	:expected_quality_id,
+		        start_date =    	:start_date,
+		        end_date =      	:end_date
+		where
+		        project_id = :sub_project_id
+	"
+=======
 	update im_projects set
 	        requires_report_p =	:requires_report_p,
 		parent_id =		:project_id,
@@ -190,18 +213,23 @@ if {[exists_and_not_null submit_subprojects]} {
 	        project_id = :sub_project_id
 	"
 
+>>>>>>> 1.9
 	db_dml project_update $project_update_sql
-
 
 	# -----------------------------------------------------------------
 	# Set the target language of the subproject
-	db_dml delete_target_languages "delete from im_target_languages where project_id=:sub_project_id"
+	db_dml delete_target_languages "
+		delete from im_target_languages 
+		where project_id=:sub_project_id
+	"
 	db_dml set_target_language "
 		insert into im_target_languages
 		(project_id, language_id) values
 		(:sub_project_id, :lang)
 	"	
 
+<<<<<<< edit-trans-data-2.tcl
+=======
 	# -----------------------------------------------------------------
 	# Create Folder structure for the new project
 	set err_msg ""
@@ -235,6 +263,7 @@ if {[exists_and_not_null submit_subprojects]} {
 
   
 
+>>>>>>> 1.9
     }
 }
 
