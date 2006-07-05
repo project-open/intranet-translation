@@ -186,7 +186,6 @@ if {[exists_and_not_null submit_subprojects]} {
 	# -----------------------------------------------------------------
 	# Update the Project
 	set project_update_sql "
-<<<<<<< edit-trans-data-2.tcl
 		update im_projects set
 		        requires_report_p =	:requires_report_p,
 			parent_id =		:project_id,
@@ -199,21 +198,7 @@ if {[exists_and_not_null submit_subprojects]} {
 		where
 		        project_id = :sub_project_id
 	"
-=======
-	update im_projects set
-	        requires_report_p =	:requires_report_p,
-		parent_id =		:project_id,
-		project_status_id =	:project_status_id,
-		source_language_id = 	:source_language_id,
-		subject_area_id = 	:subject_area_id,
-		expected_quality_id =	:expected_quality_id,
-	        start_date =    	:start_date,
-	        end_date =      	:end_date
-	where
-	        project_id = :sub_project_id
-	"
 
->>>>>>> 1.9
 	db_dml project_update $project_update_sql
 
 	# -----------------------------------------------------------------
@@ -228,8 +213,6 @@ if {[exists_and_not_null submit_subprojects]} {
 		(:sub_project_id, :lang)
 	"	
 
-<<<<<<< edit-trans-data-2.tcl
-=======
 	# -----------------------------------------------------------------
 	# Create Folder structure for the new project
 	set err_msg ""
@@ -261,9 +244,6 @@ if {[exists_and_not_null submit_subprojects]} {
 	    return
 	}
 
-  
-
->>>>>>> 1.9
     }
 }
 
