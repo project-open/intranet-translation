@@ -7,7 +7,7 @@
 <%= [im_sub_navbar $parent_menu_id $bind_vars "" "pagedesriptionbar" "project_trans_tasks_assignments"] %>
 
 
-<!-- autoassignment_html;noquote -->
+@autoassignment_html;noquote@
 
 @task_html;noquote@
 
