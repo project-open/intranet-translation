@@ -33,7 +33,10 @@
 -- alter table im_projects add FOREIGN KEY (company_contact_id) references users;
 
 
-alter table im_projects add company_project_nr	varchar(50);
+-- Company_project_nr (bad name, wrong rename...) is
+-- now part of the "Core"
+-- alter table im_projects add company_project_nr	varchar(50);
+-- alter table im_projects add final_company		varchar(50);
 
 alter table im_projects add source_language_id integer;
 alter table im_projects add FOREIGN KEY (source_language_id) references im_categories;
@@ -44,7 +47,6 @@ alter table im_projects add FOREIGN KEY (subject_area_id) references im_categori
 alter table im_projects add expected_quality_id integer;
 alter table im_projects add FOREIGN KEY (expected_quality_id) references im_categories;
 
-alter table im_projects add final_company		varchar(50);
 
 -- An approximate value for the size (number of words) of the project
 alter table im_projects add trans_project_words	numeric(12,0);
