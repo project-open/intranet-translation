@@ -2370,7 +2370,7 @@ ad_proc im_new_task_component {
     <select name=wordcount_application>
 	<option value=\"trados\" $trados_selected>Trados (3.0 - 7.0) </option>
 	<option value=\"freebudget\" $freebudget_selected>FreeBudget (4.0 - 5.0)</option>
-	<option value=\"freebudget\" $webbudget_selected>WebBudget (4.0 - 5.0)</option>
+	<option value=\"webbudget\" $webbudget_selected>WebBudget (4.0 - 5.0)</option>
     </select>
 "
 	append task_table "<input type=hidden name='tm_integration_type_id' value='[im_trans_tm_integration_type_external]'>\n"

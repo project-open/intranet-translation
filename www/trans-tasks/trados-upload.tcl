@@ -85,6 +85,6 @@ switch $wordcount_application {
 	ad_returnredirect freebudget-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file import_method]
     }
     webbudget {
-	ad_returnredirect freebudget-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file import_method]
+	ad_returnredirect webbudget-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file import_method]
     }
 }

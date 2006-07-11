@@ -1,4 +1,4 @@
-# /packages/intranet-translation/www/trans-tasks/freebudget-import.tcl
+# /packages/intranet-translation/www/trans-tasks/webbudget-import.tcl
 #
 # Copyright (C) 2003-2006 ]project-open[
 #
@@ -29,7 +29,7 @@ if {!$write} {
 }
 
 # Compatibility with old message...
-set freebudget_wordcount_file $wordcount_file
+set webbudget_wordcount_file $wordcount_file
 
 # ---------------------------------------------------------------------
 # Get some more information about the project
@@ -65,7 +65,7 @@ if {"" == $customer_id} {
 # Get the file and deal with Unicode encoding...
 # ---------------------------------------------------------------------
 
-ns_log Notice "freebudget-import: wordcount_file=$wordcount_file"
+ns_log Notice "webbudget-import: wordcount_file=$wordcount_file"
 
 if {[catch {
     set fl [open $wordcount_file]
@@ -79,7 +79,7 @@ if {[catch {
 
 set encoding_bin [string range $binary_content 0 1]
 binary scan $encoding_bin H* encoding_hex
-ns_log Notice "freebudget-import: encoding_hex=$encoding_hex"
+ns_log Notice "webbudget-import: encoding_hex=$encoding_hex"
 
 switch $encoding_hex {
     fffe {
@@ -102,7 +102,7 @@ if {0 == [llength $target_language_ids]} {
 
 set project_path [im_filestorage_project_path $project_id]
 
-set page_title "[lang::message::lookup "" intranet-translation.Freebudget_Upload "FreeBudget Upload"]"
+set page_title "[lang::message::lookup "" intranet-translation.Webbudget_Upload "Webbudget Upload"]"
 set context_bar [im_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] $page_title]
 
 set bgcolor(0) " class=roweven"
@@ -110,7 +110,6 @@ set bgcolor(1) " class=rowodd"
 
 # Number of errors encountered
 set err_count 0
-
 
 # ---------------------------------------------------------------------
 # Start parsing the wordcount file
@@ -124,7 +123,7 @@ append page_body "
 if {[catch {
     set fl [open $wordcount_file]
     fconfigure $fl -encoding $encoding 
-    set freebudget_files_content [read $fl]
+    set webbudget_files_content [read $fl]
     close $fl
 } err]} {
     ad_return_complaint 1 "Unable to open file $wordcount_file:<br><pre>\n$err</pre>"
@@ -133,16 +132,16 @@ if {[catch {
 
 
 # Extract the header line from the file
-set separator ","
-set freebudget_files [split $freebudget_files_content "\n"]
-set freebudget_files_len [llength $freebudget_files]
-set freebudget_header [lindex $freebudget_files 0]
-set freebudget_headers [im_csv_split $freebudget_header $separator]
-set freebudget_header_len [llength $freebudget_headers]
+set separator "\t"
+set webbudget_files [split $webbudget_files_content "\n"]
+set webbudget_files_len [llength $webbudget_files]
+set webbudget_header [lindex $webbudget_files 0]
+set webbudget_headers [im_csv_split $webbudget_header $separator]
+set webbudget_header_len [llength $webbudget_headers]
 
-ns_log Notice "freebudget-import: freebudget_header='$freebudget_header'"
-ns_log Notice "freebudget-import: freebudget_headers='$freebudget_headers'"
-ns_log Notice "freebudget-import: freebudget_header_len=$freebudget_header_len"
+ns_log Notice "webbudget-import: webbudget_header='$webbudget_header'"
+ns_log Notice "webbudget-import: webbudget_headers='$webbudget_headers'"
+ns_log Notice "webbudget-import: webbudget_header_len=$webbudget_header_len"
 
 
 # "Normalize" the header line to make the strings suitable as variables. 
@@ -150,23 +149,23 @@ ns_log Notice "freebudget-import: freebudget_header_len=$freebudget_header_len"
 # reduce to a single space. Also, we might want to normalize other 
 # changes in the next versions
 set headers [list]
-foreach h $freebudget_headers {
+foreach h $webbudget_headers {
     set h [string tolower [string map -nocase {"  " "_" " " "_" "'" "" "/" "_" "-" "_"} $h]]
     lappend headers $h
 }
-set freebudget_headers $headers
-# ad_return_complaint 1 "<pre>$headers</pre>"
+set webbudget_headers $headers
+# ad_return_complaint 1 "<pre>$webbudget_headers</pre>"
 
 
-# Determine the FreeBudget version -
+# Determine the Webbudget version -
 # Very easy right now, just check if "total_words" is there...
-set freebudget_version "unknown"
-if {[lsearch $freebudget_headers "total_words"] >= 0} { set freebudget_version "5.0" }
-ns_log Notice "freebudget-import: freebudget_version=$freebudget_version, freebudget_header_len=$freebudget_header_len, separator=$separator"
-if {[string equal "unknown" $freebudget_version]} {
+set webbudget_version "unknown"
+if {[lsearch $webbudget_headers "total_words"] >= 0} { set webbudget_version "3.9" }
+ns_log Notice "webbudget-import: webbudget_version=$webbudget_version, webbudget_header_len=$webbudget_header_len, separator=$separator"
+if {[string equal "unknown" $webbudget_version]} {
     ad_return_complaint 1 "
-        <li>[_ intranet-translation.Unknown_Freebudget_Version]<br>
-	[_ intranet-translation.Your_file_freebudget_word]<BR>
+        <li>[_ intranet-translation.Unknown_Webbudget_Version]<br>
+	[_ intranet-translation.Your_file_webbudget_word]<BR>
 	[_ intranet-translation.Please_repeat_your_ana]"
     return
 }
@@ -175,21 +174,29 @@ if {[string equal "unknown" $freebudget_version]} {
 # Split the file into a two-dimensinal array
 # ---------------------------------------------------------------------
 
-set values_list_of_lists [im_csv_get_values $freebudget_files_content $separator]
+set values_list_of_lists [im_csv_get_values $webbudget_files_content $separator]
 set values_list_len [llength $values_list_of_lists]
+
+
+set ttt ""
+foreach line $values_list_of_lists {
+    set len [llength $line]
+    append ttt "$line  - $len\n"
+}
+# ad_return_complaint 1 "<pre>$ttt</pre>"
 
 
 # ---------------------------------------------------------------------
 # Determine the common filename components in the list of 
-# freebudget files. These components are chopped off later in
+# webbudget files. These components are chopped off later in
 # the loop.
 # ---------------------------------------------------------------------
 
 set first_line [lindex $values_list_of_lists 0]
 set first_filename [lindex $first_line 1]
 set first_filename_comps [split $first_filename "\\"]
-ns_log Notice "freebudget-import: first_filename=$first_filename"
-ns_log Notice "freebudget-import: first_filename_comps=$first_filename_comps"
+ns_log Notice "webbudget-import: first_filename=$first_filename"
+ns_log Notice "webbudget-import: first_filename_comps=$first_filename_comps"
 
 
 set common_filename_comps 0
@@ -199,25 +206,26 @@ set first_filename_comps_len [llength $first_filename_comps]
 
 while {$all_the_same && $ctr < $first_filename_comps_len} {
     set common_component [lindex $first_filename_comps $ctr]
-    ns_log Notice "freebudget-import: $ctr: first_filename_comps: prefix=$common_component"
-    ns_log Notice "freebudget-import: $ctr: num_of_lines: $values_list_len"
+    ns_log Notice "webbudget-import: $ctr: first_filename_comps: prefix=$common_component"
+    ns_log Notice "webbudget-import: $ctr: num_of_lines: $values_list_len"
 
     for {set i 1} {$i < $values_list_len} {incr i} {
-	set freebudget_fields [lindex $values_list_of_lists $i]
-	if {0 == [llength $freebudget_fields]} { continue }
-	set filename [lindex $freebudget_fields 1]
+	set webbudget_fields [lindex $values_list_of_lists $i]
+	if {0 == [llength $webbudget_fields]} { continue }
+	set filename [lindex $webbudget_fields 1]
 	if {"\"\"\"\"" == $filename} { continue }
+	if {"" == [lindex $webbudget_fields 2]} { continue }
 	set filename_comps [split $filename "\\"]
 	set this_component [lindex $filename_comps $ctr]
 
-	ns_log Notice "freebudget-import: $ctr: $i: freebudget_fields=$freebudget_fields"
-	ns_log Notice "freebudget-import: $ctr: $i: filename=$filename"
-	ns_log Notice "freebudget-import: $ctr: $i: filename_comps=$filename_comps"
-	ns_log Notice "freebudget-import: $ctr: $i: this_component=$this_component"
-	ns_log Notice "freebudget-import: $ctr: $i: common_component=$common_component"
+	ns_log Notice "webbudget-import: $ctr: $i: webbudget_fields=$webbudget_fields"
+	ns_log Notice "webbudget-import: $ctr: $i: filename=$filename"
+	ns_log Notice "webbudget-import: $ctr: $i: filename_comps=$filename_comps"
+	ns_log Notice "webbudget-import: $ctr: $i: this_component=$this_component"
+	ns_log Notice "webbudget-import: $ctr: $i: common_component=$common_component"
 	
 	if {![string equal $common_component $this_component]} {
-	    ns_log Notice "freebudget-import: $ctr: $i: Found '$this_component' which does not suit the common_component '$common_component', aborting"
+	    ns_log Notice "webbudget-import: $ctr: $i: Found '$this_component' which does not suit the common_component '$common_component', aborting"
 	    set all_the_same 0
 	    break
 	}
@@ -225,7 +233,7 @@ while {$all_the_same && $ctr < $first_filename_comps_len} {
     incr ctr
 }
 set common_filename_comps [expr $ctr - 1]
-ns_log Notice "freebudget-import: common_filename_comps=$common_filename_comps"
+ns_log Notice "webbudget-import: common_filename_comps=$common_filename_comps"
 
 
 
@@ -238,7 +246,7 @@ append page_body "
 <tr><td colspan=2 class=rowtitle align=center>
   [_ intranet-translation.Wordcount_Import]
 </td></tr>
-<tr><td>Freebudget-Version</td><td>$freebudget_version</td></tr>
+<tr><td>Webbudget-Version</td><td>$webbudget_version</td></tr>
 <tr><td>Project Path</td><td>$project_path</td></tr>
 </table>
 
@@ -269,10 +277,13 @@ append page_body "
 set ctr 0
 foreach line_fields $values_list_of_lists {
 
-    ns_log Notice "freebudget-import: line='$line_fields'"
+    ns_log Notice "webbudget-import: line='$line_fields'"
+
+    if {"" == [lindex $line_fields 2]} { continue }
+
 
     # Set the variables to "", because they might not be present
-    # in the CSV file. In FreeBudget you can choose the number of
+    # in the CSV file. In Webbudget you can choose the number of
     # fields to export...
     set info ""
     set name ""
@@ -285,16 +296,16 @@ foreach line_fields $values_list_of_lists {
     # Extract variables from the CSV file
     #
     set var_name_list [list]
-    for {set j 0} {$j < $freebudget_header_len} {incr j} {
+    for {set j 0} {$j < $webbudget_header_len} {incr j} {
 
-        set var_name [string trim [lindex $freebudget_headers $j]]
+        set var_name [string trim [lindex $webbudget_headers $j]]
         if {"" == $var_name} {
             # No variable name - probably an empty column
             continue
         }
 
         lappend var_name_list $var_name
-        ns_log notice "freebudget-import: varname([lindex $freebudget_headers $j]) = $var_name"
+        ns_log notice "webbudget-import: varname([lindex $webbudget_headers $j]) = $var_name"
 
         set var_value [string trim [lindex $line_fields $j]]
         if {[string equal "NULL" $var_value]} { set var_value ""}
@@ -303,9 +314,11 @@ foreach line_fields $values_list_of_lists {
 	set var_value [string map -nocase {"," "."} $var_value]
 
         set cmd "set $var_name \"$var_value\""
-        ns_log Notice "freebudget-import: cmd=$cmd"
+        ns_log Notice "webbudget-import: cmd=$cmd"
         set result [eval $cmd]
     }
+
+    if {![string is double $total_words]} { continue }
 
     if {"" == $repetitions} { set repetitions 0 }
 
@@ -321,7 +334,7 @@ foreach line_fields $values_list_of_lists {
     # Remove all common filename components from the task names
 
     set filename $name
-    ns_log Notice "freebudget-import: filename='$filename', len=[string length $filename]"
+    ns_log Notice "webbudget-import: filename='$filename', len=[string length $filename]"
     if {"" == $filename || "\"\"\"\"" == $filename} { continue }
 
     set filename_comps [split $filename "\\"]
@@ -332,7 +345,7 @@ foreach line_fields $values_list_of_lists {
     # Skip if it was an empty line
 
     if {"" == $total_words && "" == $repetitions} {
-	ns_log Notice "freebudget-import: found an empty line - maybe the last one..."
+	ns_log Notice "webbudget-import: found an empty line - maybe the last one..."
 	continue
     }
 
