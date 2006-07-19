@@ -2074,9 +2074,8 @@ order by sort_order"
   <td align=left>
   </td>
   <td colspan=13 align=right>&nbsp;</td>
-  <td align=center><input type=submit value=\"[_ intranet-translation.Save]\" name=submit></td>
-  <td align=center><input type=submit value=\"[_ intranet-translation.Del]\" name=submit></td>
-<!--  <td align=center><input type=submit value=\"[_ intranet-translation.Assign]\" name=submit></td> -->
+  <td align=center><input type=submit value=\"[_ intranet-translation.Save]\" name=submit_save></td>
+  <td align=center><input type=submit value=\"[_ intranet-translation.Del]\" name=submit_del></td>
 </tr>"
     }
 
