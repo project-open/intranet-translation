@@ -30,6 +30,8 @@ ad_page_contract {
     { task_type_manual "" }
     { submit "" }
     { submit_view ""}
+    { submit_del ""}
+    { submit_save ""}
     { submit_assign "" }
     { submit_trados "" }
     { submit_add_manual "" }
@@ -49,7 +51,10 @@ if {0 == [llength $target_language_ids]} {
     set target_language_ids [list ""]
 }
 
+
 if {"" != $submit_view} { set submit "View Tasks" }
+if {"" != $submit_del} { set submit "Del" }
+if {"" != $submit_save} { set submit "Save" }
 if {"" != $submit_assign} { set submit "Assign Tasks" }
 if {"" != $submit_trados} { set submit "Trados Import" }
 if {"" != $submit_add_manual} { set submit "Add" }
