@@ -290,13 +290,13 @@ foreach line_fields $values_list_of_lists {
     if {"" == $repetitions} { set repetitions 0 }
 
     set px_words 0
-    set prep_words $repetitions
+    set prep_words [expr int($total_words * $repetitions / 100)]
     set p100_words 0
     set p95_words 0
     set p85_words 0
     set p75_words 0
     set p50_words 0
-    set p0_words [expr int($total_words - $repetitions)]
+    set p0_words [expr int($total_words * (100 - $repetitions) / 100)]
 
     # Remove all common filename components from the task names
 
