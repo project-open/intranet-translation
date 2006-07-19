@@ -35,28 +35,9 @@ set freebudget_wordcount_file $wordcount_file
 # Get some more information about the project
 # ---------------------------------------------------------------------
 
-set customer_id ""
-set project_query "
-	select
-	        p.project_nr as project_short_name,
-	        p.company_id as customer_id,
-	        c.company_name as company_short_name,
-	        p.source_language_id,
-	        p.project_type_id
-	from
-	        im_projects p
-	      LEFT JOIN
-	        im_companies c on (p.company_id = c.company_id)
-	where
-	        p.project_id = :project_id
-"
-
-if { ![db_0or1row projects_info_query $project_query] } {
-    ad_return_complaint 1 "[_ intranet-translation.lt_Cant_find_the_project]"
-    return
-}
-
-if {"" == $customer_id} {
+set rows [db_0or1row projects_info_query ""]
+if {!$rows} {
+    ad_return_complaint 1 "no rows"
     ad_return_complaint 1 "[_ intranet-translation.lt_Cant_find_the_project]"
     return
 }
@@ -302,9 +283,8 @@ foreach line_fields $values_list_of_lists {
 	# Normalize the variable. Replace komma by dot (European decimals)
 	set var_value [string map -nocase {"," "."} $var_value]
 
-        set cmd "set $var_name \"$var_value\""
-        ns_log Notice "freebudget-import: cmd=$cmd"
-        set result [eval $cmd]
+        ns_log Notice "freebudget-import: 'set $var_name $var_value'"
+        set $var_name $var_value
     }
 
     if {"" == $repetitions} { set repetitions 0 }
