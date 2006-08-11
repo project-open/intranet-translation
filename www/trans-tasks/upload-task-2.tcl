@@ -139,16 +139,45 @@ set task_name_body [lindex $task_name_pathes $task_name_len]
 ns_log Notice "upload_file_body=$upload_file_body"
 ns_log Notice "task_name_body=$task_name_body"
 
-# Make sure both filenames coincide to avoid translator errors
+
+# Check that filenames coincide to avoid translators errors
 #
 set check_filename_equal_p [ad_parameter -package_id [im_package_translation_id] CheckTaskUploadFilenamesEqualP "" 1]
-if {![string equal $upload_file_body $task_name_body] && $check_filename_equal_p} {
-    set error "<li>[_ intranet-translation.lt_Your_file_doesnt_coin]<br>
-    [_ intranet-translation.lt_Your_file_upload_file]<br>
-    [_ intranet-translation.lt_Expected_file_task_na]<br>
-    [_ intranet-translation.lt_Please_check_your_inp]"
-    ad_return_complaint "[_ intranet-translation.User_Error]" $error
-    return
+if {$check_filename_equal_p} {
+
+    # Filenames should be exactly equal
+    if {![string equal $upload_file_body $task_name_body]} {
+	set error "<li>[_ intranet-translation.lt_Your_file_doesnt_coin]<br>
+	    [_ intranet-translation.lt_Your_file_upload_file]<br>
+	    [_ intranet-translation.lt_Expected_file_task_na]<br>
+	    [_ intranet-translation.lt_Please_check_your_inp]"
+        ad_return_complaint "[_ intranet-translation.User_Error]" $error
+        return
+    }
+
+} else {
+
+    # Filenames can differ, but the extension should be the same
+    # so that a translator cant upload a ".doc" file if the task
+    # consisted of a ".zip" file:
+
+    set upload_parts [split $upload_file_body "."]
+    set upload_ext [string tolower [lindex $upload_parts [expr [llength $upload_parts] - 1]]]
+
+    set task_parts [split $task_name_body "."]
+    set task_ext [string tolower [lindex $task_parts [expr [llength $task_parts] - 1]]]
+
+    # Check if extensions are equal
+    if {![string equal $upload_ext $task_ext]} {
+	set error "<li>
+	    [lang::message::lookup "" intranet-translation.File_extensions_dont_match "Your file extensions don't match.:"]<br>
+	    [_ intranet-translation.lt_Your_file_upload_file]<br>
+	    [_ intranet-translation.lt_Expected_file_task_na]<br>
+	    [_ intranet-translation.lt_Please_check_your_inp]"
+        ad_return_complaint "[_ intranet-translation.User_Error]" $error
+        return
+    }
+
 }
 
 # -------------------------------------------------------------------
