@@ -1685,7 +1685,7 @@ order by sort_order"
     }
 
 
-    # -------------------- SQL -----------------------------------
+    # -------------------- Task List SQL -----------------------------------
     #
     set bgcolor(0) " class=roweven"
     set bgcolor(1) " class=rowodd"
@@ -1713,8 +1713,13 @@ order by sort_order"
 			im_projects parent,
 			im_projects children
 		    where
-			children.project_status_id not in ([im_project_status_deleted],[im_project_status_canceled])
-			and children.tree_sortkey between parent.tree_sortkey and tree_right(parent.tree_sortkey)
+			children.project_status_id not in (
+				[im_project_status_deleted],
+				[im_project_status_canceled]
+			)
+			and children.tree_sortkey 
+				between parent.tree_sortkey 
+				and tree_right(parent.tree_sortkey)
 			and parent.project_id = :project_id
 	    )
 	"
@@ -1723,6 +1728,8 @@ order by sort_order"
     set extra_select ""
     set extra_from ""
     set extra_where ""
+
+    ad_return_complaint 1 $wf_installed_p
     if {$wf_installed_p} {
 	set extra_select ",
 		wft.*
