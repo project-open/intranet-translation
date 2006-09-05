@@ -361,7 +361,7 @@ set wf_header_sql "
 	        LEFT OUTER JOIN wf_transitions wft ON (wfc.workflow_key = wft.workflow_key)
 	where
 	        t.project_id = :project_id
-	        and wft.trigger_type != 'automatic'
+	        and wft.trigger_type not in ('automatic', 'message')
 	order by
 	        wfc.workflow_key,
 	        wft.sort_order
@@ -405,7 +405,7 @@ set wf_assignments_sql "
 	        )
 	where
 	        t.project_id = :project_id
-	        and wft.trigger_type != 'automatic'
+	        and wft.trigger_type not in ('automatic', 'message')
 	order by
 	        wfc.workflow_key,
 	        wft.sort_order

@@ -1729,7 +1729,6 @@ order by sort_order"
     set extra_from ""
     set extra_where ""
 
-    ad_return_complaint 1 $wf_installed_p
     if {$wf_installed_p} {
 	set extra_select ",
 		wft.*
@@ -2021,7 +2020,8 @@ order by sort_order"
 		}
 	    }
 	}
-	    
+
+	append message " <br>dyn = $dynamic_task_p"
 
 	# Render the line using the dynamic columns from the database im_views
 	append table_body_html "<tr$bgcolor([expr $ctr % 2])>\n"
