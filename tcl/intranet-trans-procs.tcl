@@ -199,9 +199,13 @@ ad_proc im_task_insert {
 
     # Get some variable of the project:
     set query "
-	select	p.source_language_id
-	from	im_projects p
-	where	p.project_id=:project_id
+	select
+		p.source_language_id,
+		p.end_date as project_end_date
+	from
+		im_projects p
+	where
+		p.project_id = :project_id
     "
     if { ![db_0or1row projects_info_query $query] } {
 	append page_body "Can't find the project $project_id"
@@ -269,7 +273,8 @@ ad_proc im_task_insert {
 			match100 = :match100,
 			match95 = :match95,
 			match85 = :match85,
-			match0 = :match0
+			match0 = :match0,
+			end_date = :project_end_date
 		WHERE 
 			task_id = :new_task_id
 	    "
@@ -2020,8 +2025,6 @@ order by sort_order"
 		}
 	    }
 	}
-
-	append message " <br>dyn = $dynamic_task_p"
 
 	# Render the line using the dynamic columns from the database im_views
 	append table_body_html "<tr$bgcolor([expr $ctr % 2])>\n"

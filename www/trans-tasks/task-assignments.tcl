@@ -45,6 +45,10 @@ if {"" == $return_url} { set return_url [im_url_with_query] }
 set bgcolor(0) " class=roweven"
 set bgcolor(1) " class=rowodd"
 
+# Workflow available?
+set wf_installed_p [im_workflow_installed_p]
+
+set date_format "YYYY-MM-DD"
 
 # -------------------------------------------------------------------------
 # Auto assign
@@ -127,6 +131,16 @@ db_foreach group_select $groups_sql {
 # Select and format the list of tasks
 # ---------------------------------------------------------------------
 
+set extra_where ""
+if {$wf_installed_p} {
+    set extra_where "and
+	t.task_id not in (
+		select	object_id
+		from	wf_cases
+	)
+"
+}
+
 set task_sql "
 select
 	t.*,
@@ -147,6 +161,7 @@ from
 where
 	t.project_id=:project_id
         and t.task_status_id <> 372
+	$extra_where
 order by
         t.task_name,
         t.target_language_id
@@ -187,7 +202,7 @@ set n_trans 0
 set n_edit 0
 set n_proof 0
 set n_other 0
-set ctr 1
+set ctr 0
 
 set task_list [array names tasks_id]
 
@@ -337,6 +352,8 @@ append task_html "
 </form>
 "
 
+# Don't show component if there are no tasks
+if {$wf_installed_p && !$ctr} { set task_html "" }
 
 # -------------------------------------------------------------------
 # Extract the Headers
@@ -394,11 +411,18 @@ set wf_assignments_sql "
 	        wft.transition_key,
 	        wft.trigger_type,
 	        wft.sort_order,
-	        wfca.party_id
+	        wfca.party_id,
+		wfta.deadline,
+		to_char(wfta.deadline, :date_format) as deadline_formatted
 	from
 	        im_trans_tasks t
 	        LEFT OUTER JOIN wf_cases wfc ON (t.task_id = wfc.object_id)
 	        LEFT OUTER JOIN wf_transitions wft ON (wfc.workflow_key = wft.workflow_key)
+		LEFT OUTER JOIN wf_tasks wfta ON (
+			wfta.case_id = wfc.case_id
+			and wfc.workflow_key = wfta.workflow_key
+			and wfta.transition_key = wfta.transition_key
+		)
 	        LEFT OUTER JOIN wf_case_assignments wfca ON (
 	                wfca.case_id = wfc.case_id
 			and wfca.role_key = wft.role_key
@@ -414,6 +438,8 @@ set wf_assignments_sql "
 db_foreach wf_assignment $wf_assignments_sql {
     set ass_key "$task_id $transition_key"
     set ass($ass_key) $party_id
+    set deadl($ass_key) $deadline_formatted
+
     ns_log Notice "task-assignments: $workflow_key: '$ass_key' -> '$party_id'"
 }
 
@@ -425,7 +451,12 @@ db_foreach wf_assignment $wf_assignments_sql {
 set wf_assignments_render_sql "
 	select
 		t.*,
-		wfc.workflow_key
+		to_char(t.end_date, :date_format) as end_date_formatted,
+		wfc.workflow_key,
+		im_category_from_id(t.task_uom_id) as task_uom,
+		im_category_from_id(t.task_type_id) as task_type,
+		im_category_from_id(t.task_status_id) as task_status,
+		im_category_from_id(t.target_language_id) as target_language
 	from
 		im_trans_tasks t,
 		wf_cases wfc
@@ -477,14 +508,19 @@ db_foreach wf_assignment $wf_assignments_render_sql {
 		</td>
 	        <td>$target_language</td>
 	        <td>$task_type</td>
-	        <td>$task_units</td>
-	        <td>$task_uom</td>
+	        <td><nobr>$task_units</nobr></td>
+	        <td><nobr>$task_uom</nobr></td>
     "
     foreach trans $transitions($workflow_key) {
 	set ass_key "$task_id $trans"
 	set ass_val $ass($ass_key)
+	set deadl_val $deadl($ass_key)
+	if {"" == $deadl_val} { set deadl_val "$end_date_formatted" }
+
 	append ass_html "<td>\n"
 	append ass_html [im_task_user_select -group_list $group_list "assignment.${trans}-$task_id" $project_resource_list $ass_val]
+	append ass_html "\n"
+	append ass_html "<input type=text size=10 name=deadline.${trans}-$task_id value=\"$deadl_val\">"
 	append ass_html "\n"
     }
     append ass_html "</tr>\n"
@@ -552,6 +588,8 @@ set autoassignment_html "
 </form>
 "
 
+# No static tasks - no auto assignment...
+if {"" == $task_html} { set autoassignment_html "" }
 
 # -------------------------------------------------------------------
 # Project Subnavbar

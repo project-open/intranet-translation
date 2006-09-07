@@ -19,6 +19,7 @@ ad_page_contract {
     project_id:integer
     task_id:integer,multiple
     assignment:array
+    deadline:array
 }
 
 set user_id [ad_maybe_redirect_for_registration]
@@ -37,7 +38,8 @@ foreach assig [array names assignment] {
 	"
 
 	set asignee_id [string trim $assignment($assig)]
-	ns_log Notice "task-assignments-wf-2: $transition_key, $trans_task_id -> $asignee_id"
+	set deadl $deadline($assig)
+	ns_log Notice "task-assignments-wf-2: $transition_key, $trans_task_id -> $asignee_id ($deadl)"
 	
 	# Delete the case assignment
 	db_dml unassign_case "
@@ -73,7 +75,9 @@ foreach assig [array names assignment] {
 		)
 	    "
 
-	    # Assign the dude to any Task of the current Case
+	    # Assign the dude to the given task (task_id = f(case_id, transition_key)).
+	    # There should be exactly one task for each case/transition, but
+	    # we do a foreach just in case...
 	    db_foreach task_to_be_assigned $tasks_sql {
 		db_dml assign_task "
 			insert into wf_task_assignments (
@@ -83,9 +87,14 @@ foreach assig [array names assignment] {
 			)
 		"
 	    }
-
-
 	}
+
+	# Set the deadline
+	wf_case_set_case_deadline \
+		-case_id $case_id \
+		-transition_key $transition_key \
+		-deadline $deadl
+
     }
 }
 
