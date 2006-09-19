@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="intranet-translation" package_version="3.1.0.0.0" locale="en_US" charset="ISO-8859-1">
+<message_catalog package_key="intranet-translation" package_version="3.2.2.0.0" locale="en_US" charset="ISO-8859-1">
 
   <msg key="--_Please_Select_--">-- Please Select --</msg>
   <msg key="0_">0%</msg>
@@ -199,12 +199,12 @@ Project: %project_name%
   <msg key="Wordcount">Wordcount</msg>
   <msg key="Wordcount_Import">Wordcount Import</msg>
   <msg key="Words">Words</msg>
-  <msg key="Workflow_deliv_directory">delif</msg>
-  <msg key="Workflow_edit_directory">editt</msg>
-  <msg key="Workflow_other_directory">oter</msg>
-  <msg key="Workflow_proof_directory">prooof</msg>
-  <msg key="Workflow_source_directory">src</msg>
-  <msg key="Workflow_trans_directory">transs</msg>
+  <msg key="Workflow_deliv_directory">9_deliv</msg>
+  <msg key="Workflow_edit_directory">2_edit</msg>
+  <msg key="Workflow_other_directory">other</msg>
+  <msg key="Workflow_proof_directory">3_proof</msg>
+  <msg key="Workflow_source_directory">0_source</msg>
+  <msg key="Workflow_trans_directory">1_trans</msg>
   <msg key="X_Trans">X Trans</msg>
   <msg key="XTr">XTr</msg>
 </message_catalog>

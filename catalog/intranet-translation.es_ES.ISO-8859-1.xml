@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="intranet-translation" package_version="3.1.0.0.0" locale="es_ES" charset="ISO-8859-1">
+<message_catalog package_key="intranet-translation" package_version="3.2.2.0.0" locale="es_ES" charset="ISO-8859-1">
 
   <msg key="--_Please_Select_--">-- Por favor seleccione --</msg>
   <msg key="0_">0%</msg>
@@ -11,7 +11,7 @@
   <msg key="Add">Añadir</msg>
   <msg key="Add_a_New_Task">Añadir una nueva tarea</msg>
   <msg key="Add_File">Añadir un archivo</msg>
-  <msg key="Add_Trados_Wordcount">Añadir contaje palabras Trados</msg>
+  <msg key="Add_Trados_Wordcount">Añadir análisis Trados</msg>
   <msg key="Ass">Asi</msg>
   <msg key="Assign">Assign</msg>
   <msg key="Assign_Tasks">Asignar tareas</msg>
@@ -25,6 +25,7 @@
   <msg key="Client_Project">No. proyecto del cliente</msg>
   <msg key="Client_project_">No. proyecto del cliente</msg>
   <msg key="Comment">Comentario</msg>
+  <msg key="Comments">Comentarios</msg>
   <msg key="Companies">Empresas</msg>
   <msg key="Company">Empresa</msg>
   <msg key="Company_1">Empresa:</msg>
@@ -42,6 +43,7 @@
   <msg key="Dn">Dn</msg>
   <msg key="Edit">Editar</msg>
   <msg key="Editing">Edición</msg>
+  <msg key="End_Date">Fecha final</msg>
   <msg key="File">Archivo</msg>
   <msg key="Filename">Nombre del archivo</msg>
   <msg key="Final_User">Usuario final</msg>
@@ -129,6 +131,9 @@
   <msg key="Name">Nombre</msg>
   <msg key="No_Match">No hay coincidencias</msg>
   <msg key="No_tasks_found">No se han hallado tareas</msg>
+  <msg key="No_translator_comments_in_this_project">En este proyecto no hay comentarios del traductor</msg>
+  <msg key="Notify_PM_About_Task_Upload_Message">Se ha subido un nuevo archivo: Carpeta: %upload_folder% Nombre de tarea: %task_name% Proyecto: %project_name%</msg>
+  <msg key="Notify_PM_About_Task_Upload_Subject">Subida tarea %upload_folder% en %task_name% para %project_name%</msg>
   <msg key="Num_Words">núm. de palabras</msg>
   <msg key="One_Project">Un proyecto</msg>
   <msg key="One_project">Un proyecto</msg>
@@ -171,6 +176,7 @@
   <msg key="Trans">Trad</msg>
   <msg key="Translation">Traducción</msg>
   <msg key="Translation_Tasks">Tareas de traducción</msg>
+  <msg key="Translator_Comments">Comentarios del traductor</msg>
   <msg key="Units">Unidades</msg>
   <msg key="UoM">UM</msg>
   <msg key="Up">Car</msg>
@@ -183,9 +189,15 @@
   <msg key="VATnbsp">IVA&amp;nbsp;</msg>
   <msg key="View_Tasks">Ver tareas</msg>
   <msg key="Weighted">Ponderado</msg>
-  <msg key="Wordcount">Contaje de palabras</msg>
+  <msg key="Wordcount">Recuento de palabras</msg>
   <msg key="Wordcount_Import">Importación de contaje de palabras</msg>
   <msg key="Words">Palabras</msg>
+  <msg key="Workflow_deliv_directory">9_deliv</msg>
+  <msg key="Workflow_edit_directory">2_edit</msg>
+  <msg key="Workflow_other_directory">other</msg>
+  <msg key="Workflow_proof_directory">3_proof</msg>
+  <msg key="Workflow_source_directory">0_source</msg>
+  <msg key="Workflow_trans_directory">1_trans</msg>
   <msg key="X_Trans">X Trans</msg>
   <msg key="XTr">XTr</msg>
 </message_catalog>
