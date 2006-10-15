@@ -17,7 +17,10 @@ ad_page_contract {
 
 set user_id [ad_maybe_redirect_for_registration]
 set return_url [im_url_with_query]
-set page_title "[_ intranet-translation.Project_Tasks]"
+
+set project_nr [db_string project_nr "select project_nr from im_projects where project_id = :project_id" -default ""]
+set page_title "$project_nr - [_ intranet-translation.Translation_Tasks]"
+
 set context_bar [im_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] [list "/intranet/projects/view?project_id=$project_id" "[_ intranet-translation.One_project]"] $page_title]
 set company_view_page "/intranet/companies/view"
 

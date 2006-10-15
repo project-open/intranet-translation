@@ -1,5 +1,5 @@
 <master src="../../../intranet-core/www/master">
-<property name="title">#intranet-translation.lt_Translation_Assignmen#</property>
+<property name="title">@page_title@</property>
 <property name="main_navbar_label">projects</property>
 
 

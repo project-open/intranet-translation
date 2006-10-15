@@ -37,7 +37,8 @@ if {![im_permission $user_id view_trans_proj_detail]} {
     return
 }
 
-set page_title "[_ intranet-translation.Assignments]"
+set project_nr [db_string project_nr "select project_nr from im_projects where project_id = :project_id" -default ""]
+set page_title "$project_nr - [_ intranet-translation.lt_Translation_Assignmen]"
 set context_bar [im_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] [list "/intranet/projects/view?project_id=$project_id" "[_ intranet-translation.One_project]"] $page_title]
 
 if {"" == $return_url} { set return_url [im_url_with_query] }
