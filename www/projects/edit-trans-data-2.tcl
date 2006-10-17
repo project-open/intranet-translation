@@ -56,22 +56,22 @@ set fs_installed_p [db_table_exists im_fs_folders]
 set sql "
 update im_projects set
 "
-if {[exists_and_not_null final_company]} {
+if {[info exists final_company]} {
     append sql "final_company=:final_company,\n"
 }
-if {[exists_and_not_null company_project_nr]} {
+if {[info exists company_project_nr]} {
     append sql "company_project_nr=:company_project_nr,\n"
 }
-if {[exists_and_not_null company_contact_id]} {
+if {[info exists company_contact_id]} {
     append sql "company_contact_id=:company_contact_id,\n"
 }
-if {[exists_and_not_null expected_quality_id]} {
+if {[info exists expected_quality_id]} {
     append sql "expected_quality_id=:expected_quality_id,\n"
 }
-if {[exists_and_not_null subject_area_id]} {
+if {[info exists subject_area_id]} {
     append sql "subject_area_id=:subject_area_id,\n"
 }
-if {[exists_and_not_null source_language_id]} {
+if {[info exists source_language_id]} {
     append sql "source_language_id=:source_language_id,\n"
 }
 
