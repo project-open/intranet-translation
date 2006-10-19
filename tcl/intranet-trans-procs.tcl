@@ -191,6 +191,16 @@ ad_proc im_task_insert {
 } {
     Add a new task into the DB
 } {
+    # Check for accents and other non-ascii characters
+    set filename $task_filename
+    set charset [ad_parameter -package_id [im_package_filestorage_id] FilenameCharactersSupported "" "alphanum"]
+    if {![im_filestorage_check_filename $charset $filename]} {
+	ad_return_complaint 1 [lang::message::lookup "" intranet-filestorage.Invalid_Character_Set "
+                <b>Invalid Character(s) found</b>:<br>
+                Your filename '%filename%' contains atleast one character that is not allowed
+                in your character set '%charset%'."]
+    }
+
     set user_id [ad_get_user_id]
     set ip_address [ad_conn peeraddr]
 
