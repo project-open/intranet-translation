@@ -231,7 +231,20 @@ switch -glob $submit {
 
 
     "Add File" {
+
+	# Decode the task_name_file
 	set task_filename [ns_urldecode $task_name_file]
+
+	# Check for accents and other non-ascii characters
+	set filename $task_filename
+	set charset [ad_parameter -package_id [im_package_filestorage_id] FilenameCharactersSupported "" "alphanum"]
+	if {![im_filestorage_check_filename $charset $filename]} {
+	    ad_return_complaint 1 [lang::message::lookup "" intranet-filestorage.Invalid_Character_Set "
+		<b>Invalid Character(s) found</b>:<br>
+		Your filename '%filename%' contains atleast one character that is not allowed 
+		in your character set '%charset%'."]
+	}
+
 	im_task_insert $project_id $task_filename $task_filename $task_units_file $task_uom_file $task_type_file $target_language_ids
 	ad_returnredirect $return_url
 	return
