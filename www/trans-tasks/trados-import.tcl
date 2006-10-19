@@ -48,6 +48,11 @@ if {!$write} {
 # Compatibility with old message...
 set trados_wordcount_file $wordcount_file
 
+
+# Check for accents and other non-ascii characters
+set charset [ad_parameter -package_id [im_package_filestorage_id] FilenameCharactersSupported "" "alphanum"]
+
+
 # ---------------------------------------------------------------------
 # Get the file and deal with Unicode encoding...
 # ---------------------------------------------------------------------
@@ -438,6 +443,19 @@ ns_log Notice "trados-import: common_filename_comps=$common_filename_comps"
 	foreach target_language_id $target_language_ids {
 
             if { [catch {
+
+		set task_name_comps [split $task_name "/"]
+                set task_name_len [expr [llength $task_name_comps] - 1]
+                set task_name_body [lindex $task_name_comps $task_name_len]
+		set filename $task_name_body
+
+		if {![im_filestorage_check_filename $charset $filename]} {
+		    return -code 10 [lang::message::lookup "" intranet-filestorage.Invalid_Character_Set "
+			<b>Invalid Character(s) found</b>:<br>
+			Your filename '%filename%' contains atleast one character that is not allowed
+			in your character set '%charset%'."]
+		}
+
 
 		set new_task_id [im_exec_dml new_task "im_trans_task__new (
 			null,			-- task_id
