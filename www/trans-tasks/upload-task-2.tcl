@@ -54,9 +54,10 @@ where
 	and p.project_id = :project_id"
 
 # ProjectURL
-set project_url [ad_parameter -package_id [ad_acs_kernel_id] SystemURL ""]
-append project_url [db_string p_url "select url from im_biz_object_urls where object_type = 'im_project' and url_type = 'display'" -default "/intranet/projects/view?project_id="]
-append project_url $project_id
+set system_url [ad_parameter -package_id [ad_acs_kernel_id] SystemURL ""]
+set project_rel_url [db_string p_url "select url from im_biz_object_urls where object_type = 'im_project' and url_type = 'display'" -default "/intranet/projects/view?project_id="]
+if {[regexp {^\/(.*)$} $project_rel_url match rest]} { set project_rel_url $rest }
+set project_url "$system_url$project_rel_url$project_id"
 
 if {![db_0or1row task_info_query $task_sql] } {
     ad_return_complaint 1 "<li>[_ intranet-translation.lt_Couldnt_find_the_spec]"
