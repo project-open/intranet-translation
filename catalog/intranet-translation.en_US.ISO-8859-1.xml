@@ -135,12 +135,14 @@ system meanwhile.)</msg>
   <msg key="No_Match">No Match</msg>
   <msg key="No_tasks_found">No tasks found</msg>
   <msg key="No_translator_comments_in_this_project">No translator comments in this project</msg>
-  <msg key="Notify_PM_About_Task_Upload_Message">A new file has been uploaded:
+  <msg key="Notify_PM_About_Task_Upload_Message">%project_url%
+
+A new file has been uploaded:
+Project: %project_nr% - %project_name%
+Task: %task_name%
 Folder: %upload_folder%
-Task Name: %task_name%
-Project: %project_name%
 </msg>
-  <msg key="Notify_PM_About_Task_Upload_Subject">Task Upload of %upload_folder% into %task_name% for %project_name%</msg>
+  <msg key="Notify_PM_About_Task_Upload_Subject">New Upload in %project_nr% - %project_name%</msg>
   <msg key="Num_Words">#Words</msg>
   <msg key="One_Project">One Project</msg>
   <msg key="One_project">One project</msg>
