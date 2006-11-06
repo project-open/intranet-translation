@@ -138,6 +138,10 @@ Nueva subida:
 Proyecto: %project_nr% - %project_name%
 Tarea: %task_name%
 Carpeta: %upload_folder%
+Comentario:
+
+%comment_body%
+
 </msg>
   <msg key="Notify_PM_About_Task_Upload_Subject">Nueva subida en %project_nr% - %project_name%</msg>
   <msg key="Num_Words">núm. de palabras</msg>

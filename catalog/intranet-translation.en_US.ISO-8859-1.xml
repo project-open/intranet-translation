@@ -141,6 +141,10 @@ A new file has been uploaded:
 Project: %project_nr% - %project_name%
 Task: %task_name%
 Folder: %upload_folder%
+Comment:
+
+%comment_body%
+
 </msg>
   <msg key="Notify_PM_About_Task_Upload_Subject">New Upload in %project_nr% - %project_name%</msg>
   <msg key="Num_Words">#Words</msg>
