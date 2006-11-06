@@ -41,6 +41,7 @@ set task_sql "
 select
 	t.*,
 	p.project_name,
+	p.project_nr,
 	im_category_from_id(t.task_status_id) as task_status,
 	im_category_from_id(t.source_language_id) as source_language,
 	im_category_from_id(t.target_language_id) as target_language
@@ -51,6 +52,11 @@ where
 	t.task_id=:task_id
 	and t.project_id = p.project_id 
 	and p.project_id = :project_id"
+
+# ProjectURL
+set project_url [ad_parameter -package_id [ad_acs_kernel_id] SystemURL ""]
+append project_url [db_string p_url "select url from im_biz_object_urls where object_type = 'im_project' and url_type = 'display'" -default "/intranet/projects/view?project_id="]
+append project_url $project_id
 
 if {![db_0or1row task_info_query $task_sql] } {
     ad_return_complaint 1 "<li>[_ intranet-translation.lt_Couldnt_find_the_spec]"
@@ -81,13 +87,8 @@ if {"" == $upload_folder} {
 
 if {1 == $notify_project_manager_p} {
 
-    set subject [lang::message::lookup "" intranet-translation.Notify_PM_About_Task_Upload_Subject "Task Upload of %upload_folder% into %task_name% for %project_name%"]
-    set message [lang::message::lookup "" intranet-translation.Notify_PM_About_Task_Upload_Message "
-A new file has been uploaded:
-Folder: %upload_folder%
-Task Name: %task_name%
-Project: %project_name%
-    "]
+    set subject [lang::message::lookup "" intranet-translation.Notify_PM_About_Task_Upload_Subject]
+    set message [lang::message::lookup "" intranet-translation.Notify_PM_About_Task_Upload_Message]
 
     set project_managers_sql "
 	select
