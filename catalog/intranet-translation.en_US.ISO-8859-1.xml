@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="intranet-translation" package_version="3.2.6.0.0" locale="en_US" charset="ISO-8859-1">
+<message_catalog package_key="intranet-translation" package_version="3.2.7.0.0" locale="en_US" charset="ISO-8859-1">
 
   <msg key="--_Please_Select_--">-- Please Select --</msg>
   <msg key="0_">0%</msg>
@@ -25,7 +25,7 @@
   <msg key="Auto_Assignment">Auto Assignment</msg>
   <msg key="Bill_Units">Bill Units</msg>
   <msg key="Client_contact">Client contact</msg>
-  <msg key="Client_Project">Client Project#</msg>
+  <msg key="Client_Project">Customer Project#</msg>
   <msg key="Client_project_">Client project #</msg>
   <msg key="Comment">Comment</msg>
   <msg key="Comments">Comments</msg>
@@ -205,12 +205,12 @@ Project: %project_name%
   <msg key="Wordcount">Wordcount</msg>
   <msg key="Wordcount_Import">Wordcount Import</msg>
   <msg key="Words">Words</msg>
-  <msg key="Workflow_deliv_directory">9_deliv</msg>
-  <msg key="Workflow_edit_directory">2_edit</msg>
+  <msg key="Workflow_deliv_directory">deliv</msg>
+  <msg key="Workflow_edit_directory">edit</msg>
   <msg key="Workflow_other_directory">other</msg>
-  <msg key="Workflow_proof_directory">3_proof</msg>
-  <msg key="Workflow_source_directory">0_source</msg>
-  <msg key="Workflow_trans_directory">1_trans</msg>
+  <msg key="Workflow_proof_directory">proof</msg>
+  <msg key="Workflow_source_directory">source</msg>
+  <msg key="Workflow_trans_directory">trans</msg>
   <msg key="X_Trans">X Trans</msg>
   <msg key="XTr">XTr</msg>
   <msg key="Your_file_freebudget_word">Your file '%freebudget_wordcount_file%' has not been created with one of the supported Freebudget versions (4.0, 5.0).</msg>
