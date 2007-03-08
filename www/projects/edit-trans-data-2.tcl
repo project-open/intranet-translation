@@ -183,6 +183,9 @@ if {[exists_and_not_null submit_subprojects]} {
 
 	}
 
+
+
+
 	# -----------------------------------------------------------------
 	# Update the Project
 	set project_update_sql "
@@ -200,6 +203,27 @@ if {[exists_and_not_null submit_subprojects]} {
 	"
 
 	db_dml project_update $project_update_sql
+
+
+	# -----------------------------------------------------------------
+	# Add main project's members to the subproject
+	set main_project_members_sql "
+		select	p.person_id,
+			m.object_role_id
+		from	acs_rels r,
+			im_biz_object_members m,
+			persons p
+		where	r.object_id_two = p.person_id
+			and r.rel_id = m.rel_id
+			and r.object_id_one = :project_id
+	"
+	db_foreach main_project_members $main_project_members_sql {
+	    # We don't need to propage the user information againg to
+	    # the superproject, because it's already there...
+	    # This saves a lot of time because of the recursive N*M adds
+	    im_biz_object_add_role -propagate_superproject_p 0 $person_id $sub_project_id $object_role_id
+	}
+
 
 	# -----------------------------------------------------------------
 	# Set the target language of the subproject
