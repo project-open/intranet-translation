@@ -86,7 +86,7 @@ if {"" == $upload_folder} {
 # Notify the Project Manager(s) about the upload
 # -----------------------------------------------------------------
 
-if {1 == $notify_project_manager_p} {
+if {"" != $notify_project_manager_p} {
 
     set subject [lang::message::lookup "" intranet-translation.Notify_PM_About_Task_Upload_Subject]
     set message [lang::message::lookup "" intranet-translation.Notify_PM_About_Task_Upload_Message]
