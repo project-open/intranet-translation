@@ -1883,6 +1883,10 @@ order by sort_order"
 	#
 	if {!$dynamic_task_p} {
 
+	    # Nothing specified at the task level how to handle the task.
+	    # => Asume "External" (File System) integration, just the static old solution...
+	    if {"" == $tm_integration_type} { set tm_integration_type "External" }
+
 	    ns_log Notice "im_task_component: Static WF"
 	    # Message - Tell the freelancer what to do...
 	    # Check if the user is a freelance who is allowed to
@@ -1899,7 +1903,6 @@ order by sort_order"
 	    set download_link ""
 	    if {$download_folder != ""} {
 
-		if {"" == $tm_integration_type} { set tm_integration_type "External" }
 		switch $tm_integration_type {
 		    External {
 
@@ -1931,7 +1934,7 @@ order by sort_order"
 	    # Upload Link
 	    set upload_link ""
 	    if {$upload_folder != ""} {
-		
+ 
 		switch $tm_integration_type {
 		    External {
 			# Standard - Upload to stop editing
