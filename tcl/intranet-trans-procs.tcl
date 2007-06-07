@@ -2226,7 +2226,7 @@ group by
     
     # Return an empty string if there are no errors
     if {$ctr == 0 && !$err_count} {
-#	return ""
+	return ""
 	append task_table_rows "
 <tr $bgcolor([expr $ctr % 2])>
   <td colspan=99 align=center>[_ intranet-translation.lt_No_missing_files_foun]</td>
