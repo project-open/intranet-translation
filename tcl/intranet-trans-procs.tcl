@@ -2069,7 +2069,7 @@ order by sort_order"
 
     set project_size ""
     db_foreach project_size "select category_id as uom_id, category as uom_unit from im_categories where category_type = 'Intranet UoM'" {
-	set uom_size $project_size_uom_counter($uom_id)
+	set uom_size [expr round($project_size_uom_counter($uom_id))]
 	if {0 != $uom_size} {
 	    set comma ""
 	    if {"" != $project_size} { set comma ", " }
