@@ -1226,6 +1226,10 @@ ad_proc im_trans_task_project_advance { project_id } {
 		set percent_completed = :advance
 		where project_id = :project_id
 	"
+
+	# Write audit trail
+	im_project_audit $project_id
+
     }
 
     return $advance

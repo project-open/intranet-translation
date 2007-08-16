@@ -88,6 +88,9 @@ if { ![exists_and_not_null return_url] } {
     set return_url "[im_url_stub]/projects/view?[export_url_vars project_id]"
 }
 
+# Write audit trail
+im_project_audit $project_id
+
 
 # Save the information about the project target languages
 # in the im_target_languages table
@@ -184,8 +187,6 @@ if {[exists_and_not_null submit_subprojects]} {
 	}
 
 
-
-
 	# -----------------------------------------------------------------
 	# Update the Project
 	set project_update_sql "
@@ -203,6 +204,9 @@ if {[exists_and_not_null submit_subprojects]} {
 	"
 
 	db_dml project_update $project_update_sql
+
+	# Write audit trail
+	im_project_audit $sub_project_id
 
 
 	# -----------------------------------------------------------------
