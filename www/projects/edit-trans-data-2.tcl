@@ -273,6 +273,13 @@ if {[exists_and_not_null submit_subprojects]} {
 	}
 
     }
+
+
+    # -----------------------------------------------------------------
+    # Call the "project_update" user_exit
+
+    im_user_exit_call project_update $project_id
+
 }
 
 ad_returnredirect $return_url
