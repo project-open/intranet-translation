@@ -2378,11 +2378,13 @@ ad_proc im_new_task_component {
 
 	set default_wordcount_app [ad_parameter -package_id [im_package_translation_id] "DefaultWordCountingApplication" "" "trados"]
 	set trados_selected ""
+	set transit_selected ""
 	set freebudget_selected ""
 	set webbudget_selected ""
 
 	switch $default_wordcount_app {
 	    "trados" { set trados_selected "selected" }
+	    "transit" { set transit_selected "selected" }
 	    "freebudget" { set freebudget_selected "selected" }
 	    "webbudget" { set webbudget_selected "selected" }
 	}
@@ -2396,6 +2398,7 @@ ad_proc im_new_task_component {
     <input type=file name=upload_file size=30 value='*.csv'>
     <select name=wordcount_application>
 	<option value=\"trados\" $trados_selected>Trados (3.0 - 7.0) </option>
+	<option value=\"transit\" $transit_selected>Transit (All)</option>
 	<option value=\"freebudget\" $freebudget_selected>FreeBudget (4.0 - 5.0)</option>
 	<option value=\"webbudget\" $webbudget_selected>WebBudget (4.0 - 5.0)</option>
     </select>

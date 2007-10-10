@@ -64,7 +64,10 @@ if { $max_n_bytes && ([file size $tmp_filename] > $max_n_bytes) } {
 set file_extension [string tolower [file extension $upload_file]]
 ns_log Notice "trados-upload: file_extension=$file_extension"
 
-if {![string equal $file_extension ".csv"] && ![string equal $file_extension ".txt"]} {
+# ".rep" is uniquely used for transit
+if {[string equal $file_extension ".rep"]} { set wordcount_application "transit" }
+
+if {![string equal $file_extension ".csv"] && ![string equal $file_extension ".txt"] && ![string equal $file_extension ".rep"]} {
     ad_return_complaint 1 "<li>
 	[lang::message::lookup "" intranet-translation.Your_file_is_not_a_wordcount_file "Your file is not a valid wordcount file"]<br>
 	[lang::message::lookup "" intranet-translation.Please_upload_cvs_txt "Please upload a file with the extension '.csv' or '.txt'."]"
@@ -81,6 +84,9 @@ switch $wordcount_application {
     trados {
 	ad_returnredirect trados-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file import_method]
     }
+    transit {
+	ad_returnredirect transit-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file import_method]
+    }
     freebudget {
 	ad_returnredirect freebudget-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file import_method]
     }
@@ -88,3 +94,5 @@ switch $wordcount_application {
 	ad_returnredirect webbudget-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file import_method]
     }
 }
+
+ad_return_complaint 1 "Wrong translation memory type selected"
