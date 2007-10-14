@@ -833,7 +833,7 @@ where
     <td>
 <form action=/intranet-translation/projects/edit-trans-data method=POST>
 [export_form_vars project_id return_url]
-<input type=submit name=edit value=\"[_ intranet-translation.Edit]\">
+<input type=submit name=edit value=\"[lang::message::lookup "" intranet-translation.Edit_Button "Edit"]\">
 </form>
     </td>
   </tr>
