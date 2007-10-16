@@ -110,13 +110,11 @@ select
         p.source_language_id,
         p.project_type_id
 from
-        im_projects p,
-        im_companies c
+        im_projects p
+	LEFT JOIN im_companies c USING (company_id)
 where
-        p.project_id=:project_id
-        and p.company_id=c.company_id(+)"
-
-
+        p.project_id = :project_id
+"
 
 if { ![db_0or1row projects_info_query $project_query] } {
     ad_return_complaint 1 "[_ intranet-translation.lt_Cant_find_the_project]"
