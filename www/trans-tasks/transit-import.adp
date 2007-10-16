@@ -30,12 +30,10 @@
 <p>
 -->
 
+<!-- -------------------------------------------------------------------- -->
 <form action=transit-import-2 method=POST>
-
-<h3>
-	<input type=radio name=transit_batch_import value=1 <if 1 eq @transit_batch_default_p@>checked</if>>
-	Import as a Single "Batch" File
-</h3>
+<%= [export_form_vars return_url project_id task_type_id target_language_id import_method] %>
+<h3>Import as a Single "Batch" File</h3>
 <p>
 <table width="600">
 <tr>
@@ -48,18 +46,33 @@
 <tr>
     <td>Batch file name:</td>
     <td>
-	<input type=text size=40 value="transit.zip">
+	<input type=text name=filename_list.1 size=40 value="transit.zip">
+	<input type=hidden name=px_words_list.1 value="@sum_px_words@">
+	<input type=hidden name=prep_words_list.1 value="@sum_prep_words@">
+	<input type=hidden name=p100_words_list.1 value="@sum_p100_words@">
+	<input type=hidden name=p95_words_list.1 value="@sum_p95_words@">
+	<input type=hidden name=p85_words_list.1 value="@sum_p85_words@">
+	<input type=hidden name=p75_words_list.1 value="@sum_p75_words@">
+	<input type=hidden name=p50_words_list.1 value="@sum_p50_words@">
+	<input type=hidden name=p0_words_list.1 value="@sum_p0_words@">
+    </td>
+</tr>
+<tr>
+    <td colspan=2>
+	<input type=submit value="<%= [lang::message::lookup "" intranet-translation.Add_Transit_Batch "Add Transit Batch"]%>">
     </td>
 </tr>
 </table>
+</form>
+
 </p><p>&nbsp;</p>
 
 
-<h3>
-	<input type=radio name=transit_batch_import value=0 <if 0 eq @transit_batch_default_p@>checked</if>>
-	Import as Multiple Lines
-</h3>
-
+<!-- -------------------------------------------------------------------- -->
+<form action=transit-import-2 method=POST>
+<%= [export_form_vars return_url project_id task_type_id target_language_id import_method] %>
+<h3>Import as Multiple Lines</h3>
+<p>
 <table width="600">
 <tr>
     <td colspan=2>
@@ -68,17 +81,17 @@
 	This import will create the following translation tasks:
     </td>
 </tr>
+<tr>
+    <td>
+<input type=submit value="<%= [lang::message::lookup "" intranet-translation.Add_Transit_Analysis_Lines "Add Transit Analysis as Multiple Lines"]%>">
+    </td>
+</tr>
 </table>
-
 <p>
 @task_html;noquote@
+</form>
 
 <p>&nbsp;</p>
-
-<input type=submit value="<%= [lang::message::lookup "" intranet-translation.Upload_Transit_Analysis "Upload Transit Analysis"]%>">
-
-
-</form>
 
 
 <!--

@@ -9,6 +9,9 @@ ad_page_contract {
     Purpose: Import the contents of a wordcount.rep file
     into the current projects as a list of "im_task"s
 
+    This screen lets the user choose between importing all Transit tasks
+    as one "batch" or to load the files one-by-one.
+
     @author Frank Bergmann (frank.bergmann@project-open.com)
 } {
     return_url
@@ -37,6 +40,8 @@ set transit_wordcount_file $wordcount_file
 # Check for accents and other non-ascii characters
 set charset [ad_parameter -package_id [im_package_filestorage_id] FilenameCharactersSupported "" "alphanum"]
 
+
+set transit_batch_default_p 1
 
 # ---------------------------------------------------------------------
 # Get the file and deal with Unicode encoding...
@@ -84,7 +89,7 @@ if {"" != $target_language_id} {
 
 set project_path [im_filestorage_project_path $project_id]
 
-set page_title "[_ intranet-translation.Transit_Upload]"
+set page_title [lang::message::lookup "" intranet-translation.Transit_Upload_Wizard "Transit Upload Wizard"]
 set context_bar [im_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] $page_title]
 
 set bgcolor(0) " class=roweven"
@@ -138,11 +143,6 @@ if { ![db_0or1row projects_info_query $project_query] } {
 #
 # ---------------------------------------------------------------------
 
-append page_body "
-<P><A HREF=$return_url>[_ intranet-translation.lt_Return_to_previous_pa]</A></P>
-<table cellpadding=0 cellspacing=2 border=0>
-"
-
 if {[catch {
     set fl [open $wordcount_file]
     fconfigure $fl -encoding $encoding 
@@ -170,31 +170,20 @@ if {1 == [llength $transit_headers]} {
 set transit_version "all"
 
 
-append page_body "
-<P>
-<tr><td colspan=2 class=rowtitle align=center>
-  [_ intranet-translation.Wordcount_Import]
-</td></tr>
-<tr><td>Transit-Version</td><td>$transit_version</td></tr>
-<tr><td>Project Path</td><td>$project_path</td></tr>
-</table>
-
-<P>
-
-<table cellpadding=0 cellspacing=2 border=0>
-<tr>
-  <td class=rowtitle align=center>[_ intranet-translation.Filename]</td>
-  <td class=rowtitle align=center>[_ intranet-translation.Task_Name]</td>
-  <td class=rowtitle align=center>[_ intranet-translation.XTr]</td>
-  <td class=rowtitle align=center>[_ intranet-translation.Rep]</td>
-  <td class=rowtitle align=center>100%</td>
-  <td class=rowtitle align=center>95%</td>
-  <td class=rowtitle align=center>85%</td>
-  <td class=rowtitle align=center>75%</td>
-  <td class=rowtitle align=center>50%</td>
-  <td class=rowtitle align=center>0%</td>
-  <td class=rowtitle align=center>[_ intranet-translation.Weighted]</td>
-</tr>
+set task_html "
+	<table cellpadding=0 cellspacing=2 border=0>
+	<tr>
+	  <td class=rowtitle align=center>[_ intranet-translation.Filename]</td>
+	  <td class=rowtitle align=center>[_ intranet-translation.XTr]</td>
+	  <td class=rowtitle align=center>[_ intranet-translation.Rep]</td>
+	  <td class=rowtitle align=center>100%</td>
+	  <td class=rowtitle align=center>95%</td>
+	  <td class=rowtitle align=center>85%</td>
+	  <td class=rowtitle align=center>75%</td>
+	  <td class=rowtitle align=center>50%</td>
+	  <td class=rowtitle align=center>0%</td>
+	  <td class=rowtitle align=center>[_ intranet-translation.Weighted]</td>
+	</tr>
 "
 
 # Determine the common filename components in the list of 
@@ -247,6 +236,15 @@ if {[string equal $import_method "Asp"]} {
 
 ns_log Notice "transit-import: common_filename_comps=$common_filename_comps"
 
+set sum_px_words 0
+set sum_prep_words 0
+set sum_p100_words 0
+set sum_p95_words 0
+set sum_p85_words 0
+set sum_p75_words 0
+set sum_p50_words 0
+set sum_p0_words 0
+
 set ctr 0
 for {set i 1} {$i < $transit_files_len} {incr i} {
     incr ctr
@@ -256,7 +254,6 @@ for {set i 1} {$i < $transit_files_len} {incr i} {
     if {0 == [string length $transit_line]} { continue }
     
     if {[regexp {^Totals not reduced by repetitions} $transit_line]} { continue }
-    if {[regexp {^Repetitions found \(reduced by limit\)} $transit_line]} { continue }
     if {[regexp {^Totals reduced by repetitions} $transit_line]} { continue }
     if {[regexp {^Totals with weighting factor} $transit_line]} { continue }
     if {[regexp {^Totals with expansion factor} $transit_line]} { continue }
@@ -273,15 +270,31 @@ for {set i 1} {$i < $transit_files_len} {incr i} {
 #	7	Remaining not translated units
 #	8	Total:
 
-	set filename		[lindex $transit_fields 0]
-	set px_words		[expr [lindex $transit_fields 1] + [lindex $transit_fields 2]]
-	set prep_words		0
-	set p100_words		[lindex $transit_fields 3]
-	set p95_words		[lindex $transit_fields 4]
-	set p85_words		[lindex $transit_fields 5]
-	set p75_words		[lindex $transit_fields 6]
-	set p50_words		0
-	set p0_words		[lindex $transit_fields 7]
+    set filename		[lindex $transit_fields 0]
+    set px_words		[expr [lindex $transit_fields 1] + [lindex $transit_fields 2]]
+    set prep_words		0
+    set p100_words		[lindex $transit_fields 3]
+    set p95_words		[lindex $transit_fields 4]
+    set p85_words		[lindex $transit_fields 5]
+    set p75_words		[lindex $transit_fields 6]
+    set p50_words		0
+    set p0_words		[lindex $transit_fields 7]
+
+
+    # Special treatment of repetitions - count them as negative in a separate task
+    if {[regexp {^Repetitions found \(reduced by limit\)} $transit_line]} {
+	set px_words		[expr -$px_words]
+	set prep_words		[expr -$prep_words]
+	set p100_words		[expr -$p100_words]
+	set p95_words		[expr -$p95_words]
+	set p85_words		[expr -$p85_words]
+	set p75_words		[expr -$p75_words]
+	set p50_words		[expr -$p50_words]
+	set p0_words		[expr -$p0_words]
+
+	set task_type_id [im_project_type_translation]
+    }
+
 	
 	switch $import_method {
 	
@@ -353,115 +366,31 @@ for {set i 1} {$i < $transit_files_len} {incr i} {
     set invoice_id ""
     
 
-    append page_body "
-<tr $bgcolor([expr $ctr % 2])>
-  <td>$filename</td>
-  <td>$task_name</td>
-  <td>$px_words</td>
-  <td>$prep_words</td>
-  <td>$p100_words</td>
-  <td>$p95_words</td>
-  <td>$p85_words</td>
-  <td>$p75_words</td>
-  <td>$p50_words</td>
-  <td>$p0_words</td>
-  <td>$task_units</td>
-</tr>
-"
+    append task_html "
+	<tr $bgcolor([expr $ctr % 2])>
+	  <td>$filename		<input type=hidden name=filename_list.$ctr value=\"$filename\">	</td>
+	  <td>$px_words		<input type=hidden name=px_words_list.$ctr value=\"$px_words\">	</td>
+	  <td>$prep_words	<input type=hidden name=prep_words_list.$ctr value=\"$prep_words\">	</td>
+	  <td>$p100_words	<input type=hidden name=p100_words_list.$ctr value=\"$p100_words\">	</td>
+	  <td>$p95_words	<input type=hidden name=p95_words_list.$ctr value=\"$p95_words\">	</td>
+	  <td>$p85_words	<input type=hidden name=p85_words_list.$ctr value=\"$p85_words\">	</td>
+	  <td>$p75_words	<input type=hidden name=p75_words_list.$ctr value=\"$p75_words\">	</td>
+	  <td>$p50_words	<input type=hidden name=p50_words_list.$ctr value=\"$p50_words\">	</td>
+	  <td>$p0_words		<input type=hidden name=p0_words_list.$ctr value=\"$p0_words\">	</td>
+	  <td>$task_units	</td>
+	</tr>
+    "
 
-    # Add a new task for every project target language
-    set insert_sql ""
-    foreach target_language_id $target_language_ids {
-	
-	if { [catch {
-	    
-	    set task_name_comps [split $task_name "/"]
-	    set task_name_len [expr [llength $task_name_comps] - 1]
-	    set task_name_body [lindex $task_name_comps $task_name_len]
-	    set filename $task_name_body
-	    
-	    if {![im_filestorage_check_filename $charset $filename]} {
-		return -code 10 [lang::message::lookup "" intranet-filestorage.Invalid_Character_Set "
-			<b>Invalid Character(s) found</b>:<br>
-			Your filename '%filename%' contains atleast one character that is not allowed
-			in your character set '%charset%'."]
-	    }
-	    
-
-	    set new_task_id [im_exec_dml new_task "im_trans_task__new (
-			null,			-- task_id
-			'im_trans_task',	-- object_type
-			now(),			-- creation_date
-			:user_id,		-- creation_user
-			:ip_address,		-- creation_ip	
-			null,			-- context_id	
-
-			:project_id,		-- project_id	
-			:task_type_id,		-- task_type_id	
-			:task_status_id,	-- task_status_id
-			:source_language_id,	-- source_language_id
-			:target_language_id,	-- target_language_id
-			:task_uom_id		-- task_uom_id
-	    )"]
-
-	    db_dml update_task "
-		    UPDATE im_trans_tasks SET
-			tm_integration_type_id = [im_trans_tm_integration_type_external],
-			task_name = :task_name,
-			task_filename = :task_name,
-			description = :task_description,
-			task_units = :task_units,
-			billable_units = :billable_units,
-			match_x = :px_words,
-			match_rep = :prep_words,
-			match100 = :p100_words, 
-			match95 = :p95_words,
-			match85 = :p85_words,
-			match75 = :p75_words, 
-			match50 = :p50_words,
-			match0 = :p0_words
-		    WHERE 
-			task_id = :new_task_id
-	    "
-
-	} err_msg] } {
-
-	    # Failed to create translation task
-	    incr err_count
-	    append page_body "
-<tr><td colspan=10>$insert_sql</td></tr>
-<tr><td colspan=10><font color=red>$err_msg</font></td></tr>
-"
-
-	} else {
-	    
-	    # Successfully created translation task
-	    # Call user_exit to let TM know about the event
-	    im_user_exit_call trans_task_create $new_task_id
-	    
-	}
-	
-    }
+    set sum_px_words [expr $sum_px_words + $px_words]
+    set sum_prep_words [expr $sum_prep_words + $prep_words]
+    set sum_p100_words [expr $sum_p100_words + $p100_words]
+    set sum_p95_words [expr $sum_p95_words + $p95_words]
+    set sum_p85_words [expr $sum_p85_words + $p85_words]
+    set sum_p75_words [expr $sum_p75_words + $p75_words]
+    set sum_p50_words [expr $sum_p50_words + $p50_words]
+    set sum_p0_words [expr $sum_p0_words + $p0_words]
 }
 
 
-append page_body "</table>\n"
-append page_body "\n<P><A HREF=$return_url>[_ intranet-translation.lt_Return_to_previous_pa]</A></P>\n"
+append task_html "</table>\n"
 
-
-# Remove the wordcount file
-if { [catch {
-    exec /bin/rm $wordcount_file
-} err_msg] } {
-    ad_return_complaint 1 "<li>[_ intranet-translation.lt_Error_deleting_the_te]"
-    return
-}
-
-if {0 == $err_count} {
-    # No errors - return to the $return_url
-    ad_returnredirect $return_url
-    return
-}
-
-db_release_unused_handles
-ad_return_template

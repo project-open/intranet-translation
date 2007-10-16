@@ -28,6 +28,9 @@ ad_proc -public im_project_type_trans_spot {} { return 94 }
 ad_proc -public im_project_type_proof {} { return 95 }
 ad_proc -public im_project_type_glossary_comp {} { return 96 }
 
+ad_proc -public im_project_type_translation {} { return 2500 }
+
+
 
 ad_proc -public im_uom_unit {} { return 322 }
 ad_proc -public im_uom_page {} { return 323 }
