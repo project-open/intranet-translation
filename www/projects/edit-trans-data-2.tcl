@@ -89,7 +89,7 @@ if { ![exists_and_not_null return_url] } {
 }
 
 # Write audit trail
-im_project_audit $project_id
+# im_project_audit $project_id
 
 
 # Save the information about the project target languages
@@ -206,7 +206,7 @@ if {[exists_and_not_null submit_subprojects]} {
 	db_dml project_update $project_update_sql
 
 	# Write audit trail
-	im_project_audit $sub_project_id
+#	im_project_audit $sub_project_id
 
 
 	# -----------------------------------------------------------------
