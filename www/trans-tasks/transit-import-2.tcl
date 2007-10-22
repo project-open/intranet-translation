@@ -54,18 +54,18 @@ set err_count 0
 # ---------------------------------------------------------------------
 
 set project_query "
-select
-        p.project_nr as project_short_name,
-	p.company_id as customer_id,
-        c.company_name as company_short_name,
-        p.source_language_id,
-        p.project_type_id
-from
-        im_projects p,
-        im_companies c
-where
-        p.project_id=:project_id
-        and p.company_id=c.company_id(+)"
+	select
+	        p.project_nr as project_short_name,
+	        p.company_id as customer_id,
+	        c.company_name as company_short_name,
+	        p.source_language_id,
+	        p.project_type_id
+	from
+	        im_projects p
+	        LEFT JOIN im_companies c USING (company_id)
+	where
+	        p.project_id = :project_id
+"
 
 if { ![db_0or1row projects_info_query $project_query] } {
     ad_return_complaint 1 "[_ intranet-translation.lt_Cant_find_the_project]"
