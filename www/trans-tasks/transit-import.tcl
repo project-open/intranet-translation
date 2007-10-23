@@ -269,14 +269,14 @@ for {set i 1} {$i < $transit_files_len} {incr i} {
 #	8	Total:
 
     set filename		[lindex $transit_fields 0]
-    set px_words		[expr [lindex $transit_fields 1] + [lindex $transit_fields 2]]
+    set px_words		[lindex $transit_fields 1]
     set prep_words		0
     set p100_words		[lindex $transit_fields 3]
     set p95_words		[lindex $transit_fields 4]
     set p85_words		[lindex $transit_fields 5]
     set p75_words		[lindex $transit_fields 6]
     set p50_words		0
-    set p0_words		[lindex $transit_fields 7]
+    set p0_words		[expr [lindex $transit_fields 7] + [lindex $transit_fields 2]]
 
 
     # Special treatment of repetitions - count them as negative in a separate task
