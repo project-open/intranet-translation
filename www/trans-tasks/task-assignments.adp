@@ -1,11 +1,7 @@
 <master src="../../../intranet-core/www/master">
 <property name="title">@page_title@</property>
 <property name="main_navbar_label">projects</property>
-
-
-<br>
-<%= [im_sub_navbar $parent_menu_id $bind_vars "" "pagedesriptionbar" "project_trans_tasks_assignments"] %>
-
+<property name="sub_navbar">@sub_navbar;noquote@</property>
 
 @autoassignment_html;noquote@
 
