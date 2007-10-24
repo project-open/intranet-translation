@@ -1633,13 +1633,14 @@ ad_proc im_task_component {
     set column_vars [list]
 
     set column_sql "
-select  column_name,
-	column_render_tcl,
-	visible_for
-from    im_view_columns
-where   view_id=:view_id
-	and group_id is null
-order by sort_order"
+	select  column_name,
+		column_render_tcl,
+		visible_for
+	from    im_view_columns
+	where   view_id=:view_id
+		and group_id is null
+	order by sort_order
+    "
 
     db_foreach column_list_sql $column_sql {
 	if {"" == $visible_for || [eval $visible_for]} {
@@ -1882,8 +1883,7 @@ order by sort_order"
 	}
 
 	# Delete Checkbox
-	set del_checkbox "<input type=checkbox name=delete_task value=$task_id>"
-
+	set del_checkbox "<input type=checkbox name=delete_task value=$task_id id=task,$task_id>"
 
 	# ------------------------------------------
 	# The Static Workflow -
