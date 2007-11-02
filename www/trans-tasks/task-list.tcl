@@ -33,4 +33,8 @@ ns_set put $bind_vars project_id $project_id
 set parent_menu_id [db_string parent_menu "select menu_id from im_menus where label='project'" -default 0]
 
 set menu_label "project_trans_tasks"
-set project_menu [im_sub_navbar $parent_menu_id $bind_vars "" "pagedesriptionbar" $menu_label]
+set sub_navbar [im_sub_navbar \
+    -components \
+    -base_url "/intranet/projects/view?project_id=$project_id" \
+    $parent_menu_id \
+    $bind_vars "" "pagedesriptionbar" $menu_label] 
