@@ -170,7 +170,8 @@ if {$check_filename_equal_p} {
     set task_ext [string tolower [lindex $task_parts [expr [llength $task_parts] - 1]]]
 
     # Check if extensions are equal
-    if {![string equal $upload_ext $task_ext]} {
+    set check_extensions_equal_p [ad_parameter -package_id [im_package_translation_id] CheckTaskUploadFileExtensionsEqualP "" 0]
+    if {![string equal $upload_ext $task_ext] && $check_extensions_equal_p} {
 	set error "<li>
 	    [lang::message::lookup "" intranet-translation.File_extensions_dont_match "Your file extensions don't match.:"]<br>
 	    [_ intranet-translation.lt_Your_file_upload_file]<br>
@@ -213,10 +214,10 @@ for {set i 0} {$i < $subfolder_len} {incr i} {
 # Move the file
 #
 if { [catch {
-    ns_log Notice "/bin/mv $tmp_filename $project_path/$upload_folder/$task_name"
-    exec /bin/cp $tmp_filename "$project_path/$upload_folder/$task_name"
-    ns_log Notice "/bin/chmod ug+w $project_path/$upload_folder/$task_name"
-    exec /bin/chmod ug+w $project_path/$upload_folder/$task_name
+    ns_log Notice "/bin/mv $tmp_filename $project_path/$upload_folder/$upload_file"
+    exec /bin/cp $tmp_filename "$project_path/$upload_folder/$upload_file"
+    ns_log Notice "/bin/chmod ug+w $project_path/$upload_folder/$upload_file"
+    exec /bin/chmod ug+w $project_path/$upload_folder/$upload_file
 
 } err_msg] } {
     # Probably some permission errors
@@ -243,7 +244,7 @@ if {"" != $comment_body} {
     set owner_id $user_id
     # This comment is only visible to members of the company
     set scope "staff"
-    set subject $task_name
+    set subject $upload_file
     set message "$comment_body"
 
     # Limit Subject and message to their field sizes
