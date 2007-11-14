@@ -357,6 +357,7 @@ ad_proc -public im_trans_trados_matrix_component { user_id object_id return_url 
     }
 
     array set matrix [im_trans_trados_matrix $object_id]
+
     set header_html "
 <td class=rowtitle align=center>[_ intranet-translation.XTr]</td>
 <td class=rowtitle align=center>[_ intranet-translation.Rep]</td>
@@ -456,6 +457,13 @@ ad_proc -public im_trans_trados_matrix { object_id } {
 	}
     }
 
+    # Make sure there are no empty values that might give errors when multplying
+    foreach key [array names matrix] {
+	set val $matrix($key)
+	if {"" == $val} { set matrix($key) 0 }
+
+    }
+	
     return [array get matrix]
 
 }
@@ -505,17 +513,17 @@ ad_proc -public im_trans_trados_matrix_company { company_id } {
     if {!$count} { return [im_trans_trados_matrix_internal] }
 
     # Get match100, match95, ...
-db_1row matrix_select "
-select
-	m.*,
-	acs_object.name(o.object_id) as object_name
-from
-	acs_objects o,
-	im_trans_trados_matrix m
-where
-	o.object_id = :company_id
-	and o.object_id = m.object_id(+)
-"
+    db_1row matrix_select "
+	select
+		m.*,
+		acs_object.name(o.object_id) as object_name
+	from
+		acs_objects o,
+		im_trans_trados_matrix m
+	where
+		o.object_id = :company_id
+		and o.object_id = m.object_id(+)
+    "
 
     set matrix(x) $match_x
     set matrix(rep) $match_rep
