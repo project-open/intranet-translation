@@ -1891,7 +1891,7 @@ ad_proc im_task_component {
 	}
 
 	# Delete Checkbox
-	set del_checkbox "<input type=checkbox name=delete_task value=$task_id id=task,$task_id>"
+	set del_checkbox "<input type=checkbox name=delete_task value=$task_id id=\"task,$task_id\">"
 
 	# ------------------------------------------
 	# The Static Workflow -

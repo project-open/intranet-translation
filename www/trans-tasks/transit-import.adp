@@ -32,7 +32,7 @@
 
 <!-- -------------------------------------------------------------------- -->
 <form action=transit-import-2 method=POST>
-<%= [export_form_vars return_url project_id task_type_id target_language_id import_method] %>
+<%= [export_form_vars return_url project_id target_language_id import_method] %>
 <h3>Import as a Single "Batch" File</h3>
 <p>
 <table width="600">
@@ -47,6 +47,7 @@
     <td>Batch file name:</td>
     <td>
 	<input type=text name=filename_list.1 size=40 value="transit.zip">
+	<input type=hidden name=task_type_list.1 value="@org_task_type_id@">
 	<input type=hidden name=px_words_list.1 value="@sum_px_words@">
 	<input type=hidden name=prep_words_list.1 value="@sum_prep_words@">
 	<input type=hidden name=p100_words_list.1 value="@sum_p100_words@">
@@ -70,7 +71,7 @@
 
 <!-- -------------------------------------------------------------------- -->
 <form action=transit-import-2 method=POST>
-<%= [export_form_vars return_url project_id task_type_id target_language_id import_method] %>
+<%= [export_form_vars return_url project_id target_language_id import_method] %>
 <h3>Import as Multiple Lines</h3>
 <p>
 <table width="600">

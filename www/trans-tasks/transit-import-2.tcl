@@ -13,10 +13,10 @@ ad_page_contract {
 } {
     return_url
     project_id:integer
-    task_type_id:integer
     { target_language_id "" }
     {import_method "Asp"}
     filename_list:array
+    task_type_list:array
     px_words_list:array
     prep_words_list:array
     p100_words_list:array
@@ -106,8 +106,10 @@ foreach ctr [array names filename_list] {
     set p75_words		$p75_words_list($ctr)
     set p50_words		$p50_words_list($ctr)
     set p0_words		$p0_words_list($ctr)
+    set task_type_id		$task_type_list($ctr)
 
     set task_name $filename
+    
     
     # Determine the wordcount of the task:
     # Get the "task_units" from the company "default_freelance"

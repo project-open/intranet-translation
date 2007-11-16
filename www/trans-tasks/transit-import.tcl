@@ -40,6 +40,7 @@ set transit_wordcount_file $wordcount_file
 # Check for accents and other non-ascii characters
 set charset [ad_parameter -package_id [im_package_filestorage_id] FilenameCharactersSupported "" "alphanum"]
 
+set org_task_type_id $task_type_id
 
 set transit_batch_default_p 1
 
@@ -277,10 +278,11 @@ for {set i 1} {$i < $transit_files_len} {incr i} {
     set p75_words		[lindex $transit_fields 6]
     set p50_words		0
     set p0_words		[expr [lindex $transit_fields 7] + [lindex $transit_fields 2]]
-
+    set task_type_id		$org_task_type_id
 
     # Special treatment of repetitions - count them as negative in a separate task
     if {[regexp {^Repetitions found \(reduced by limit\)} $transit_line]} {
+
 	set px_words		[expr -$px_words]
 	set prep_words		[expr -$prep_words]
 	set p100_words		[expr -$p100_words]
@@ -291,6 +293,7 @@ for {set i 1} {$i < $transit_files_len} {incr i} {
 	set p0_words		[expr -$p0_words]
 
 	set task_type_id [im_project_type_translation]
+
     }
 
 	
@@ -366,7 +369,10 @@ for {set i 1} {$i < $transit_files_len} {incr i} {
 
     append task_html "
 	<tr $bgcolor([expr $ctr % 2])>
-	  <td>$filename		<input type=hidden name=filename_list.$ctr value=\"$filename\">	</td>
+	  <td>$filename	
+		<input type=hidden name=filename_list.$ctr value=\"$filename\">	
+		<input type=hidden name=task_type_list.$ctr value=\"$task_type_id\">	
+	  </td>
 	  <td>$px_words		<input type=hidden name=px_words_list.$ctr value=\"$px_words\">	</td>
 	  <td>$prep_words	<input type=hidden name=prep_words_list.$ctr value=\"$prep_words\">	</td>
 	  <td>$p100_words	<input type=hidden name=p100_words_list.$ctr value=\"$p100_words\">	</td>
