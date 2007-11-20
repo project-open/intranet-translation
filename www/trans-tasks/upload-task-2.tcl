@@ -221,7 +221,10 @@ if { [catch {
 
 } err_msg] } {
     # Probably some permission errors
-    ad_return_complaint  "[_ intranet-translation.lt_Error_writing_upload_]"  $err_msg
+    ad_return_complaint 1 "[_ intranet-translation.lt_Error_writing_upload_]:<br>
+	<pre>$err_msg</pre>
+	during command:
+	<pre>exec /bin/cp $tmp_filename $project_path/$upload_folder/$upload_file_body</pre>"
     return
 }
 
