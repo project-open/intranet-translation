@@ -214,10 +214,10 @@ for {set i 0} {$i < $subfolder_len} {incr i} {
 # Move the file
 #
 if { [catch {
-    ns_log Notice "/bin/mv $tmp_filename $project_path/$upload_folder/$upload_file"
-    exec /bin/cp $tmp_filename "$project_path/$upload_folder/$upload_file"
-    ns_log Notice "/bin/chmod ug+w $project_path/$upload_folder/$upload_file"
-    exec /bin/chmod ug+w $project_path/$upload_folder/$upload_file
+    ns_log Notice "/bin/mv $tmp_filename $project_path/$upload_folder/$upload_file_body"
+    exec /bin/cp $tmp_filename "$project_path/$upload_folder/$upload_file_body"
+    ns_log Notice "/bin/chmod ug+w $project_path/$upload_folder/$upload_file_body"
+    exec /bin/chmod ug+w $project_path/$upload_folder/$upload_file_body
 
 } err_msg] } {
     # Probably some permission errors
@@ -244,7 +244,7 @@ if {"" != $comment_body} {
     set owner_id $user_id
     # This comment is only visible to members of the company
     set scope "staff"
-    set subject $upload_file
+    set subject $upload_file_body
     set message "$comment_body"
 
     # Limit Subject and message to their field sizes
