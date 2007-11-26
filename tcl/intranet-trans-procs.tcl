@@ -93,7 +93,9 @@ proc intranet_task_download {} {
 
     # +0:/ +1:intranet-translation, +2:download-task, +3:<task_id>, +4:...
     set task_id [lindex $path_list 3]
-    ns_log Notice "intranet_task_download: task_id=$task_id"
+    set task_path [lindex $path_list 4]
+    set task_file_body [lindex $path_list 5]
+    ns_log Notice "intranet_task_download: task_id=$task_id, task_path=$task_path, task_body=$task_file_body"
 
     # Make sure $task_id is a number and emit an error otherwise!!!
 
@@ -149,10 +151,43 @@ where
 	doc_return 403 text/html "[_ intranet-translation.lt_You_are_not_allowed_t_1]"
     }
 
-    # Use the task_name as file name (dirty, dangerous?)
-    set file_name $task_name
+    set alternative_files [list]
+    # Check for the files uploaded by the translator previously.
+    catch {
+	set alternative_files [db_list alt_files "
+		        select distinct
+		                upload_file
+		        from    im_task_actions
+		        where   task_id = :task_id
+				and upload_file is not NULL
+	"]
+    }
+    set allowed_files $alternative_files
+    lappend allowed_files $task_name
 
+    # Default: Take the filename from the URL.
+    set file_name $task_file_body
     set file "$project_path/$download_folder/$file_name"
+
+    if {![file readable $file]} {
+	# Check the alternative files if one exists
+	foreach alt_file_body $alternative_files {
+	    set alt_file "$project_path/$download_folder/$alt_file_body"
+	    if {[file readable $alt_file]} {
+		set file_name $alt_file_body
+		set file "$project_path/$download_folder/$file_name"
+	    }
+	}
+    }
+
+    if {$task_file_body != $file_name} {
+	# Alternative file: We have to redirect to the new URL
+	# +0:/ +1:intranet-translation, +2:download-task, +3:<task_id>, +4:<folder>, +5:<file>
+	set folder [lindex $path_list 4]
+	ad_returnredirect "/intranet-translation/download-task/$task_id/$folder/$alt_file_body"
+	ad_script_abort
+    }
+
     set guessed_file_type [ns_guesstype $file]
 
     ns_log notice "intranet_task_download: file_name=$file_name"
@@ -161,6 +196,12 @@ where
 
     if [file readable $file] {
 
+	# Check if inside allowed files
+	if {[lsearch $allowed_files $file_name] == -1} { 
+	    # Attempted tampering with filename?
+	    ad_return_complaint 1 "Bad filename"
+	}
+
 	# Update the task to advance to the next status
 	im_trans_download_action $task_id $task_status_id $task_type_id $user_id
 
@@ -168,8 +209,8 @@ where
         rp_serve_concrete_file $file
 
     } else {
-	ns_log notice "intranet_task_download: file '$file' not readable"
 
+	ns_log notice "intranet_task_download: file '$file' not readable"
 	set subject "[_ intranet-translation.lt_File_is_missing_in_pr]"
 	set subject [ad_urlencode $subject]
 
@@ -881,10 +922,12 @@ $html
 # Update the task to advance to the next status
 # after a successful upload of the related file
 ad_proc im_trans_upload_action {
+    {-upload_file "" }
     task_id 
     task_status_id 
     task_type_id 
-    user_id} {
+    user_id
+} {
 } {
     set new_status_id $task_status_id
 
@@ -968,6 +1011,20 @@ ad_proc im_trans_upload_action {
 		:task_status_id,
 		:new_status_id
     )"
+
+    # Register the new filename as a valid one
+    if {"" != $upload_file} {
+	if {[catch {
+	    db_dml update_task_action_file "
+		update im_task_actions set
+			upload_file = :upload_file
+		where action_id = :action_id
+	    "
+	} err_msg]} {
+	    ns_log Error "im_trans_upload_action: Error updating im_task_actions: $err_msg"
+	}
+    }
+
 }
 
 

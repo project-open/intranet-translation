@@ -230,7 +230,7 @@ if { [catch {
 
 # Advance the status of the respective im_task.
 #
-im_trans_upload_action $task_id $task_status_id $task_type_id $user_id
+im_trans_upload_action -upload_file $upload_file_body $task_id $task_status_id $task_type_id $user_id
 
 
 # -----------------------------------------------------------------
