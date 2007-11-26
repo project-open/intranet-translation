@@ -17,6 +17,11 @@ insert into im_view_columns (
 );
 
 
+-- Add a new column to im_task_actions to record the file
+-- that the translator has actually uploaded.
+--
+alter table im_task_actions add column upload_file varchar(1000);
+
 
 
 -- insert into im_view_columns (

@@ -365,7 +365,8 @@ create table im_task_actions (
 				references im_categories,
 	new_status_id		integer
 				constraint im_task_action_new_fk
-				references im_categories
+				references im_categories,
+	upload_file		varchar(1000)
 );
 
 
