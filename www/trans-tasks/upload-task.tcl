@@ -30,6 +30,45 @@ set default_notify_pm [ad_parameter -package_id [im_package_translation_id] Defa
 set notify_checked ""
 if {$default_notify_pm} { set notify_checked " checked" }
 
+# ---------------------------------------------------------------
+# Check if the user can rate the previous translator in the chain
+# ---------------------------------------------------------------
+
+set survey_exists_p [llength [info commands im_package_survsimp_id]]
+set previous_wf_role [im_task_previous_workflow_role $task_id]
+set previous_user_id [im_task_previous_workflow_stage_user $task_id]
+regsub { } $previous_wf_role "_" previous_wf_role_mangled
+set previous_wf_role_mangled [string tolower $previous_wf_role_mangled]
+
+set survey_id 0
+set previous_wf_stage_user_id 0
+if {$survey_exists_p && $previous_user_id != 0} {
+
+    # Check if there is a survey associated with the specific stage
+    set previous_role [im_task_previous_workflow_role $task_id]
+    set previous_wf_stage_user_id [im_task_previous_workflow_stage_user $task_id]
+    set survey_base_name [ad_parameter -package_id [im_package_translation_id] TranslationWorkflowSurveyBaseName "" "Translation Workflow Rating: "]
+    set survey_name "$survey_base_name $previous_role"
+
+    set survey_ids [db_list trans_survey "
+	select	survey_id
+	from	survsimp_surveys
+	where	name = :survey_name
+    "]
+	
+   if {[llength $survey_ids] == 1} {
+	# Get the one and only survey found
+	set survey_id [lindex $survey_ids 0]
+   }
+	
+#    ad_return_complaint 1 "exists=$survey_exists_p - prev_role=$previous_wf_role - prev_id=$previous_user_id - mangled=$previous_wf_role_mangled"
+
+}
+
+# ---------------------------------------------------------------
+# Render the form
+# ---------------------------------------------------------------
+
 set page_content "
 <form enctype=multipart/form-data method=POST action=upload-task-2.tcl>
 [export_form_vars project_id task_id return_url]
@@ -67,7 +106,25 @@ set page_content "
 			  [lang::message::lookup "" intranet-translation.Send_Notification_to_PM "Send a notification to the Project Manager"]
                         </td>
                       </tr>
-                      <tr $bgcolor(0)> 
+"
+set ctr 0
+
+if {$survey_id} {
+   
+    set survey_url [export_vars -base "/simple-survey/one" {return_url survey_id provider_id {related_object_id $previous_wf_stage_user_id}}]
+    append page_content "
+                      <tr $bgcolor([expr $ctr%2])> 
+                        <td align=right>[lang::message::lookup "" intranet-translation.Rate_your_$previous_wf_role_mangled "Rate the<br>$previous_wf_role"]</td>
+                        <td> 
+			    <a href=\"$survey_url\" xxxtarget=\"survey\">$survey_name</a>
+                        </td>
+                      </tr>
+    "
+    incr ctr
+}
+
+append page_content "
+                      <tr $bgcolor([expr $ctr%2])> 
                         <td></td>
                         <td> 
                           <input type=submit value='[_ intranet-translation.Submit_and_Upload]'><br>

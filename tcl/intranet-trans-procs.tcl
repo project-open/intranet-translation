@@ -1099,6 +1099,91 @@ ad_proc im_trans_download_action {task_id task_status_id task_type_id user_id} {
 }
 
 
+ad_proc im_task_previous_workflow_role {
+    task_id
+} {
+    Returns the previous workflow role ("Translator" "Editor" "Proof Reader"), 
+    depending on the current task statusl.
+    
+    Example: the task is in status "editing", then this procedure
+    returns "Translator". Or during proof reading, it returns "Editor".
+
+    During translation, an empty string  "" is returned to indicate that 
+    there was no previous workflow state.
+} {
+    # get everything about the task
+    set task_status_id [db_string task_status "
+	select	t.task_status_id
+	from	im_trans_tasks t
+	where	t.task_id=:task_id
+    " -default 0]
+
+#         340 | Created
+#         342 | for Trans
+#         344 | Trans-ing
+#         346 | for Edit
+#         348 | Editing
+#         350 | for Proof
+#         352 | Proofing
+#         354 | for QCing
+#         356 | QCing
+#         358 | for Deliv
+#         360 | Delivered
+#         365 | Invoiced
+#         370 | Payed
+#         372 | Deleted
+
+    switch $task_status_id {
+	340 { return "" }
+	342 { return "" }
+	344 { return "" }
+	346 { return "Translator" }
+	348 { return "Translator" }
+	350 { return "Editor" }
+	352 { return "Editor" }
+	354 { return "Editor" }
+	356 { return "Editor" }
+    }
+
+    return ""
+}	
+
+
+
+
+ad_proc im_task_previous_workflow_stage_user {
+    task_id
+} {
+    Returns the user who owned the previous workflow state.
+    Example: the task is in status "editing", then this procedure
+    returns the user_id of the translator. Or during proof reading,
+    it returns the user_id of the editor.
+    During translation, a "0" is returned to indicate that there
+    was no previous workflow state.
+} {
+    # get everything about the task
+    set task_sql "
+	select	t.*
+	from	im_trans_tasks t
+	where	t.task_id=:task_id
+    "
+    set trans_id 0
+    set edit_id 0
+    set proof_id 0
+    db_0or1row task_info $task_sql
+
+    set prev_role [im_task_previous_workflow_role $task_id]
+    switch $prev_role {
+	"Translator" { return $trans_id }
+	"Editor" { return $edit_id }
+	"Proof Reader" { return $proof_id }
+    }
+
+    return 0
+}	
+
+
+
 ad_proc im_task_component_upload {
     user_id
     user_admin_p
@@ -2346,6 +2431,8 @@ ad_proc im_new_task_component {
 } {
     if {![im_permission $user_id view_trans_proj_detail]} { return "" }
 
+    set default_uom [parameter::get_from_package_key -package_key intranet-trans-invoices -parameter "DefaultPriceListUomID" -default 324]
+
     # More then one option for a TM?
     # Then we'll have to show a few more fields later.
     set ophelia_installed_p [llength [info procs im_package_ophelia_id]]
@@ -2555,7 +2642,7 @@ ad_proc im_new_task_component {
 
     <td>[im_select -translate_p 0 "task_name_file" $task_list]</td>
     <td><input type=text size=2 value=0 name=task_units_file></td>
-    <td>[im_category_select "Intranet UoM" "task_uom_file" 324]</td>
+    <td>[im_category_select "Intranet UoM" "task_uom_file" $default_uom]</td>
     <td>[im_category_select "Intranet Project Type" task_type_file $project_type_id]</td>
     $integration_type_html
     <td><input type=submit value=\"[_ intranet-translation.Add_File]\" name=submit_add_file></td>
@@ -2573,7 +2660,7 @@ ad_proc im_new_task_component {
 
     <td><input type=text size=20 value=\"\" name=task_name_manual></td>
     <td><input type=text size=2 value=0 name=task_units_manual></td>
-    <td>[im_category_select "Intranet UoM" "task_uom_manual" 324]</td>
+    <td>[im_category_select "Intranet UoM" "task_uom_manual" $default_uom]</td>
     <td>[im_category_select "Intranet Project Type" task_type_manual $project_type_id]</td>
     $integration_type_html
     <td><input type=submit value=\"[_ intranet-translation.Add]\" name=submit_add_manual></td>
