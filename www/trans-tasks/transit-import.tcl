@@ -257,6 +257,11 @@ for {set i 1} {$i < $transit_files_len} {incr i} {
     if {[regexp {^Totals with weighting factor} $transit_line]} { continue }
     if {[regexp {^Totals with expansion factor} $transit_line]} { continue }
 
+    if {[regexp {^Totales reducidos por repeticiones} $transit_line]} { continue }
+    if {[regexp {^Totales sin reducc} $transit_line]} { continue }
+    if {[regexp {^Totales con factor de pondera} $transit_line]} { continue }
+    if {[regexp {^Totales con factor de expan} $transit_line]} { continue }
+
     set transit_fields [split $transit_line $separator]
 
 #	0	File	
@@ -281,8 +286,12 @@ for {set i 1} {$i < $transit_files_len} {incr i} {
     set task_type_id		$org_task_type_id
 
     # Special treatment of repetitions - count them as negative in a separate task
-    if {[regexp {^Repetitions found \(reduced by limit\)} $transit_line]} {
-
+    set rep_found_p [expr \
+	[regexp {^Repetitions found} $transit_line] + \
+	[regexp {^Repeticiones encontradas} $transit_line] \
+    ]
+    
+    if {$rep_found_p} {
 	set px_words		[expr -$px_words]
 	set prep_words		[expr -$prep_words]
 	set p100_words		[expr -$p100_words]
@@ -293,7 +302,6 @@ for {set i 1} {$i < $transit_files_len} {incr i} {
 	set p0_words		[expr -$p0_words]
 
 	set task_type_id [im_project_type_translation]
-
     }
 
 	
