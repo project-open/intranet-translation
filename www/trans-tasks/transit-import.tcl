@@ -172,6 +172,7 @@ set transit_version "all"
 set task_html "
 	<table cellpadding=0 cellspacing=2 border=0>
 	<tr>
+	  <td class=rowtitle>&nbsp;</td>
 	  <td class=rowtitle align=center>[_ intranet-translation.Filename]</td>
 	  <td class=rowtitle align=center>[_ intranet-translation.XTr]</td>
 	  <td class=rowtitle align=center>[_ intranet-translation.Rep]</td>
@@ -251,16 +252,18 @@ for {set i 1} {$i < $transit_files_len} {incr i} {
 
     # Remove empty lines    
     if {0 == [string length $transit_line]} { continue }
-    
-    if {[regexp {^Totals not reduced by repetitions} $transit_line]} { continue }
-    if {[regexp {^Totals reduced by repetitions} $transit_line]} { continue }
-    if {[regexp {^Totals with weighting factor} $transit_line]} { continue }
-    if {[regexp {^Totals with expansion factor} $transit_line]} { continue }
 
-    if {[regexp {^Totales reducidos por repeticiones} $transit_line]} { continue }
-    if {[regexp {^Totales sin reducc} $transit_line]} { continue }
-    if {[regexp {^Totales con factor de pondera} $transit_line]} { continue }
-    if {[regexp {^Totales con factor de expan} $transit_line]} { continue }
+    set checked_p "checked"
+    
+    if {[regexp {^Totals not reduced by repetitions} $transit_line]} { set checked_p "" }
+    if {[regexp {^Totals reduced by repetitions} $transit_line]} { set checked_p "" }
+    if {[regexp {^Totals with weighting factor} $transit_line]} { set checked_p "" }
+    if {[regexp {^Totals with expansion factor} $transit_line]} { set checked_p "" }
+
+    if {[regexp {^Totales reducidos por repeticiones} $transit_line]} { set checked_p "" }
+    if {[regexp {^Totales sin reducc} $transit_line]} { set checked_p "" }
+    if {[regexp {^Totales con factor de pondera} $transit_line]} { set checked_p "" }
+    if {[regexp {^Totales con factor de expan} $transit_line]} { set checked_p "" }
 
     set transit_fields [split $transit_line $separator]
 
@@ -374,10 +377,13 @@ for {set i 1} {$i < $transit_files_len} {incr i} {
     set task_uom_id 324	
     set invoice_id ""
     
-
     append task_html "
 	<tr $bgcolor([expr $ctr % 2])>
-	  <td>$filename	
+	  <td>
+		<input type=checkbox name=import_p.$ctr value=1 $checked_p>
+	  </td>
+	  <td>
+		$filename	
 		<input type=hidden name=filename_list.$ctr value=\"$filename\">	
 		<input type=hidden name=task_type_list.$ctr value=\"$task_type_id\">	
 	  </td>
