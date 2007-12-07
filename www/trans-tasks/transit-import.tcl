@@ -18,6 +18,7 @@ ad_page_contract {
     project_id:integer
     task_type_id:integer
     wordcount_file
+    { upload_file "transit.rep" }
     { target_language_id "" }
     {import_method "Asp"}
 }
@@ -43,6 +44,10 @@ set charset [ad_parameter -package_id [im_package_filestorage_id] FilenameCharac
 set org_task_type_id $task_type_id
 
 set transit_batch_default_p 1
+
+# Extract the file body
+set upload_file_pieces [split $upload_file "."]
+set upload_file_body [join [lrange $upload_file_pieces 0 end-1] "."]
 
 # ---------------------------------------------------------------------
 # Get the file and deal with Unicode encoding...

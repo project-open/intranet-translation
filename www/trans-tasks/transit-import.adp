@@ -78,7 +78,7 @@
     <td>Batch file name:</td>
     <td>
 	<input type=hidden name=import_p.1 value=1>
-	<input type=text name=filename_list.1 size=40 value="transit.pxf">
+	<input type=text name=filename_list.1 size=40 value="@upload_file_body@.pxf">
 	<input type=hidden name=task_type_list.1 value="@org_task_type_id@">
 	<input type=hidden name=px_words_list.1 value="@sum_px_words@">
 	<input type=hidden name=prep_words_list.1 value="@sum_prep_words@">
