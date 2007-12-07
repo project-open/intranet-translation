@@ -399,14 +399,16 @@ for {set i 1} {$i < $transit_files_len} {incr i} {
 	</tr>
     "
 
-    set sum_px_words [expr $sum_px_words + $px_words]
-    set sum_prep_words [expr $sum_prep_words + $prep_words]
-    set sum_p100_words [expr $sum_p100_words + $p100_words]
-    set sum_p95_words [expr $sum_p95_words + $p95_words]
-    set sum_p85_words [expr $sum_p85_words + $p85_words]
-    set sum_p75_words [expr $sum_p75_words + $p75_words]
-    set sum_p50_words [expr $sum_p50_words + $p50_words]
-    set sum_p0_words [expr $sum_p0_words + $p0_words]
+    if {"" != $checked_p} {
+	set sum_px_words [expr $sum_px_words + $px_words]
+	set sum_prep_words [expr $sum_prep_words + $prep_words]
+	set sum_p100_words [expr $sum_p100_words + $p100_words]
+	set sum_p95_words [expr $sum_p95_words + $p95_words]
+	set sum_p85_words [expr $sum_p85_words + $p85_words]
+	set sum_p75_words [expr $sum_p75_words + $p75_words]
+	set sum_p50_words [expr $sum_p50_words + $p50_words]
+	set sum_p0_words [expr $sum_p0_words + $p0_words]
+    }
 }
 
 
