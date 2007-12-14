@@ -24,6 +24,10 @@ set context_bar [im_context_bar [list /intranet/projects/ "[_ intranet-translati
 # set required_field "<font color=red size=+1><B>*</B></font>"
 set required_field ""
 
+
+set include_source_language_country_locale [ad_parameter -package_id [im_package_translation_id] SourceLanguageWithCountryLocaleP "" 0]
+
+
 im_project_permissions $user_id $project_id view read write admin
 if {!$write} {
     ad_return_complaint 1 "<li>[_ intranet-translation.lt_You_have_insufficient]"
@@ -81,7 +85,7 @@ set page_body "
                    <tr>
                       <td>[_ intranet-translation.Source_Language] $required_field </td>
                       <td>
-[im_trans_language_select source_language_id $source_language_id]
+[im_trans_language_select -include_country_locale $include_source_language_country_locale source_language_id $source_language_id]
 [im_admin_category_gif "Intranet Translation Language"]
 [im_gif help "Translation source language"]
                       </td>

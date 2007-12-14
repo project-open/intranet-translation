@@ -745,15 +745,13 @@ ad_proc im_trans_language_select {
 
     set sql "
         select *
-        from
-                (select
-                        category_id,
+        from	(
+		select	category_id,
                         category,
                         category_description
-                from
-                        im_categories
-                where
-                        category_type = :category_type
+                from	im_categories
+                where	category_type = :category_type
+			and (enabled_p = 't' OR enabled_p is null)
 			$country_locale_sql
                 ) c
         order by lower(category)
