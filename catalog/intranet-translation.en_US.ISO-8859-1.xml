@@ -24,9 +24,9 @@
   <msg key="Auto_Assign">Auto Assign</msg>
   <msg key="Auto_Assignment">Auto Assignment</msg>
   <msg key="Bill_Units">Bill Units</msg>
-  <msg key="Client_contact">Client contact</msg>
-  <msg key="Client_Project">Customer Project#</msg>
-  <msg key="Client_project_">Client project #</msg>
+  <msg key="Client_contact">Customer Contact</msg>
+  <msg key="Client_Project">Customer Project Nr.</msg>
+  <msg key="Client_project_">Customer Project Nr.</msg>
   <msg key="Comment">Comment</msg>
   <msg key="Comments">Comments</msg>
   <msg key="Companies">Companies</msg>
@@ -62,7 +62,7 @@
   <msg key="lt_Cant_find_the_project_1">Can't find the project with ID '%project_id%'</msg>
   <msg key="lt_Classical_Trados_impo">(\&quot;Classical\&quot; Trados import of a local 'wordcount.csv' file)</msg>
   <msg key="lt_Click_right_and_choos">Click right and choose \&quot;Save target as\&quot; to download the file</msg>
-  <msg key="lt_Couldnt_find_the_spec">Couldn't find the specified task #%task_id%</msg>
+  <msg key="lt_Couldnt_find_the_spec">Couldn't find the specified task nr. %task_id%</msg>
   <msg key="lt_Create_folder_structu">Create folder structure and create a subproject for each language that you have chosen.</msg>
   <msg key="lt_Create_the_new_folder">Create the new folder structure</msg>
   <msg key="lt_Did_you_enter_the_sam">Did you enter the same task name twice?</msg>
@@ -72,7 +72,7 @@
   <msg key="lt_Error_deleting_the_te">Error deleting the temporary wordcount file %trados_wordcount_file%</msg>
   <msg key="lt_Error_writing_upload_">Error writing upload file</msg>
   <msg key="lt_Expected_file_task_na">Expected file: %task_name%</msg>
-  <msg key="lt_File_is_missing_in_pr">File is missing in project #%project_nr%: %file_name%</msg>
+  <msg key="lt_File_is_missing_in_pr">File is missing in project nr. %project_nr%: %file_name%</msg>
   <msg key="lt_img_srcintranetimages">_</msg>
   <msg key="lt_Missing_Translation_F">Missing Translation Files</msg>
   <msg key="lt_New_files_need_to_be_">New files need to be located in the \&quot;source_xx\&quot; folder to appear in the drop-down box on the left.</msg>
@@ -90,7 +90,7 @@
   <msg key="lt_Return_to_previous_pa">Return to previous page</msg>
   <msg key="lt_Return_to_Project_Pag">Return to Project Page</msg>
   <msg key="lt_Shows_the_status_of_a">Shows the status of all tasks\nAss: Assigned Files\nDn: Downloaded Files\nUp: Uploaded Files</msg>
-  <msg key="lt_Task_task_id_doesnt_e">Task \#%task_id% doesn't exist</msg>
+  <msg key="lt_Task_task_id_doesnt_e">Task nr. %task_id% doesn't exist</msg>
   <msg key="lt_The_most_probable_cau">The most probable cause for this error is that the Project Manager has not uploaded the file yet. &lt;br&gt;
 Please contact the project manager of your project: </msg>
   <msg key="lt_The_project_has_no_ta">The project has no target language defined, so we are unable to add translation tasks to the project.</msg>
