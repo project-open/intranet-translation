@@ -51,6 +51,9 @@ if {![db_0or1row "get company info" "select  c.company_name from im_companies c 
     set company_name ""
 }
 
+set submit_changes_l10n [lang::message::lookup "" intranet-translation.Submit_Changes "Submit Changes and Create Folder Structure"]
+set create_language_subprojects_l10n [lang::message::lookup "" intranet-translation.Create_Language_Subprojects "Submit Changes and Create Language Subprojects"]
+
 set page_body "
                 <form action=edit-trans-data-2 method=post name=edit-trans-data>
 [export_form_vars return_url project_id dp_ug.user_groups.creation_ip_address dp_ug.user_groups.creation_user]
@@ -122,9 +125,9 @@ set page_body "
                       <td valign=top></td>
                       <td>
 		 	<p> 
-                          <input type=submit value='Submit changes' name=submit_changes>
+                          <input type=submit value='$submit_changes_l10n' name=submit_changes>
                           [im_gif help "Create the new folder structure"] <br>
-                          <input type=submit value='Create Language Subprojects' name=submit_subprojects>
+                          <input type=submit value='$create_language_subprojects_l10n' name=submit_subprojects>
                           [im_gif help "Create folder structure and create a subproject for each language that you have chosen."] <br>
                         </p>
                       </td>
