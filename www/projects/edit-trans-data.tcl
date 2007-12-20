@@ -18,8 +18,6 @@ ad_page_contract {
 }
 
 set user_id [ad_maybe_redirect_for_registration]
-set page_title "[_ intranet-translation.lt_Edit_Translation_Deta]"
-set context_bar [im_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] [list "/intranet/projects/view?[export_url_vars project_id]" "[_ intranet-translation.One_project]"] $page_title]
 
 # set required_field "<font color=red size=+1><B>*</B></font>"
 set required_field ""
@@ -45,6 +43,9 @@ from
 where 
 	p.project_id=:project_id 
 }
+
+set page_title "$project_nr - $project_name"
+set context_bar [im_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] [list "/intranet/projects/view?[export_url_vars project_id]" "[_ intranet-translation.One_project]"] $page_title]
 
 if {![db_0or1row "get company info" "select  c.company_name from im_companies c where c.company_id = :company_id"]} {
     set company_name ""
@@ -131,6 +132,17 @@ set page_body "
                   </table>
                 </form>
 "
+
+
+
+# -------------------------------------------------------------------
+# Project Subnavbar
+# -------------------------------------------------------------------
+
+set bind_vars [ns_set create]
+ns_set put $bind_vars project_id $project_id
+set parent_menu_id [db_string parent_menu "select menu_id from im_menus where label='project'" -default 0]
+
 
 ad_return_template
 

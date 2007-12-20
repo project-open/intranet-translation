@@ -2679,7 +2679,10 @@ ad_proc im_new_task_component {
 # Determine the list of missing files
 # ---------------------------------------------------------------------
 
-ad_proc im_task_missing_file_list { project_id } {
+ad_proc im_task_missing_file_list { 
+    {-no_complain 0}
+    project_id 
+} {
     Returns a list of task_ids that have not been found
     in the project folder.
     These task_ids can be used to display a list of 
@@ -2687,9 +2690,12 @@ ad_proc im_task_missing_file_list { project_id } {
     workflow work without problems.
     The algorithm works O(n*log(n)), using ns_set, so
     it should be a reasonably cheap operation.
+
+    @param no_complain Don't emit ad_return_complaint messages
+           in order not to disturb a users's page with missing
+           pathes etc.
 } {
     set find_cmd [im_filestorage_find_cmd]
-
 
     # Localize the workflow stage directories
     set locale "en_US"
@@ -2740,6 +2746,8 @@ where
     } err_msg] } {
 	# The directory probably doesn't exist yet, so don't generate
 	# an error !!!
+
+	if {$no_complain} { return "" }
 	ad_return_complaint 1 "im_task_missing_file_list: directory $source_folder<br>
 		       probably does not exist:<br>$err_msg"
 	set file_list ""
