@@ -2810,3 +2810,34 @@ where
 }
 
 
+# ------------------------------------------------------
+# Tandem component to allow selecting tandem partners
+# ------------------------------------------------------
+
+ad_proc im_trans_tandem_partner_component {
+    -project_id:required
+    -return_url:required
+} {
+    Returns a formatted HTML table to allow a user to a the "tandem partners"
+    (habitual editor for...) of the current users.
+} {
+    if {![im_project_has_type $project_id "Translation Project"]} { return "" }
+
+    im_project_permissions [ad_get_user_id] $project_id view read write admin
+    if {!$write} { return "" }
+
+    set params [list \
+                    [list project_id $project_id] \
+                    [list return_url $return_url] \
+    ]
+
+    set result ""
+    if {[catch {
+	set result [ad_parse_template -params $params "/packages/intranet-translation/www/tandem/tandem-partners"]
+    } err_msg]} {
+        set result "Error in Tandem Partner Component:<p><pre>$err_msg</pre>"
+    }
+
+    return $result
+}
+
