@@ -13,10 +13,10 @@ ad_page_contract {
     return_url
     upload_file
     {notify_project_manager_p ""}
+    {notify_next_wf_stage_p ""}
     {file_title:trim ""}
     {comment_body:trim "" }
 }
-
 
 # ---------------------------------------------------------------------
 # Defaults & Security
@@ -93,21 +93,50 @@ if {"" != $notify_project_manager_p} {
     set message [lang::message::lookup "" intranet-translation.Notify_PM_About_Task_Upload_Message]
 
     set project_managers_sql "
-	select
-		r.object_id_two as pm_id
-	from
-		acs_rels r,
+	select	r.object_id_two as pm_id
+	from	acs_rels r,
 		im_biz_object_members m
-	where
-		r.rel_id = m.rel_id
+	where	r.rel_id = m.rel_id
 		and r.object_id_one = :project_id
 		and m.object_role_id = [im_biz_object_role_project_manager]
+    UNION
+	select	project_lead_id
+	from	im_projects p
+	where	project_id = :project_id
     "
+
+    set project_url [export_vars -base "/intranet/projects/view" {project_id}]
+
     db_foreach notify_project_managers $project_managers_sql {
-	im_send_alert $pm_id "hourly" $subject $message
+	set auto_login [im_generate_auto_login -user_id $pm_id]
+	set msg_url "[ad_parameter -package_id [ad_acs_kernel_id] SystemURL "" ""][export_vars -base "intranet/auto-login" {{user_id $pm_id} {url $project_url} {auto_login $auto_login}}]"
+
+	im_send_alert $pm_id "hourly" $subject "$msg_url\n$message"
     }
 
 }
+
+
+if {"" != $notify_next_wf_stage_p} {
+
+    set subject [lang::message::lookup "" intranet-translation.Notify_Next_WF_Stage_About_Task_Upload_Subject "\
+	A New Task has Become Ready: $task_name\
+    "]
+    set message [lang::message::lookup "" intranet-translation.Notify_Next_WF_Stage_About_Task_Upload_Message "\
+	A new task has become ready for you in project %project_nr% - %project_name%.\
+    "]
+
+    set next_wf_stage_user_id [im_task_next_workflow_stage_user $task_id]
+    set project_url [export_vars -base "/intranet/projects/view" {project_id}]
+
+    set auto_login [im_generate_auto_login -user_id $next_wf_stage_user_id]
+    set msg_url "[ad_parameter -package_id [ad_acs_kernel_id] SystemURL "" ""][export_vars -base "intranet/auto-login" {{user_id $next_wf_stage_user_id} {url $project_url} {auto_login $auto_login}}]"
+    
+    im_send_alert $next_wf_stage_user_id "hourly" $subject "$msg_url\n$message"
+
+}
+
+
 
 # -------------------------------------------------------------------
 # Get the file from the user.

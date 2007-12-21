@@ -1099,7 +1099,84 @@ ad_proc im_trans_download_action {task_id task_status_id task_type_id user_id} {
 }
 
 
+
+ad_proc im_task_workflow_translate_role {
+    role
+} {
+    Returns a translation for the role.
+} {
+    set trans_l10n [lang::message::lookup "" intranet-translation.wf_role_trans "Translator"]
+    set edit_l10n [lang::message::lookup "" intranet-translation.wf_role_edit "Editor"]
+    set proof_l10n [lang::message::lookup "" intranet-translation.wf_role_proof "Proof Reader"]
+    set other_l10n [lang::message::lookup "" intranet-translation.wf_role_other "Other"]
+
+    switch $role {
+	    trans { return $trans_l10n }
+	    edit { return $edit_l10n }
+	    proof { return $proof_l10n }
+	    other { return $other_l10n }
+    }
+    return ""
+}	
+
+ad_proc im_task_next_workflow_role {
+    {-translate_p 1}
+    task_id
+} {
+    Returns the next workflow role ("Translator" "Editor" "Proof Reader"), 
+    depending on the current task statusl.
+    
+    Example: the task is in status "translating", then this procedure
+    returns "Editor". Or during editing, it returns "Proof Reader".
+
+    At the end of the WF chain an empty string  "" is returned to indicate 
+    that there is no next workflow state.
+#         340 | Created
+#         342 | for Trans
+#         344 | Trans-ing
+#         346 | for Edit
+#         348 | Editing
+#         350 | for Proof
+#         352 | Proofing
+#         354 | for QCing
+#         356 | QCing
+#         358 | for Deliv
+#         360 | Delivered
+#         365 | Invoiced
+#         370 | Payed
+#         372 | Deleted
+
+} {
+    # get everything about the task
+    set task_status_id [db_string task_status "
+	select	t.task_status_id
+	from	im_trans_tasks t
+	where	t.task_id=:task_id
+    " -default 0]
+
+    set role ""
+    switch $task_status_id {
+        340 { set role edit }
+        342 { set role edit }
+        344 { set role edit }
+        346 { set role edit }
+        348 { set role proof }
+        350 { set role "" }
+        352 { set role "" }
+        354 { set role "" }
+        356 { set role "" }
+    }
+
+    if {$translate_p} {
+        set role [im_task_workflow_translate_role $role]
+    }
+
+    return $role
+}	
+
+
 ad_proc im_task_previous_workflow_role {
+    {-translate_p 1}
     task_id
 } {
     Returns the previous workflow role ("Translator" "Editor" "Proof Reader"), 
@@ -1110,13 +1187,6 @@ ad_proc im_task_previous_workflow_role {
 
     During translation, an empty string  "" is returned to indicate that 
     there was no previous workflow state.
-} {
-    # get everything about the task
-    set task_status_id [db_string task_status "
-	select	t.task_status_id
-	from	im_trans_tasks t
-	where	t.task_id=:task_id
-    " -default 0]
 
 #         340 | Created
 #         342 | for Trans
@@ -1133,22 +1203,33 @@ ad_proc im_task_previous_workflow_role {
 #         370 | Payed
 #         372 | Deleted
 
+} {
+    # get everything about the task
+    set task_status_id [db_string task_status "
+	select	t.task_status_id
+	from	im_trans_tasks t
+	where	t.task_id=:task_id
+    " -default 0]
+
+    set role ""
     switch $task_status_id {
-	340 { return "" }
-	342 { return "" }
-	344 { return "" }
-	346 { return "Translator" }
-	348 { return "Translator" }
-	350 { return "Editor" }
-	352 { return "Editor" }
-	354 { return "Editor" }
-	356 { return "Editor" }
+	340 { set role "" }
+	342 { set role "" }
+	344 { set role "" }
+	346 { set role trans }
+	348 { set role trans }
+	350 { set role edit }
+	352 { set role edit }
+	354 { set role edit }
+	356 { set role edit }
     }
 
-    return ""
+    if {$translate_p} {
+	set role [im_task_workflow_translate_role $role]
+    }
+
+    return $role
 }	
-
-
 
 
 ad_proc im_task_previous_workflow_stage_user {
@@ -1161,27 +1242,63 @@ ad_proc im_task_previous_workflow_stage_user {
     During translation, a "0" is returned to indicate that there
     was no previous workflow state.
 } {
+    set trans_id 0
+    set edit_id 0
+    set proof_id 0
+
     # get everything about the task
     set task_sql "
 	select	t.*
 	from	im_trans_tasks t
 	where	t.task_id=:task_id
     "
+    db_0or1row task_info $task_sql
+
+    set prev_role [im_task_previous_workflow_role -translate_p 0 $task_id]
+    set user_id 0
+    switch $prev_role {
+	"trans" { set user_id $trans_id }
+	"edit" { set user_id $edit_id }
+	"proof" { set user_id $proof_id }
+    }
+    
+    if {"" == $user_id} { set user_id 0 }
+    return $user_id
+}
+
+
+ad_proc im_task_next_workflow_stage_user {
+    task_id
+} {
+    Returns the user who owns the next workflow state.
+    Example: the task is in status "translating", then this procedure
+    returns the user_id of the editor. 
+    During the last WF stage a "0" is returned to indicate that there
+    was no next workflow state.
+} {
     set trans_id 0
     set edit_id 0
     set proof_id 0
+
+    # get everything about the task
+    set task_sql "
+	select	t.*
+	from	im_trans_tasks t
+	where	t.task_id=:task_id
+    "
     db_0or1row task_info $task_sql
 
-    set prev_role [im_task_previous_workflow_role $task_id]
-    switch $prev_role {
-	"Translator" { return $trans_id }
-	"Editor" { return $edit_id }
-	"Proof Reader" { return $proof_id }
+    set next_role [im_task_next_workflow_role -translate_p 0 $task_id]
+    set user_id 0
+    switch $next_role {
+	"trans" { set user_id $trans_id }
+	"edit" { set user_id $edit_id }
+	"proof" { set user_id $proof_id }
     }
 
-    return 0
+    if {"" == $user_id} { set user_id 0 }
+    return $user_id
 }	
-
 
 
 ad_proc im_task_component_upload {

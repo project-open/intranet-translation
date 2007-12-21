@@ -26,9 +26,28 @@ set bgcolor(1) " class=rowodd"
 
 set filename [db_string get_filename "select task_name from im_trans_tasks where task_id=:task_id"]
 
+
+
+# ---------------------------------------------------------------
+# Notify the PM?
+# ---------------------------------------------------------------
+
 set default_notify_pm [ad_parameter -package_id [im_package_translation_id] DefaultNotifyPMAboutUploadP "" 0]
-set notify_checked ""
-if {$default_notify_pm} { set notify_checked " checked" }
+set notify_pm_checked ""
+if {$default_notify_pm} { set notify_pm_checked " checked" }
+
+
+# ---------------------------------------------------------------
+# Notify next WF stage
+# ---------------------------------------------------------------
+
+# Shoud the translator notifiy the editor when he uploads a file?
+set notify_next_wf_stage_p [ad_parameter -package_id [im_package_translation_id] NotifyNextWfStageP "" 0]
+set notify_next_wf_stage_checked " checked"
+
+set next_role_l10n [im_task_next_workflow_role $task_id]
+set next_wf_stage_user_id [im_task_next_workflow_stage_user $task_id]
+
 
 # ---------------------------------------------------------------
 # Check if the user can rate the previous translator in the chain
@@ -60,9 +79,6 @@ if {$survey_exists_p && $previous_user_id != 0} {
 	# Get the one and only survey found
 	set survey_id [lindex $survey_ids 0]
    }
-	
-#    ad_return_complaint 1 "exists=$survey_exists_p - prev_role=$previous_wf_role - prev_id=$previous_user_id - mangled=$previous_wf_role_mangled"
-
 }
 
 # ---------------------------------------------------------------
@@ -99,14 +115,30 @@ set page_content "
 			  <br>Please let us know what you think about this task (max. 1000 characters).
                         </td>
                       </tr>
+
                       <tr $bgcolor(1)> 
                         <td align=right>[lang::message::lookup "" intranet-translation.Notify "Notify"] </td>
                         <td>
-                          <input type=checkbox name=notify_project_manager_p value=1 $notify_checked>
-			  [lang::message::lookup "" intranet-translation.Send_Notification_to_PM "Send a notification to the Project Manager"]
+                          <input type=checkbox name=notify_project_manager_p value=1 $notify_pm_checked>
+			  [lang::message::lookup "" intranet-translation.Send_Notification_to_PM "Send a notification to your Project Manager"]
                         </td>
                       </tr>
 "
+
+if {$notify_next_wf_stage_p} {
+    append page_content "
+                      <tr $bgcolor(1)> 
+                        <td align=right>[lang::message::lookup "" intranet-translation.Notify "Notify"] </td>
+                        <td>
+                          <input type=checkbox name=notify_next_wf_stage_p value=1 $notify_next_wf_stage_checked>
+			  [lang::message::lookup "" intranet-translation.Send_Notification_to_Next_WF_Stage "Send a notification to your %next_role_l10n%"]
+			  ($next_wf_stage_user_id)
+                        </td>
+                      </tr>
+    "
+}
+
+
 set ctr 0
 
 if {$survey_id} {
