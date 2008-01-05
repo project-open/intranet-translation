@@ -80,6 +80,13 @@ select acs_object_type__create_type (
 	'im_trans_task__name'	-- name_method
 );
 
+update acs_object_types set
+        status_type_table = 'im_trans_tasks',
+        status_column = 'task_status_id',
+        type_column = 'task_type_id'
+where object_type = 'im_trans_task';
+
+
 
 -- Main Object Table
 create table im_trans_tasks (
