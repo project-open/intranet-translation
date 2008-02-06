@@ -82,14 +82,19 @@ where project_id=:project_id
 db_transaction {
     db_dml update_im_projects $sql
 }
-db_release_unused_handles
 
 if { ![exists_and_not_null return_url] } {
     set return_url "[im_url_stub]/projects/view?[export_url_vars project_id]"
 }
 
 # Write audit trail
-# im_project_audit $project_id
+catch {im_project_audit $project_id } err_msg
+
+
+# Write the source + target language and subject area to freelance skills
+im_freelance_add_required_skills -object_id $project_id -skill_type_id [im_freelance_skill_type_source_language] -skill_ids $source_language_id
+im_freelance_add_required_skills -object_id $project_id -skill_type_id [im_freelance_skill_type_subject_area] -skill_ids $subject_area_id
+im_freelance_add_required_skills -object_id $project_id -skill_type_id [im_freelance_skill_type_expected_quality] -skill_ids $expected_quality_id
 
 
 # Save the information about the project target languages
@@ -102,6 +107,8 @@ db_transaction {
 	ns_log Notice "target_language=$lang"
 	set sql "insert into im_target_languages values ($project_id, $lang)"
         db_dml insert_im_target_language $sql
+
+	im_freelance_add_required_skills -object_id $project_id -skill_type_id [im_freelance_skill_type_target_language] -skill_ids $lang
     }
 }
 
@@ -202,11 +209,16 @@ if {[exists_and_not_null submit_subprojects]} {
 		where
 		        project_id = :sub_project_id
 	"
-
 	db_dml project_update $project_update_sql
 
 	# Write audit trail
-#	im_project_audit $sub_project_id
+	catch { im_project_audit $sub_project_id} err_msg
+
+	# Write the source + target language and subject area to freelance skills
+	im_freelance_add_required_skills -object_id $sub_project_id -skill_type_id [im_freelance_skill_type_source_language] -skill_ids $source_language_id
+	im_freelance_add_required_skills -object_id $sub_project_id -skill_type_id [im_freelance_skill_type_target_language] -skill_ids $lang
+	im_freelance_add_required_skills -object_id $sub_project_id -skill_type_id [im_freelance_skill_type_subject_area] -skill_ids $subject_area_id
+	im_freelance_add_required_skills -object_id $sub_project_id -skill_type_id [im_freelance_skill_type_expected_quality] -skill_ids $expected_quality_id
 
 
 	# -----------------------------------------------------------------
@@ -222,9 +234,6 @@ if {[exists_and_not_null submit_subprojects]} {
 			and r.object_id_one = :project_id
 	"
 	db_foreach main_project_members $main_project_members_sql {
-	    # We don't need to propage the user information againg to
-	    # the superproject, because it's already there...
-	    # This saves a lot of time because of the recursive N*M adds
 	    im_biz_object_add_role -propagate_superproject_p 0 $person_id $sub_project_id $object_role_id
 	}
 
