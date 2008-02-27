@@ -120,46 +120,36 @@ where category_type = 'Intranet Translation Task Status';
 -- Categories
 -- -------------------------------------------------------------------
 
-# Fixed thanks to Bohumil Gorcic:
-# Maybe these lines have got here as part of testing the code?
-#
-# delete from im_biz_object_role_map where object_type_id in (
-# 	select category_id from im_categories where category_type = 'Intranet Project Type');
-# delete from im_category_hierarchy where parent_id in (
-#	select category_id from im_categories where category_type = 'Intranet Project Type');
-#delete from im_categories where category_type = 'Intranet Project Type';
+-- Fixed thanks to Bohumil Gorcic:
+-- Maybe these lines have got here as part of testing the code?
+--
+-- delete from im_biz_object_role_map where object_type_id in (
+-- 	select category_id from im_categories where category_type = 'Intranet Project Type');
+-- delete from im_category_hierarchy where parent_id in (
+--	select category_id from im_categories where category_type = 'Intranet Project Type');
+--delete from im_categories where category_type = 'Intranet Project Type';
 
-insert into im_categories values (87,  'Trans + Edit',  
-'',  'Intranet Project Type','category','t','f');
-insert into im_categories values (88,  'Edit Only',  '',  
-'Intranet Project Type','category','t','f');
-insert into im_categories values (89,  'Trans + Edit + Proof',  
-'',  'Intranet Project Type','category','t','f');
-insert into im_categories values (90,  'Linguistic Validation',  
-'',  'Intranet Project Type','category','t','f');
-insert into im_categories values (91,  'Localization',  
-'',  'Intranet Project Type','category','t','f');
-insert into im_categories values (92,  'Technology',  
-'',  'Intranet Project Type','category','t','f');
-insert into im_categories values (93,  'Trans Only',  
-'',  'Intranet Project Type','category','t','f');
-insert into im_categories values (94,  'Trans + Int. Spotcheck',  
-'',  'Intranet Project Type','category','t','f');
-insert into im_categories values (95,  'Proof Only',  
-'',  'Intranet Project Type','category','t','f');
-insert into im_categories values (96,  'Glossary Compilation',  
-'',  'Intranet Project Type','category','t','f');
+
+
+SELECT im_category_new (87, 'Trans + Edit', 'Intranet Project Type');
+SELECT im_category_new (88, 'Edit Only', 'Intranet Project Type');
+SELECT im_category_new (89, 'Trans + Edit + Proof', 'Intranet Project Type');
+SELECT im_category_new (90, 'Linguistic Validation', 'Intranet Project Type');
+SELECT im_category_new (91, 'Localization', 'Intranet Project Type');
+SELECT im_category_new (92, 'Technology', 'Intranet Project Type');
+SELECT im_category_new (93, 'Trans Only', 'Intranet Project Type');
+SELECT im_category_new (94, 'Trans + Int. Spotcheck', 'Intranet Project Type');
+SELECT im_category_new (95, 'Proof Only', 'Intranet Project Type');
+SELECT im_category_new (96, 'Glossary Compilation', 'Intranet Project Type');
 
 
 -- -------------------------------------------------------------------
 -- Category Hierarchy
 -- -------------------------------------------------------------------
 
--- 2500-2599    Translation Hierarchy
+-- 2500-2599  Translation Hierarchy
 
-insert into im_categories values (2500,  'Translation Project',  
-'',  'Intranet Project Type','category','t','f');
-delete from im_category_hierarchy where parent_id = 2500;
+SELECT im_category_new (2500,  'Translation Project',  'Intranet Project Type');
 
 insert into im_category_hierarchy values (2500,87);
 insert into im_category_hierarchy values (2500,88);
@@ -176,139 +166,138 @@ insert into im_category_hierarchy values (2500,96);
 -- -------------------------------------------------------------------
 -- Other Categories
 -- -------------------------------------------------------------------
-delete from im_categories where category_type = 'Intranet Quality';
+
 -- Intranet Quality
-INSERT INTO im_categories VALUES (110,'Premium Quality','Premium Quality','Intranet Quality','category','t','f');
-INSERT INTO im_categories VALUES (111,'High Quality','High Quality','Intranet Quality','category','t','f');
-INSERT INTO im_categories VALUES (112,'Average Quality','Average Quality','Intranet Quality','category','t','f');
-INSERT INTO im_categories VALUES (113,'Draft Quality','Draft Quality','Intranet Quality','category','t','f');
+SELECT im_category_new (110,'Premium Quality','Intranet Quality');
+SELECT im_category_new (111,'High Quality','Intranet Quality','category');
+SELECT im_category_new (112,'Average Quality','Intranet Quality');
+SELECT im_category_new (113,'Draft Quality','Intranet Quality');
 
 
-delete from im_categories where category_type = 'Intranet Translation Language';
 -- Setup the most frequently used language (lang, sort_key, name)
-INSERT INTO im_categories VALUES (250,'es','Spanish','Intranet Translation Language','category','t','f');
-INSERT INTO im_categories VALUES (251,'es_ES','Spanish (Spain)','Intranet Translation Language','category','t','f');
-INSERT INTO im_categories VALUES (252,'es_LA','Spanish (Latin America)','Intranet Translation Language','category','t','f');
-INSERT INTO im_categories VALUES (253,'es_US','Spanish (US)','Intranet Translation Language','category','t','f');
-INSERT INTO im_categories VALUES (254,'es_MX','Spanish (Mexico)','Intranet Translation Language','category','t','f');
-INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
-(255,'es_VE','Intranet Translation Language','Spanish (Venezuea)');
-INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
-(256,'es_PE','Intranet Translation Language','Spanish (Peru)');
-INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
-(257,'es_AR','Intranet Translation Language','Spanish (Argentina)');
-INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
-(258,'es_UY','Intranet Translation Language','Spanish (Uruguay)');
+SELECT im_category_new (21010,'none','Intranet Translation Language','No Language');
+SELECT im_category_new (21020,'af','Intranet Translation Language','Afrikaans');
+SELECT im_category_new (21030,'ar','Intranet Translation Language','Arabic');
+SELECT im_category_new (21040,'be','Intranet Translation Language','Byelorussian');
+SELECT im_category_new (21050,'bg','Intranet Translation Language','Bulgarian');
+SELECT im_category_new (21060,'bs','Intranet Translation Language','Bosnian');
+SELECT im_category_new (21070,'ca','Intranet Translation Language','Catalan');
+SELECT im_category_new (21080,'cs','Intranet Translation Language','Czech');
+SELECT im_category_new (21090,'da','Intranet Translation Language','Danish');
+SELECT im_category_new (21100,'de','Intranet Translation Language','German');
+SELECT im_category_new (21110,'de_CH','Intranet Translation Language','Swiss German');
+SELECT im_category_new (21120,'de_DE','Intranet Translation Language','German German');
+SELECT im_category_new (21130,'en','Intranet Translation Language','English');
+SELECT im_category_new (21140,'en_AU','Intranet Translation Language','English (Australia)');
+SELECT im_category_new (21150,'en_CA','Intranet Translation Language','English (Canada)');
+SELECT im_category_new (21160,'en_IE','Intranet Translation Language','English (Ireland)');
+SELECT im_category_new (21170,'en_UK','Intranet Translation Language','English (UK)');
+SELECT im_category_new (21180,'en_US','Intranet Translation Language','English (US)');
+SELECT im_category_new (21190,'es','Intranet Translation Language','Spanish');
+SELECT im_category_new (21200,'es_ES','Intranet Translation Language','Spanish (Spain)');
+SELECT im_category_new (21210,'es_LA','Intranet Translation Language','Spanish (Latin America)');
+SELECT im_category_new (21220,'et','Intranet Translation Language','Estonian');
+SELECT im_category_new (21230,'eu','Intranet Translation Language','Euskera');
+SELECT im_category_new (21240,'fa','Intranet Translation Language','Farsi');
+SELECT im_category_new (21250,'fi','Intranet Translation Language','Finnish');
+SELECT im_category_new (21260,'fr','Intranet Translation Language','French');
+SELECT im_category_new (21270,'fr_BE','Intranet Translation Language','French (Belgium)');
+SELECT im_category_new (21280,'fr_CH','Intranet Translation Language','French (Switzerland)');
+SELECT im_category_new (21290,'fr_FR','Intranet Translation Language','French (France)');
+SELECT im_category_new (21300,'gl','Intranet Translation Language','Galician');
+SELECT im_category_new (21310,'gr','Intranet Translation Language','Greek');
+SELECT im_category_new (21320,'hr','Intranet Translation Language','Croatian');
+SELECT im_category_new (21330,'hu','Intranet Translation Language','Hungarian');
+SELECT im_category_new (21340,'hy','Intranet Translation Language','Armenian');
+SELECT im_category_new (21350,'in','Intranet Translation Language','Indonesian');
+SELECT im_category_new (21360,'is','Intranet Translation Language','Islandic');
+SELECT im_category_new (21370,'it','Intranet Translation Language','Italian');
+SELECT im_category_new (21380,'he','Intranet Translation Language','Hebrew');
+SELECT im_category_new (21390,'jp','Intranet Translation Language','Japanese');
+SELECT im_category_new (21400,'ko','Intranet Translation Language','Korean');
+SELECT im_category_new (21410,'lt','Intranet Translation Language','Lithuanian');
+SELECT im_category_new (21420,'lv','Intranet Translation Language','Latvian');
+SELECT im_category_new (21430,'mk','Intranet Translation Language','Macedonian');
+SELECT im_category_new (21440,'mo','Intranet Translation Language','Moldavian');
+SELECT im_category_new (21450,'ms_MY','Intranet Translation Language','Malaysian');
+SELECT im_category_new (21460,'nl','Intranet Translation Language','Dutch (Standard)');
+SELECT im_category_new (21470,'nl_BE','Intranet Translation Language','Duch (Belgium)');
+SELECT im_category_new (21480,'no','Intranet Translation Language','Norwegian');
+SELECT im_category_new (21490,'pl','Intranet Translation Language','Polish');
+SELECT im_category_new (21500,'pl','Intranet Translation Language','Polish');
+SELECT im_category_new (21510,'pl','Intranet Translation Language','Polish');
+SELECT im_category_new (21520,'pt','Intranet Translation Language','Portuguese');
+SELECT im_category_new (21530,'pt_BR','Intranet Translation Language','Portuguese (Brazil)');
+SELECT im_category_new (21540,'pt_PT','Intranet Translation Language','Portuguese (Portugal)');
+SELECT im_category_new (21550,'ro','Intranet Translation Language','Romanian');
+SELECT im_category_new (21560,'ru','Intranet Translation Language','Russian');
+SELECT im_category_new (21570,'ru_RU','Intranet Translation Language','Russian (Russian Federation)');
+SELECT im_category_new (21580,'ru_UA','Intranet Translation Language','Russian (Ukrainia)');
+SELECT im_category_new (21590,'sh','Intranet Translation Language','Serbo-Croatian');
+SELECT im_category_new (21600,'sk','Intranet Translation Language','Slovak');
+SELECT im_category_new (21610,'sl','Intranet Translation Language','Slovenian');
+SELECT im_category_new (21620,'so','Intranet Translation Language','Somali');
+SELECT im_category_new (21630,'sq','Intranet Translation Language','Albanian');
+SELECT im_category_new (21640,'sr','Intranet Translation Language','Serbian');
+SELECT im_category_new (21650,'sv','Intranet Translation Language','Swedish');
+SELECT im_category_new (21660,'sw','Intranet Translation Language','Swahili');
+SELECT im_category_new (21670,'th','Intranet Translation Language','Thai');
+SELECT im_category_new (21680,'tl','Intranet Translation Language','Tagalog');
+SELECT im_category_new (21690,'tr','Intranet Translation Language','Turkish');
+SELECT im_category_new (21700,'ts','Intranet Translation Language','Tsonga');
+SELECT im_category_new (21710,'tw','Intranet Translation Language','Taiwanese (traditional Chinese)');
+SELECT im_category_new (21720,'ur','Intranet Translation Language','Urdu');
+SELECT im_category_new (21730,'vi','Intranet Translation Language','Vietnamese');
+SELECT im_category_new (21740,'zh','Intranet Translation Language','Chinese');
 
-INSERT INTO im_categories VALUES (261,'en','English','Intranet Translation Language','category','t','f');
-INSERT INTO im_categories VALUES (262,'en_US','English (US)','Intranet Translation Language','category','t','f');
-INSERT INTO im_categories VALUES (263,'en_UK','English (UK)','Intranet Translation Language','category','t','f');
-INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
-(264,'en_CA','Intranet Translation Language','English (Canada)');
-INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
-(265,'en_IE','Intranet Translation Language','English (Ireland)');
-INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
-(266,'en_AU','Intranet Translation Language','English (Australia)');
 
-
-INSERT INTO im_categories (category_id, category, category_type, category_description) VALUES
-(268,'it','Intranet Translation Language','Italian');
-INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
-(269,'it_IT','Intranet Translation Language','Italian Italy');
-
-INSERT INTO im_categories VALUES (271,'fr','French','Intranet Translation Language','category','t','f');
-INSERT INTO im_categories VALUES (272,'fr_FR','French (France)','Intranet Translation Language','category','t','f');
-INSERT INTO im_categories VALUES (273,'fr_BE','French (Belgium)','Intranet Translation Language','category','t','f');
-INSERT INTO im_categories VALUES (274,'fr_CH','French (Switzerland)','Intranet Translation Language','category','t','f');
-
-INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
-(276,'pt','Intranet Translation Language','Portuguese');
-INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
-(277,'pt_PT','Intranet Translation Language','Portuguese (Portugal)');
-INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
-(278,'pt_BR','Intranet Translation Language','Portuguese (Brazil)');
-
-INSERT INTO im_categories VALUES (281,'de','German','Intranet Translation Language','category','t','f');
-INSERT INTO im_categories VALUES (282,'de_DE','German German','Intranet Translation Language','category','t','f');
-INSERT INTO im_categories VALUES (283,'de_CH','Swiss German','Intranet Translation Language','category','t','f');
-
-INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
-(285,'ru','Intranet Translation Language','Russian');
-INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
-(286,'ru_RU','Intranet Translation Language','Russian (Russian Federation)');
-INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
-(287,'ru_UA','Intranet Translation Language','Russian (Ukrainia)');
-INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
-(288,'da','Intranet Translation Language','Danish');
-
-
-INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
-(290,'nl','Intranet Translation Language','Dutch');
-INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
-(291,'nl_NL','Intranet Translation Language','Duch (The Netherlands)');
-INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
-(292,'nl_BE','Intranet Translation Language','Duch (Belgium)');
-
-INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
-(294,'ca_ES','Intranet Translation Language','Catalan (Spain)');
-INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
-(295,'gr','Intranet Translation Language','Greek');
-INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
-(296,'gl','Intranet Translation Language','Galician');
-INSERT INTO im_categories (category_id, category, category_type,category_description) VALUES
-(297,'eu','Intranet Translation Language','Euskera');
-
-INSERT INTO im_categories VALUES (299,'none','No Language','Intranet Translation Language','category','t','f');
-
-
-delete from im_categories where category_type = 'Intranet UoM';
 
 -- Additional UoM categories for translation
-INSERT INTO im_categories VALUES (323,'Page','','Intranet UoM','category','t','f');
-INSERT INTO im_categories VALUES (324,'S-Word','','Intranet UoM','category','t','f');
-INSERT INTO im_categories VALUES (325,'T-Word','','Intranet UoM','category','t','f');
-INSERT INTO im_categories VALUES (326,'S-Line','','Intranet UoM','category','t','f');
-INSERT INTO im_categories VALUES (327,'T-Line','','Intranet UoM','category','t','f');
+SELECT im_category_new (323,'Page','Intranet UoM');
+SELECT im_category_new (324,'S-Word','Intranet UoM');
+SELECT im_category_new (325,'T-Word','Intranet UoM');
+SELECT im_category_new (326,'S-Line','Intranet UoM');
+SELECT im_category_new (327,'T-Line','Intranet UoM');
 
 
 -- Task Status
 delete from im_categories where category_type = 'Intranet Translation Task Status';
 
-INSERT INTO im_categories VALUES (340,'Created','','Intranet Translation Task Status','category','t','f');
-INSERT INTO im_categories VALUES (342,'for Trans','','Intranet Translation Task Status','category','t','f');
-INSERT INTO im_categories VALUES (344,'Trans-ing','','Intranet Translation Task Status','category','t','f');
-INSERT INTO im_categories VALUES (346,'for Edit','','Intranet Translation Task Status','category','t','f');
-INSERT INTO im_categories VALUES (348,'Editing','','Intranet Translation Task Status','category','t','f');
-INSERT INTO im_categories VALUES (350,'for Proof','','Intranet Translation Task Status','category','t','f');
-INSERT INTO im_categories VALUES (352,'Proofing','','Intranet Translation Task Status','category','t','f');
-INSERT INTO im_categories VALUES (354,'for QCing','','Intranet Translation Task Status','category','t','f');
-INSERT INTO im_categories VALUES (356,'QCing','','Intranet Translation Task Status','category','t','f');
-INSERT INTO im_categories VALUES (358,'for Deliv','','Intranet Translation Task Status','category','t','f');
-INSERT INTO im_categories VALUES (360,'Delivered','','Intranet Translation Task Status','category','t','f');
-INSERT INTO im_categories VALUES (365,'Invoiced','','Intranet Translation Task Status','category','t','f');
-INSERT INTO im_categories VALUES (370,'Payed','','Intranet Translation Task Status','category','t','f');
-INSERT INTO im_categories VALUES (372,'Deleted','','Intranet Translation Task Status','category','t','f');
+SELECT im_category_new (340,'Created','Intranet Translation Task Status');
+SELECT im_category_new (342,'for Trans','Intranet Translation Task Status');
+SELECT im_category_new (344,'Trans-ing','Intranet Translation Task Status');
+SELECT im_category_new (346,'for Edit','Intranet Translation Task Status');
+SELECT im_category_new (348,'Editing','Intranet Translation Task Status');
+SELECT im_category_new (350,'for Proof','Intranet Translation Task Status');
+SELECT im_category_new (352,'Proofing','Intranet Translation Task Status');
+SELECT im_category_new (354,'for QCing','Intranet Translation Task Status');
+SELECT im_category_new (356,'QCing','Intranet Translation Task Status');
+SELECT im_category_new (358,'for Deliv','Intranet Translation Task Status');
+SELECT im_category_new (360,'Delivered','Intranet Translation Task Status');
+SELECT im_category_new (365,'Invoiced','Intranet Translation Task Status');
+SELECT im_category_new (370,'Payed','Intranet Translation Task Status');
+SELECT im_category_new (372,'Deleted','Intranet Translation Task Status');
 -- reserved until 399
 
 
 -- Subject Areas
 delete from im_categories where category_type = 'Intranet Translation Subject Area';
 
-INSERT INTO im_categories VALUES (500,'Bio','','Intranet Translation Subject Area','category','t','f');
-INSERT INTO im_categories VALUES (505,'Biz','','Intranet Translation Subject Area','category','t','f');
-INSERT INTO im_categories VALUES (510,'Com','','Intranet Translation Subject Area','category','t','f');
-INSERT INTO im_categories VALUES (515,'Eco','','Intranet Translation Subject Area','category','t','f');
-INSERT INTO im_categories VALUES (520,'Gen','','Intranet Translation Subject Area','category','t','f');
-INSERT INTO im_categories VALUES (525,'Law','','Intranet Translation Subject Area','category','t','f');
-INSERT INTO im_categories VALUES (530,'Lit','','Intranet Translation Subject Area','category','t','f');
-INSERT INTO im_categories VALUES (535,'Loc','','Intranet Translation Subject Area','category','t','f');
-INSERT INTO im_categories VALUES (540,'Mkt','','Intranet Translation Subject Area','category','t','f');
-INSERT INTO im_categories VALUES (545,'Med','','Intranet Translation Subject Area','category','t','f');
-INSERT INTO im_categories VALUES (550,'Tec','','Intranet Translation Subject Area','category','t','f');
-INSERT INTO im_categories VALUES (555,'Tec-Auto','','Intranet Translation Subject Area','category','t','f');
-INSERT INTO im_categories VALUES (560,'Tec-Telecos','','Intranet Translation Subject Area','category','t','f');
-INSERT INTO im_categories VALUES (565,'Tec-Gen','','Intranet Translation Subject Area','category','t','f');
-INSERT INTO im_categories VALUES (570,'Tec-Mech. eng','','Intranet Translation Subject Area','category','t','f');
+SELECT im_category_new (500,'Bio','Intranet Translation Subject Area');
+SELECT im_category_new (505,'Biz','Intranet Translation Subject Area');
+SELECT im_category_new (510,'Com','Intranet Translation Subject Area');
+SELECT im_category_new (515,'Eco','Intranet Translation Subject Area');
+SELECT im_category_new (520,'Gen','Intranet Translation Subject Area');
+SELECT im_category_new (525,'Law','Intranet Translation Subject Area');
+SELECT im_category_new (530,'Lit','Intranet Translation Subject Area');
+SELECT im_category_new (535,'Loc','Intranet Translation Subject Area');
+SELECT im_category_new (540,'Mkt','Intranet Translation Subject Area');
+SELECT im_category_new (545,'Med','Intranet Translation Subject Area');
+SELECT im_category_new (550,'Tec','Intranet Translation Subject Area');
+SELECT im_category_new (555,'Tec-Auto','Intranet Translation Subject Area');
+SELECT im_category_new (560,'Tec-Telecos','Intranet Translation Subject Area');
+SELECT im_category_new (565,'Tec-Gen','Intranet Translation Subject Area');
+SELECT im_category_new (570,'Tec-Mech. eng','Intranet Translation Subject Area');
 -- reserved until 599
 
 
@@ -318,17 +307,7 @@ INSERT INTO im_categories VALUES (570,'Tec-Mech. eng','','Intranet Translation S
 -- Translation Memory (TM) Types for the translation workflow
 -- -------------------------------------------------------------------
 
--- 4200-4299    Intranet Trans TM Type
-
-
-
-INSERT INTO im_categories (category_id, category, category_type, category_description) VALUES
-(4200,'External', 'Intranet TM Integration Type','Trados is integrated by up/downloading files');
-INSERT INTO im_categories (category_id, category, category_type, category_description) VALUES
-(4202,'Ophelia', 'Intranet TM Integration Type','Ophelia in integrated via UserExists');
-INSERT INTO im_categories (category_id, category, category_type, category_description) VALUES
-(4204,'None', 'Intranet TM Integration Type','No integration - not a TM task');
-
-
-
-
+-- 4200-4299	Intranet Trans TM Type
+SELECT im_category_new (4200,'External', 'Intranet TM Integration Type','Trados is integrated by up/downloading files');
+SELECT im_category_new (4202,'Ophelia', 'Intranet TM Integration Type','Ophelia in integrated via UserExists');
+SELECT im_category_new (4204,'None', 'Intranet TM Integration Type','No integration - not a TM task');

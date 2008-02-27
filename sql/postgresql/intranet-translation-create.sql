@@ -22,6 +22,12 @@
 -- information about clients, because of the low barries
 -- to entry in the sector.
 
+-- -------------------------------------------------------------------
+-- Source common code
+-- -------------------------------------------------------------------
+
+\i ../common/intranet-translation-common.sql
+\i ../common/intranet-translation-backup.sql
 
 -----------------------------------------------------------
 -- Projects (Extensions)
@@ -80,6 +86,19 @@ select acs_object_type__create_type (
 	'im_trans_task__name'	-- name_method
 );
 
+insert into acs_object_type_tables (object_type,table_name,id_column)
+values ('im_trans_task', 'im_trans_tasks', 'task_id');
+
+-- Create entries for URL to allow editing TransTasks in
+-- list pages with mixed object types
+--
+insert into im_biz_object_urls (object_type, url_type, url) values (
+'im_trans_task','view','/intranet-translation/view?task_id=');
+insert into im_biz_object_urls (object_type, url_type, url) values (
+'im_trans_task','edit','/intranet-translation/new?task_id=');
+
+
+
 update acs_object_types set
         status_type_table = 'im_trans_tasks',
         status_column = 'task_status_id',
@@ -117,7 +136,7 @@ create table im_trans_tasks (
 	tm_type_id		integer
 				constraint im_trans_tasks_tm_type_fk
 				references im_categories,
-	description		varchar(4000),
+	description		text,
 	source_language_id	integer not null
 				constraint im_trans_tasks_source_fk
 				references im_categories,
@@ -141,6 +160,13 @@ create table im_trans_tasks (
 	quote_id		integer
 				constraint im_trans_tasks_quote_fk
 				references im_invoices,
+				-- New field to indicate translators when
+				-- this task should be finished.
+				-- Defaults to project end_date
+	end_date		timestamptz,
+	tm_integration_type_id	integer 
+				constraint im_trans_tm_integration_type_fk
+				references im_categories,
 				-- "Trados Matrix" determine duplicated words
 	match_x			numeric(12,0),
 	match_rep		numeric(12,0),
@@ -162,11 +188,7 @@ create table im_trans_tasks (
 				references users,
 	other_id		integer 
 				constraint im_trans_tasks_other_fk
-				references users,
-				-- New field to indicate translators when
-				-- this task should be finished.
-				-- Defaults to project end_date
-	end_date		timestamptz
+				references users
 );
 -- make sure a task doesn't get defined twice for a project:
 create unique index im_trans_tasks_unique_idx on im_trans_tasks 
@@ -261,17 +283,6 @@ BEGIN
 
 	return v_name;
 end;' language 'plpgsql';
-
-
-
-
--- Create entries for URL to allow editing TransTasks in
--- list pages with mixed object types
---
-insert into im_biz_object_urls (object_type, url_type, url) values (
-'im_trans_task','view','/intranet-translation/view?task_id=');
-insert into im_biz_object_urls (object_type, url_type, url) values (
-'im_trans_task','edit','/intranet-translation/new?task_id=');
 
 
 -- ------------------------------------------------------------
@@ -372,7 +383,8 @@ create table im_task_actions (
 				references im_categories,
 	new_status_id		integer
 				constraint im_task_action_new_fk
-				references im_categories
+				references im_categories,
+	upload_file		varchar(1000)
 );
 
 
@@ -855,15 +867,6 @@ insert into im_trans_task_progress values (93, 372, 100);
 insert into im_trans_task_progress values (94, 372, 100);
 insert into im_trans_task_progress values (95, 372, 100);
 insert into im_trans_task_progress values (96, 372, 100);
-
-
--- -------------------------------------------------------------------
--- Source common code
--- -------------------------------------------------------------------
-
-\i ../common/intranet-translation-common.sql
-\i ../common/intranet-translation-backup.sql
-
 
 
 -- -------------------------------------------------------------------
