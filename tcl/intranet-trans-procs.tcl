@@ -1606,6 +1606,7 @@ ad_proc im_task_component {
 	return ""
     }
 
+    set workflow_url [im_workflow_url]
     set current_user_id $user_id
     set date_format "YYYY-MM-DD"
 
@@ -1875,7 +1876,7 @@ ad_proc im_task_component {
 	    # executing the task. The user needs to delete and recreate
 	    # the task.
 	    set wf_pretty_name [im_workflow_pretty_name $workflow_key]
-	    set workflow_view_url "/workflow/case?case_id=$case_id"
+	    set workflow_view_url "/$workflow_url/case?case_id=$case_id"
 	    set type_select "
 		<input type=hidden name=\"task_type.$task_id\" value=\"$task_type_id\">
 		<a href=\"$workflow_view_url\">$wf_pretty_name</a>
@@ -2019,7 +2020,7 @@ ad_proc im_task_component {
 		    set message "Press 'Start' to start '$transition_name'"
 		    set download_help $message
 		    set download_gif [im_gif control_play_blue $download_help]
-		    set download_url [export_vars -base "/workflow/task" {{task_id $transition_task_id} return_url}]
+		    set download_url [export_vars -base "/$workflow_url/task" {{task_id $transition_task_id} return_url}]
 		    set download_link "<A HREF='$download_url'>$download_gif</A>\n"
 		    set upload_link ""
 		}
@@ -2027,7 +2028,7 @@ ad_proc im_task_component {
 		    set message "Press 'Stop' to finish '$transition_name'"
 		    set upload_help $message
 		    set upload_gif [im_gif control_stop_blue $upload_help]
-		    set upload_url [export_vars -base "/workflow/task" {{task_id $transition_task_id} return_url}]
+		    set upload_url [export_vars -base "/$workflow_url/task" {{task_id $transition_task_id} return_url}]
 		    set upload_link "<A HREF='$upload_url'>$upload_gif</A>\n"
 		    set download_link ""
 		}
