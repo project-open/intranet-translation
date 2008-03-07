@@ -29,6 +29,25 @@ alter table im_task_actions alter column action_date type timestamptz;
 
 
 
+-- Show the up-/download details for a project
+--
+select im_component_plugin__new (
+	null,				-- plugin_id
+	'acs_object',			-- object_type
+	now(),				-- creation_date
+	null,				-- creation_user
+	null,				-- creation_ip
+	null,				-- context_id
+	'Project Translation Task Action Log',	-- plugin_name
+	'intranet-translation',		-- package_name
+	'bottom',			-- location
+	'/intranet/projects/view',	-- page_url
+	null,				-- view_name
+	50,				-- sort_order
+	'im_trans_task_action_list_component -project_id $project_id'
+);
+
+
 -- insert into im_view_columns (
 -- 	column_id, view_id, group_id, column_name, 
 -- 	column_render_tcl, extra_select, extra_where, 

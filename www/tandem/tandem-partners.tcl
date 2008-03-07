@@ -12,7 +12,7 @@ if {![info exists project_id]} {
 
 	@author frank.bergmann@project-open.com
     } {
-	{ project_id 50633 }
+	{ project_id 0 }
 	{ return_url "" }
     }
 }

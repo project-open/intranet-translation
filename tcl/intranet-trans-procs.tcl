@@ -1032,7 +1032,6 @@ ad_proc im_trans_upload_action {
 # after a successful download of the related file
 ad_proc im_trans_download_action {task_id task_status_id task_type_id user_id} {
 } {
-    set now [db_string now "select sysdate from dual"]
     set new_status_id $task_status_id
     switch $task_status_id {
 	340 { 
@@ -1092,7 +1091,7 @@ ad_proc im_trans_download_action {task_id task_status_id task_type_id user_id} {
 		$download_action_id,
 		:user_id,
 		:task_id,
-		:now,
+		now(),
 		:task_status_id,
 		:new_status_id
     )"
@@ -2953,6 +2952,41 @@ ad_proc im_trans_tandem_partner_component {
 	set result [ad_parse_template -params $params "/packages/intranet-translation/www/tandem/tandem-partners"]
     } err_msg]} {
         set result "Error in Tandem Partner Component:<p><pre>$err_msg</pre>"
+    }
+
+    return $result
+}
+
+
+
+
+
+# ------------------------------------------------------
+# Tandem component to allow selecting tandem partners
+# ------------------------------------------------------
+
+ad_proc im_trans_task_action_list_component {
+    -project_id:required
+} {
+    Returns a formatted HTML table showing the task up-/download  activities
+} {
+    if {![im_project_has_type $project_id "Translation Project"]} { return "" }
+    set return_url [im_url_with_query]
+
+    # Security...
+    im_project_permissions [ad_get_user_id] $project_id view read write admin
+    if {!$read} { return "" }
+
+    set params [list \
+                    [list project_id $project_id] \
+                    [list return_url $return_url] \
+    ]
+
+    set result ""
+    if {[catch {
+	set result [ad_parse_template -params $params "/packages/intranet-translation/www/trans-tasks/task-action-list"]
+    } err_msg]} {
+        set result "Error in Task Action List Component:<p><pre>$err_msg</pre>"
     }
 
     return $result
