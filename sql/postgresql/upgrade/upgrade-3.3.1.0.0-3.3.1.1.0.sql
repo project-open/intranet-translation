@@ -23,6 +23,11 @@ insert into im_view_columns (
 alter table im_task_actions add column upload_file varchar(1000);
 
 
+-- Make column a timestamp in order to record the delivery time
+-- of freelancers
+alter table im_task_actions alter column action_date type timestamptz;
+
+
 
 -- insert into im_view_columns (
 -- 	column_id, view_id, group_id, column_name, 
