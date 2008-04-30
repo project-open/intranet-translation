@@ -1,8 +1,12 @@
+-- upgrade-3.0.0.7.0-3.0.0.8.0.sql
+
+SELECT acs_log__debug('/packages/intranet-translation/sql/postgresql/upgrade/upgrade-3.0.0.7.0-3.0.0.8.0.sql','');
+
+
 
 -- -------------------------------------------------------------------
 -- Table for calculating Trans Project progress
 -- -------------------------------------------------------------------
-
 
 create table im_trans_task_progress (
 	task_type_id		integer not null

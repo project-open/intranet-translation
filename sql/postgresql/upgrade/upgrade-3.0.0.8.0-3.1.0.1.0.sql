@@ -1,3 +1,7 @@
+-- upgrade-3.0.0.8.0-3.1.0.1.0.sql
+
+SELECT acs_log__debug('/packages/intranet-translation/sql/postgresql/upgrade/upgrade-3.0.0.8.0-3.1.0.1.0.sql','');
+
 
 -- -------------------------------------------------------------------
 -- Make the size column only visible for users with privilege

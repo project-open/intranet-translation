@@ -1,5 +1,9 @@
 -- upgrade-3.2.0.0.0-3.2.1.0.0.sql
 
+SELECT acs_log__debug('/packages/intranet-translation/sql/postgresql/upgrade/upgrade-3.2.0.0.0-3.2.1.0.0.sql','');
+
+\i ../../../../intranet-core/sql/postgresql/upgrade/upgrade-3.0.0.0.first.sql
+
 
 -----------------------------------------------------------
 -- Copy 'Intranet Project Type' Category into the range
@@ -20,32 +24,9 @@
 -- 4100-4199    Intranet Trans TM Type
 
 
-create or replace function inline_0 ()
-returns integer as '
-declare
-        v_count                 integer;
-begin
-        select  count(*)
-        into    v_count
-        from    im_categories
-        where   category_id = 4200;
-
-        if v_count = 1 then
-            return 0;
-        end if;
-
-	INSERT INTO im_categories (category_id, category, category_type, category_description) VALUES
-	(4200,''External'', ''Intranet TM Integration Type'',''Trados is integrated by up/downloading files'');
-	INSERT INTO im_categories (category_id, category, category_type, category_description) VALUES
-	(4202,''Ophelia'', ''Intranet TM Integration Type'',''Ophelia in integrated via UserExists'');
-	INSERT INTO im_categories (category_id, category, category_type, category_description) VALUES
-	(4204,''None'', ''Intranet TM Integration Type'',''No integration - not a TM task'');
-
-        return 0;
-end;' language 'plpgsql';
-select inline_0 ();
-drop function inline_0 ();
-
+SELECT im_category_new (4200,'External', 'Intranet TM Integration Type');
+SELECT im_category_new (4202,'Ophelia', 'Intranet TM Integration Type');
+SELECT im_category_new (4204,'None', 'Intranet TM Integration Type');
 
 
 -- No default - default should be handled by TCL
@@ -55,22 +36,17 @@ drop function inline_0 ();
 create or replace function inline_0 ()
 returns integer as '
 declare
-        v_count                 integer;
+	v_count		integer;
 begin
-        select  count(*)
-        into    v_count
-        from    user_tab_columns
-        where   lower(table_name) = ''im_trans_tasks''
-                and lower(column_name) = ''tm_integration_type_id'';
-
-        if v_count = 1 then
-            return 0;
-        end if;
+	select  count(*) into v_count from user_tab_columns
+	where   lower(table_name) = ''im_trans_tasks''
+		and lower(column_name) = ''tm_integration_type_id'';
+	if v_count = 1 then return 0; end if;
 
 	alter table im_trans_tasks
 	add tm_integration_type_id integer references im_categories;
 
-        return 0;
+	return 0;
 end;' language 'plpgsql';
 select inline_0 ();
 drop function inline_0 ();
