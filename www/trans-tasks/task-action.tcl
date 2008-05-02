@@ -121,11 +121,16 @@ switch -glob $submit {
 	    # The values for status and type are irrelevant
 	    # for the dynamic WF, but they are there for
 	    # compatibility reasons.
+
+	    # Error from SAP 080503: Deal with empty billable units
+	    set billable_value $billable_units($task_id)
+	    if {"" == $billable_value} { set billable_value 0 }
+
 	    set sql "
                     update im_trans_tasks set
                 	task_status_id= '$task_status($task_id)',
                 	task_type_id= '$task_type($task_id)',
-			billable_units = '$billable_units($task_id)'
+			billable_units = :billable_value
                     where project_id=:project_id
                     and task_id=:task_id"
 	    db_dml update_task_status $sql
