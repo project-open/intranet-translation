@@ -24,7 +24,7 @@ set context_bar [im_context_bar [list "/intranet/projects/" "[_ intranet-transla
 set bgcolor(0) " class=roweven"
 set bgcolor(1) " class=rowodd"
 
-set filename [db_string get_filename "select task_name from im_trans_tasks where task_id=:task_id"]
+set filename [db_string get_filename "select task_name from im_trans_tasks where task_id=:task_id" -default ""]
 
 
 
