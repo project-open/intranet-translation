@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="intranet-translation" package_version="3.2.7.0.0" locale="es_ES" charset="ISO-8859-1">
+<message_catalog package_key="intranet-translation" package_version="3.2.5.0.0" locale="es_ES" charset="ISO-8859-1">
 
   <msg key="--_Please_Select_--">-- Por favor seleccione --</msg>
   <msg key="0_">0%</msg>
@@ -132,8 +132,18 @@
   <msg key="No_Match">No hay coincidencias</msg>
   <msg key="No_tasks_found">No se han hallado tareas</msg>
   <msg key="No_translator_comments_in_this_project">En este proyecto no hay comentarios del traductor</msg>
-  <msg key="Notify_PM_About_Task_Upload_Message">Se ha subido un nuevo archivo: Carpeta: %upload_folder% Nombre de tarea: %task_name% Proyecto: %project_name%</msg>
-  <msg key="Notify_PM_About_Task_Upload_Subject">Subida tarea %upload_folder% en %task_name% para %project_name%</msg>
+  <msg key="Notify_PM_About_Task_Upload_Message">%project_url%
+
+Nueva subida:
+Proyecto: %project_nr% - %project_name%
+Tarea: %task_name%
+Carpeta: %upload_folder%
+Comentario:
+
+%comment_body%
+
+</msg>
+  <msg key="Notify_PM_About_Task_Upload_Subject">Nueva subida en %project_nr% - %project_name%</msg>
   <msg key="Num_Words">núm. de palabras</msg>
   <msg key="One_Project">Un proyecto</msg>
   <msg key="One_project">Un proyecto</msg>
