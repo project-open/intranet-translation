@@ -339,7 +339,32 @@ end;' language 'plpgsql';
 
 
 
+-- ------------------------------------------------------------
+-- Return a list of target languages for a project
+-- ------------------------------------------------------------
 
+create or replace function im_trans_project_target_languages (integer) 
+returns varchar as '
+DECLARE
+	p_project_id		alias for $1;
+
+        row			RECORD;
+	v_result		varchar;
+BEGIN
+    v_result := '''';
+
+    FOR row IN
+	select	tl.*,
+		im_category_from_id(tl.language_id) as language
+	from	im_target_languages tl
+	where	tl.project_id = p_project_id
+    LOOP
+	IF '''' != v_result THEN v_result := v_result || '', ''; END IF;
+	v_result := v_result || row.language;
+    END LOOP;
+
+    return v_result;
+end;' language 'plpgsql';
 
 
 -- ------------------------------------------------------------
