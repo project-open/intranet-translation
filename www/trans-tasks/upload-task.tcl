@@ -18,6 +18,7 @@ ad_page_contract {
 
 set user_id [ad_maybe_redirect_for_registration]
 set page_title "[_ intranet-translation.Upload_New_FileURL]"
+set current_url [im_url_with_query]
 
 set context_bar [im_context_bar [list "/intranet/projects/" "[_ intranet-translation.Projects]"]  [list "/intranet/projects/view?group_id=$project_id" "[_ intranet-translation.One_Project]"]  "[_ intranet-translation.Upload_File]"]
 
@@ -68,17 +69,35 @@ if {$survey_exists_p && $previous_user_id != 0} {
     set previous_wf_stage_user_id [im_task_previous_workflow_stage_user $task_id]
     set survey_base_name [ad_parameter -package_id [im_package_translation_id] TranslationWorkflowSurveyBaseName "" "Translation Workflow Rating: "]
     set survey_name "$survey_base_name $previous_role"
-
+    
     set survey_ids [db_list trans_survey "
 	select	survey_id
 	from	survsimp_surveys
 	where	name = :survey_name
     "]
 	
-   if {[llength $survey_ids] == 1} {
+    if {[llength $survey_ids] == 1} {
 	# Get the one and only survey found
 	set survey_id [lindex $survey_ids 0]
-   }
+    }
+
+    # Check if there is already a survey for this project + Translator
+    set exists_p [db_string survey_exists "
+	select	count(*)
+	from	survsimp_responses
+	where	
+		survey_id = :survey_id and
+		related_object_id = :previous_wf_stage_user_id and
+		related_context_id = :task_id
+    "]
+
+    # Only redirect if the survey doesn't exist yet.
+    # Otherwise we'll get an infinite redirection loop
+    if {!$exists_p} {
+	set survey_url [export_vars -base "/simple-survey/one" {{return_url $current_url} survey_id project_id provider_id {related_object_id $previous_wf_stage_user_id} {related_context_id $task_id}}]
+	ad_returnredirect $survey_url
+    }
+
 }
 
 # ---------------------------------------------------------------
@@ -141,9 +160,9 @@ if {$notify_next_wf_stage_p} {
 
 set ctr 0
 
-if {$survey_id} {
-   
-    set survey_url [export_vars -base "/simple-survey/one" {return_url survey_id provider_id {related_object_id $previous_wf_stage_user_id}}]
+# Commented out. Now the survey is accessed via redirection
+if {0 && $survey_id} {
+
     append page_content "
                       <tr $bgcolor([expr $ctr%2])> 
                         <td align=right>[lang::message::lookup "" intranet-translation.Rate_your_$previous_wf_role_mangled "Rate the<br>$previous_wf_role"]</td>
@@ -174,5 +193,12 @@ append page_content "
 </form>
 "
 
-db_release_unused_handles
-ad_return_template
+
+set project_menu ""
+if {0 != $project_id} {
+    set menu_label "project_summary"
+    set bind_vars [ns_set create]
+    ns_set put $bind_vars project_id $project_id
+    set parent_menu_id [db_string parent_menu "select menu_id from im_menus where label='project'" -default 0]
+    set project_menu [im_sub_navbar $parent_menu_id $bind_vars "" "pagedesriptionbar" $menu_label]
+}
