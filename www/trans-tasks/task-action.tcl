@@ -52,6 +52,8 @@ if {0 == [llength $target_language_ids]} {
     set target_language_ids [list ""]
 }
 
+# Check if translation module has been installed
+set trans_quality_exists_p [db_table_exists "im_trans_quality_reports"]
 
 # Is the dynamic WorkFlow module installed?
 set wf_installed_p [im_workflow_installed_p]
@@ -212,6 +214,11 @@ switch -glob $submit {
 	    ns_log Notice "delete task: $task_id"
 
 	    if { [catch {
+
+		if {$trans_quality_exists_p} {
+		    db_dml del_q_report_entries "delete from im_trans_quality_entries where report_id in (select report_id from im_trans_quality_reports where task_id = :task_id)"
+		    db_dml del_q_reports "delete from im_trans_quality_reports where task_id = :task_id"
+		}
 
 		im_exec_dml new_task "im_trans_task__delete(:task_id)"
 
