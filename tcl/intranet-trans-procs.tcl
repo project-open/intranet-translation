@@ -1873,7 +1873,8 @@ ad_proc im_task_component {
     }
 
     set current_user_id $user_id
-    set date_format "YYYY-MM-DD"
+    set date_format [parameter::get_from_package_key -package_key intranet-translation -parameter "TaskListEndDateFormat" -default "YYYY-MM-DD"]
+    set date_format_len [string length $date_format]
 
     # Get the permissions for the current _project_
     im_project_permissions $user_id $project_id project_view project_read project_write project_admin
@@ -2104,7 +2105,8 @@ ad_proc im_task_component {
 
 	# End Date Input Field
 	if {"" == $end_date_formatted} { set end_date_formatted $project_end_date }
-	set end_date_input "<input type=text size=10 maxlength=10 name=end_date.$task_id value=$end_date_formatted>"
+
+	set end_date_input "<input type=text size=$date_format_len maxlength=$date_format_len name=end_date.$task_id value=\"$end_date_formatted\">"
 
 	# ------------------------------------------
 	# Status Select Box
