@@ -25,10 +25,7 @@ if {![info exists return_url]} { ad_return_complaint 1 "Trans Task Action Log: N
 
 set user_id [ad_maybe_redirect_for_registration]
 im_project_permissions $user_id $project_id view read write admin
-if {!$write} {
-    ad_return_complaint 1 "<li>[_ intranet-core.lt_You_have_insufficient_6]"
-    ad_script_abort
-}
+if {!$write} { return "" }
 
 set bgcolor(0) " class=roweven"
 set bgcolor(1) " class=rowodd"
