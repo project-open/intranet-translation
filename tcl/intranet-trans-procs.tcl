@@ -1519,7 +1519,7 @@ ad_proc im_task_status_component { user_id project_id return_url } {
 } {
     ns_log Notice "im_trans_status_component($user_id, $project_id)"
     set current_user_id [ad_get_user_id]
-    set current_user_is_employee_p [expr [im_user_is_employee_p $current_user_id] | [im_is_user_site_wide_or_intranet_admin $user_id]]
+    set current_user_is_employee_p [expr [im_user_is_employee_p $current_user_id] | [im_is_user_site_wide_or_intranet_admin $current_user_id]]
 
     # Is this a translation project?
     if {![im_project_has_type $project_id "Translation Project"]} {
@@ -1527,8 +1527,8 @@ ad_proc im_task_status_component { user_id project_id return_url } {
 	return ""
     }
 
-    im_project_permissions $user_id $project_id view read write admin
-    if {![im_permission $user_id view_trans_task_status]} {
+    im_project_permissions $current_user_id $project_id view read write admin
+    if {![im_permission $current_user_id view_trans_task_status]} {
 	return ""
     }
 
@@ -1821,8 +1821,14 @@ where
     append task_status_html "
 	<tr>
 	  <td colspan=12 align=left>
-	    <input type=submit value='[_ intranet-translation.View_Tasks]' name=submit_view>
-	    <input type=submit value='[_ intranet-translation.Assign_Tasks]' name=submit_assign>
+    "
+
+    if {[im_permission $current_user_id "view_trans_tasks"]} {
+	append task_status_html "<input type=submit value='[_ intranet-translation.View_Tasks]' name=submit_view>\n"
+	append task_status_html "<input type=submit value='[_ intranet-translation.Assign_Tasks]' name=submit_assign>\n"
+    }
+
+    append task_status_html "
 	  </td>
 	</tr>
     "
