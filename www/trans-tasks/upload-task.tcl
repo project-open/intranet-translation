@@ -67,7 +67,7 @@ if {$survey_exists_p && $previous_user_id != 0} {
     # Check if there is a survey associated with the specific stage
     set previous_role [im_task_previous_workflow_role $task_id]
     set previous_wf_stage_user_id [im_task_previous_workflow_stage_user $task_id]
-    set survey_base_name [ad_parameter -package_id [im_package_translation_id] TranslationWorkflowSurveyBaseName "" "Translation Workflow Rating: "]
+    set survey_base_name [ad_parameter -package_id [im_package_translation_id] TranslationWorkflowSurveyBaseName "" "Translation Workflow Rating:"]
     set survey_name "$survey_base_name $previous_role"
     
     set survey_ids [db_list trans_survey "
