@@ -10,7 +10,7 @@ ad_page_contract {
     every line of it into an im_task for the Translation
     Workflow.
     The main work is done by "trados-import.tcl", so we
-    basicly only have to provide the trados file.
+    basically only have to provide the trados file.
 
     @param project_id The parent project
     @param return_url Where to go after the work is done?
