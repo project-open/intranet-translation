@@ -93,7 +93,9 @@ proc intranet_task_download {} {
 
     # +0:/ +1:intranet-translation, +2:download-task, +3:<task_id>, +4:...
     set task_id [lindex $path_list 3]
-    ns_log Notice "intranet_task_download: task_id=$task_id"
+    set task_path [lindex $path_list 4]
+    set task_file_body [lindex $path_list 5]
+    ns_log Notice "intranet_task_download: task_id=$task_id, task_path=$task_path, task_body=$task_file_body"
 
     # Make sure $task_id is a number and emit an error otherwise!!!
 
@@ -149,10 +151,43 @@ where
 	doc_return 403 text/html "[_ intranet-translation.lt_You_are_not_allowed_t_1]"
     }
 
-    # Use the task_name as file name (dirty, dangerous?)
-    set file_name $task_name
+    set alternative_files [list]
+    # Check for the files uploaded by the translator previously.
+    catch {
+        set alternative_files [db_list alt_files "
+                        select distinct
+                                upload_file
+                        from    im_task_actions
+                        where   task_id = :task_id
+                                and upload_file is not NULL
+        "]
+    }
+    set allowed_files $alternative_files
+    lappend allowed_files $task_name
 
+    # Default: Take the filename from the URL.
+    set file_name $task_file_body
     set file "$project_path/$download_folder/$file_name"
+
+    if {![file readable $file]} {
+        # Check the alternative files if one exists
+        foreach alt_file_body $alternative_files {
+            set alt_file "$project_path/$download_folder/$alt_file_body"
+            if {[file readable $alt_file]} {
+                set file_name $alt_file_body
+                set file "$project_path/$download_folder/$file_name"
+            }
+        }
+    }
+
+    if {$task_file_body != $file_name} {
+        # Alternative file: We have to redirect to the new URL
+        # +0:/ +1:intranet-translation, +2:download-task, +3:<task_id>, +4:<folder>, +5:<file>
+        set folder [lindex $path_list 4]
+        ad_returnredirect "/intranet-translation/download-task/$task_id/$folder/$alt_file_body"
+        ad_script_abort
+    }
+
     set guessed_file_type [ns_guesstype $file]
 
     ns_log notice "intranet_task_download: file_name=$file_name"
@@ -160,6 +195,12 @@ where
     ns_log notice "intranet_task_download: file_type=$guessed_file_type"
 
     if [file readable $file] {
+
+	# Check if inside allowed files
+        if {[lsearch $allowed_files $file_name] == -1} {
+            # Attempted tampering with filename?
+            ad_return_complaint 1 "Bad filename"
+        }
 
 	# Update the task to advance to the next status
 	im_trans_download_action $task_id $task_status_id $task_type_id $user_id
@@ -456,6 +497,13 @@ ad_proc -public im_trans_trados_matrix { object_id } {
 	}
     }
 
+    # Make sure there are no empty values that might give errors when multplying
+    foreach key [array names matrix] {
+        set val $matrix($key)
+        if {"" == $val} { set matrix($key) 0 }
+
+    }
+
     return [array get matrix]
 
 }
@@ -704,6 +752,7 @@ ad_proc im_trans_language_select {
                 from
                         im_categories
                 where
+			(enabled_p = 't' OR enabled_p is NULL) and
                         category_type = :category_type
 			$country_locale_sql
                 ) c
@@ -873,10 +922,12 @@ $html
 # Update the task to advance to the next status
 # after a successful upload of the related file
 ad_proc im_trans_upload_action {
+    {-upload_file "" }
     task_id 
     task_status_id 
     task_type_id 
-    user_id} {
+    user_id
+} {
 } {
     set new_status_id $task_status_id
 
@@ -960,6 +1011,20 @@ ad_proc im_trans_upload_action {
 		:task_status_id,
 		:new_status_id
     )"
+
+    # Register the new filename as a valid one
+    if {"" != $upload_file} {
+        if {[catch {
+            db_dml update_task_action_file "
+                update im_task_actions set
+                        upload_file = :upload_file
+                where action_id = :action_id
+            "
+        } err_msg]} {
+            ns_log Error "im_trans_upload_action: Error updating im_task_actions: $err_msg"
+        }
+    }
+
 }
 
 
@@ -967,7 +1032,6 @@ ad_proc im_trans_upload_action {
 # after a successful download of the related file
 ad_proc im_trans_download_action {task_id task_status_id task_type_id user_id} {
 } {
-    set now [db_string now "select sysdate from dual"]
     set new_status_id $task_status_id
     switch $task_status_id {
 	340 { 
@@ -1027,11 +1091,220 @@ ad_proc im_trans_download_action {task_id task_status_id task_type_id user_id} {
 		$download_action_id,
 		:user_id,
 		:task_id,
-		:now,
+		now(),
 		:task_status_id,
 		:new_status_id
     )"
 }
+
+
+
+
+ad_proc im_task_workflow_translate_role {
+    role
+} {
+    Returns a translation for the role.
+} {
+    set trans_l10n [lang::message::lookup "" intranet-translation.wf_role_trans "Translator"]
+    set edit_l10n [lang::message::lookup "" intranet-translation.wf_role_edit "Editor"]
+    set proof_l10n [lang::message::lookup "" intranet-translation.wf_role_proof "Proof Reader"]
+    set other_l10n [lang::message::lookup "" intranet-translation.wf_role_other "Other"]
+
+    switch $role {
+            trans { return $trans_l10n }
+            edit { return $edit_l10n }
+            proof { return $proof_l10n }
+            other { return $other_l10n }
+    }
+    return ""
+}
+
+ad_proc im_task_next_workflow_role {
+    {-translate_p 1}
+    task_id
+} {
+    Returns the next workflow role ("Translator" "Editor" "Proof Reader"),
+    depending on the current task statusl.
+
+    Example: the task is in status "translating", then this procedure
+    returns "Editor". Or during editing, it returns "Proof Reader".
+
+    At the end of the WF chain an empty string  "" is returned to indicate
+    that there is no next workflow state.
+#         340 | Created
+#         342 | for Trans
+#         344 | Trans-ing
+#         346 | for Edit
+#         348 | Editing
+#         350 | for Proof
+#         352 | Proofing
+#         354 | for QCing
+#         356 | QCing
+#         358 | for Deliv
+#         360 | Delivered
+#         365 | Invoiced
+#         370 | Payed
+#         372 | Deleted
+
+
+} {
+    # get everything about the task
+    set task_status_id [db_string task_status "
+        select  t.task_status_id
+        from    im_trans_tasks t
+        where   t.task_id=:task_id
+    " -default 0]
+
+    set role ""
+    switch $task_status_id {
+        340 { set role edit }
+        342 { set role edit }
+        344 { set role edit }
+        346 { set role edit }
+        348 { set role proof }
+        350 { set role "" }
+        352 { set role "" }
+        354 { set role "" }
+        356 { set role "" }
+    }
+
+    if {$translate_p} {
+        set role [im_task_workflow_translate_role $role]
+    }
+
+    return $role
+}
+
+
+ad_proc im_task_previous_workflow_role {
+    {-translate_p 1}
+    task_id
+} {
+    Returns the previous workflow role ("Translator" "Editor" "Proof Reader"),
+    depending on the current task statusl.
+
+    Example: the task is in status "editing", then this procedure
+    returns "Translator". Or during proof reading, it returns "Editor".
+
+    During translation, an empty string  "" is returned to indicate that
+    there was no previous workflow state.
+
+#         340 | Created
+#         342 | for Trans
+#         344 | Trans-ing
+#         346 | for Edit
+#         348 | Editing
+#         350 | for Proof
+#         352 | Proofing
+#         354 | for QCing
+#         356 | QCing
+#         358 | for Deliv
+#         360 | Delivered
+#         365 | Invoiced
+#         370 | Payed
+#         372 | Deleted
+
+} {
+    # get everything about the task
+    set task_status_id [db_string task_status "
+        select  t.task_status_id
+        from    im_trans_tasks t
+        where   t.task_id=:task_id
+    " -default 0]
+
+    set role ""
+    switch $task_status_id {
+        340 { set role "" }
+        342 { set role "" }
+        344 { set role "" }
+        346 { set role trans }
+        348 { set role trans }
+        350 { set role edit }
+        352 { set role edit }
+        354 { set role edit }
+        356 { set role edit }
+    }
+
+    if {$translate_p} {
+        set role [im_task_workflow_translate_role $role]
+    }
+
+    return $role
+}
+
+
+
+ad_proc im_task_previous_workflow_stage_user {
+    task_id
+} {
+    Returns the user who owned the previous workflow state.
+    Example: the task is in status "editing", then this procedure
+    returns the user_id of the translator. Or during proof reading,
+    it returns the user_id of the editor.
+    During translation, a "0" is returned to indicate that there
+    was no previous workflow state.
+} {
+    set trans_id 0
+    set edit_id 0
+    set proof_id 0
+
+    # get everything about the task
+    set task_sql "
+        select  t.*
+        from    im_trans_tasks t
+        where   t.task_id=:task_id
+    "
+    db_0or1row task_info $task_sql
+
+    set prev_role [im_task_previous_workflow_role -translate_p 0 $task_id]
+    set user_id 0
+    switch $prev_role {
+        "trans" { set user_id $trans_id }
+        "edit" { set user_id $edit_id }
+        "proof" { set user_id $proof_id }
+    }
+
+    if {"" == $user_id} { set user_id 0 }
+    return $user_id
+}
+
+
+
+
+ad_proc im_task_next_workflow_stage_user {
+    task_id
+} {
+    Returns the user who owns the next workflow state.
+    Example: the task is in status "translating", then this procedure
+    returns the user_id of the editor.
+    During the last WF stage a "0" is returned to indicate that there
+    was no next workflow state.
+} {
+    set trans_id 0
+    set edit_id 0
+    set proof_id 0
+
+    # get everything about the task
+    set task_sql "
+        select  t.*
+        from    im_trans_tasks t
+        where   t.task_id=:task_id
+    "
+    db_0or1row task_info $task_sql
+
+    set next_role [im_task_next_workflow_role -translate_p 0 $task_id]
+    set user_id 0
+    switch $next_role {
+        "trans" { set user_id $trans_id }
+        "edit" { set user_id $edit_id }
+        "proof" { set user_id $proof_id }
+    }
+
+    if {"" == $user_id} { set user_id 0 }
+    return $user_id
+}
+
+
 
 
 ad_proc im_task_component_upload {
@@ -1253,7 +1526,7 @@ ad_proc im_task_status_component { user_id project_id return_url } {
 } {
     ns_log Notice "im_trans_status_component($user_id, $project_id)"
     set current_user_id [ad_get_user_id]
-    set current_user_is_employee_p [expr [im_user_is_employee_p $current_user_id] | [im_is_user_site_wide_or_intranet_admin $user_id]]
+    set current_user_is_employee_p [expr [im_user_is_employee_p $current_user_id] | [im_is_user_site_wide_or_intranet_admin $current_user_id]]
 
     # Is this a translation project?
     if {![im_project_has_type $project_id "Translation Project"]} {
@@ -1261,8 +1534,8 @@ ad_proc im_task_status_component { user_id project_id return_url } {
 	return ""
     }
 
-    im_project_permissions $user_id $project_id view read write admin
-    if {![im_permission $user_id view_trans_task_status]} {
+    im_project_permissions $current_user_id $project_id view read write admin
+    if {![im_permission $current_user_id view_trans_task_status]} {
 	return ""
     }
 
@@ -1555,8 +1828,14 @@ where
     append task_status_html "
 	<tr>
 	  <td colspan=12 align=left>
-	    <input type=submit value='[_ intranet-translation.View_Tasks]' name=submit_view>
-	    <input type=submit value='[_ intranet-translation.Assign_Tasks]' name=submit_assign>
+    "
+
+    if {[im_permission $current_user_id "view_trans_tasks"]} {
+        append task_status_html "<input type=submit value='[_ intranet-translation.View_Tasks]' name=submit_view>\n"
+        append task_status_html "<input type=submit value='[_ intranet-translation.Assign_Tasks]' name=submit_assign>\n"
+    }
+
+    append task_status_html "
 	  </td>
 	</tr>
     "
@@ -1608,7 +1887,8 @@ ad_proc im_task_component {
 
     set workflow_url [im_workflow_url]
     set current_user_id $user_id
-    set date_format "YYYY-MM-DD"
+    set date_format [parameter::get_from_package_key -package_key intranet-translation -parameter "TaskListEndDateFormat" -default "YYYY-MM-DD"]
+    set date_format_len [string length $date_format]
 
     # Get the permissions for the current _project_
     im_project_permissions $user_id $project_id project_view project_read project_write project_admin
@@ -1839,7 +2119,8 @@ ad_proc im_task_component {
 
 	# End Date Input Field
 	if {"" == $end_date_formatted} { set end_date_formatted $project_end_date }
-	set end_date_input "<input type=text size=10 maxlength=10 name=end_date.$task_id value=$end_date_formatted>"
+	set end_date_input "<input type=text size=$date_format_len maxlength=$date_format_len name=end_date.$task_id value=\"$end_date_formatted\">"
+
 
 	# ------------------------------------------
 	# Status Select Box
@@ -1884,7 +2165,7 @@ ad_proc im_task_component {
 	}
 
 	# Delete Checkbox
-	set del_checkbox "<input type=checkbox name=delete_task value=$task_id id=task,$task_id>"
+	set del_checkbox "<input type=checkbox name=delete_task value=$task_id id=\"task,$task_id\">"
 
 	# ------------------------------------------
 	# The Static Workflow -
@@ -2281,6 +2562,7 @@ ad_proc im_new_task_component {
     Return a piece of HTML to allow to add new tasks
 } {
     if {![im_permission $user_id view_trans_proj_detail]} { return "" }
+    set default_uom [parameter::get_from_package_key -package_key intranet-trans-invoices -parameter "DefaultPriceListUomID" -default 324]
 
     # More then one option for a TM?
     # Then we'll have to show a few more fields later.
@@ -2491,7 +2773,7 @@ ad_proc im_new_task_component {
 
     <td>[im_select -translate_p 0 "task_name_file" $task_list]</td>
     <td><input type=text size=2 value=0 name=task_units_file></td>
-    <td>[im_category_select "Intranet UoM" "task_uom_file" 324]</td>
+    <td>[im_category_select "Intranet UoM" "task_uom_file" $default_uom]</td>
     <td>[im_category_select "Intranet Project Type" task_type_file $project_type_id]</td>
     $integration_type_html
     <td><input type=submit value=\"[_ intranet-translation.Add_File]\" name=submit_add_file></td>
@@ -2509,7 +2791,7 @@ ad_proc im_new_task_component {
 
     <td><input type=text size=20 value=\"\" name=task_name_manual></td>
     <td><input type=text size=2 value=0 name=task_units_manual></td>
-    <td>[im_category_select "Intranet UoM" "task_uom_manual" 324]</td>
+    <td>[im_category_select "Intranet UoM" "task_uom_manual" $default_uom]</td>
     <td>[im_category_select "Intranet Project Type" task_type_manual $project_type_id]</td>
     $integration_type_html
     <td><input type=submit value=\"[_ intranet-translation.Add]\" name=submit_add_manual></td>
@@ -2528,7 +2810,10 @@ ad_proc im_new_task_component {
 # Determine the list of missing files
 # ---------------------------------------------------------------------
 
-ad_proc im_task_missing_file_list { project_id } {
+ad_proc im_task_missing_file_list { 
+    {-no_complain 0}
+    project_id 
+} {
     Returns a list of task_ids that have not been found
     in the project folder.
     These task_ids can be used to display a list of 
@@ -2536,6 +2821,10 @@ ad_proc im_task_missing_file_list { project_id } {
     workflow work without problems.
     The algorithm works O(n*log(n)), using ns_set, so
     it should be a reasonably cheap operation.
+
+    @param no_complain Don't emit ad_return_complaint messages
+           in order not to disturb a users's page with missing pathes etc.
+
 } {
     set find_cmd [im_filestorage_find_cmd]
 
@@ -2589,6 +2878,8 @@ where
     } err_msg] } {
 	# The directory probably doesn't exist yet, so don't generate
 	# an error !!!
+
+        if {$no_complain} { return "" }
 	ad_return_complaint 1 "im_task_missing_file_list: directory $source_folder<br>
 		       probably does not exist:<br>$err_msg"
 	set file_list ""
@@ -2649,5 +2940,4 @@ where
     ns_set free $file_set
     return $missing_file_list
 }
-
 

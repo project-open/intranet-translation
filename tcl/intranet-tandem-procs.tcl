@@ -7,7 +7,8 @@
 # details.
 
 ad_library {
-    Specific stuff for tandem programming
+    Specific stuff for tandem programming.
+    Developed for a specific Danish customer.
 
     @author frank.bergmann@project-open.com
 }

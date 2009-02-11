@@ -34,16 +34,6 @@
 --
 -- Add some translation specific fields to a project.
 
--- Now (060309) part of im_project
--- alter table im_projects add company_contact_id      integer;
--- alter table im_projects add FOREIGN KEY (company_contact_id) references users;
-
-
--- Company_project_nr (bad name, wrong rename...) is
--- now part of the "Core"
--- alter table im_projects add company_project_nr	varchar(50);
--- alter table im_projects add final_company		varchar(50);
-
 alter table im_projects add source_language_id integer;
 alter table im_projects add FOREIGN KEY (source_language_id) references im_categories;
 
@@ -409,7 +399,7 @@ create table im_task_actions (
 	new_status_id		integer
 				constraint im_task_action_new_fk
 				references im_categories,
-	upload_file		varchar(1000)
+	upload_file		text
 );
 
 

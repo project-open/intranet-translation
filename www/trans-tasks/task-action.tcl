@@ -39,6 +39,9 @@ ad_page_contract {
     { submit_add_file "" }
 }
 
+set date_format [parameter::get_from_package_key -package_key intranet-translation -parameter "TaskListEndDateFormat" -default "YYYY-MM-DD"]
+
+
 # Get the list of target languages of the current project.
 # We will need this list if a new task is added, because we
 # will have to add the task for each of the target languages...
@@ -52,6 +55,8 @@ if {0 == [llength $target_language_ids]} {
     set target_language_ids [list ""]
 }
 
+# Check if translation module has been installed
+set trans_quality_exists_p [db_table_exists "im_trans_quality_reports"]
 
 # Is the dynamic WorkFlow module installed?
 set wf_installed_p [im_workflow_installed_p]
@@ -121,6 +126,11 @@ switch -glob $submit {
 	    # The values for status and type are irrelevant
 	    # for the dynamic WF, but they are there for
 	    # compatibility reasons.
+
+            # Error from SAP 080503: Deal with empty billable units
+            set billable_value $billable_units($task_id)
+            if {"" == $billable_value} { set billable_value 0 }
+
 	    set sql "
                     update im_trans_tasks set
                 	task_status_id= '$task_status($task_id)',
@@ -185,7 +195,17 @@ switch -glob $submit {
 				end_date = '$end_date($task_id)'::timestamptz
 			where	project_id = :project_id
 				and task_id = :task_id"
-		    db_dml update_task_deadline $update_sql
+                    if {[catch {
+			db_dml update_task_deadline $update_sql
+		    } err_msg]} {
+                        ad_return_complaint 1 "<b>[lang::message::lookup "" intranet-translation.Date_conversion_error "Error converting date string into a database date."]</b><br>&nbsp;<br>
+                                [lang::message::lookup "" intranet-translation.Here_is_the_error "Here is the error. You may copy this text and send it to your system administrator for reference."]<br><pre>$err_msg</pre>
+                        "
+                        ad_script_abort
+                    }
+		    
+		    if {[regexp {^[0-9][0-9][0-9][0-9]\-[0-9][0-9]\-[0-9][0-9]$} $end_date($task_id)]} {
+		    }
 
 		}
 	    }
@@ -207,6 +227,11 @@ switch -glob $submit {
 	    ns_log Notice "delete task: $task_id"
 
 	    if { [catch {
+
+                if {$trans_quality_exists_p} {
+                    db_dml del_q_report_entries "delete from im_trans_quality_entries where report_id in (select report_id from im_trans_quality_reports where task_id = :task_id)"
+                    db_dml del_q_reports "delete from im_trans_quality_reports where task_id = :task_id"
+                }
 
 		im_exec_dml new_task "im_trans_task__delete(:task_id)"
 

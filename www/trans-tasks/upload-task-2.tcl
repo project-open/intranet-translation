@@ -13,6 +13,7 @@ ad_page_contract {
     return_url
     upload_file
     {notify_project_manager_p ""}
+    {notify_next_wf_stage_p ""}
     {file_title:trim ""}
     {comment_body:trim "" }
 }
@@ -101,12 +102,37 @@ if {"" != $notify_project_manager_p} {
 		r.rel_id = m.rel_id
 		and r.object_id_one = :project_id
 		and m.object_role_id = [im_biz_object_role_project_manager]
+    UNION
+	select	project_lead_id
+	from	im_projects p
+	where	project_id = :project_id
     "
+
+    set project_url [export_vars -base "/intranet/projects/view" {project_id}]
+
     db_foreach notify_project_managers $project_managers_sql {
-	im_send_alert $pm_id "hourly" $subject $message
+        set auto_login [im_generate_auto_login -user_id $pm_id]
+        set msg_url "[ad_parameter -package_id [ad_acs_kernel_id] SystemURL "" ""][export_vars -base "intranet/auto-login" {{user_id $pm_id} {url $project_url} {auto_login $auto_login}}]"
+
+        im_send_alert $pm_id "hourly" $subject "$msg_url\n$message"
     }
+}
+
+if {"" != $notify_next_wf_stage_p} {
+
+    set subject [lang::message::lookup "" intranet-translation.Notify_Next_WF_Stage_About_Task_Upload_Subject "A New Task has Become Ready: $task_name"]
+    set message [lang::message::lookup "" intranet-translation.Notify_Next_WF_Stage_About_Task_Upload_Message "A new task has become ready for you in project %project_nr% - %project_name%."]
+
+    set next_wf_stage_user_id [im_task_next_workflow_stage_user $task_id]
+    set project_url [export_vars -base "/intranet/projects/view" {project_id}]
+
+    set auto_login [im_generate_auto_login -user_id $next_wf_stage_user_id]
+    set msg_url "[ad_parameter -package_id [ad_acs_kernel_id] SystemURL "" ""][export_vars -base "intranet/auto-login" {{user_id $next_wf_stage_user_id} {url $project_url} {auto_login $auto_login}}]"
+
+    im_send_alert $next_wf_stage_user_id "hourly" $subject "$msg_url\n$message"
 
 }
+
 
 # -------------------------------------------------------------------
 # Get the file from the user.
@@ -170,7 +196,9 @@ if {$check_filename_equal_p} {
     set task_ext [string tolower [lindex $task_parts [expr [llength $task_parts] - 1]]]
 
     # Check if extensions are equal
-    if {![string equal $upload_ext $task_ext]} {
+    set check_extensions_equal_p [ad_parameter -package_id [im_package_translation_id] CheckTaskUploadFileExtensionsEqualP "" 0]
+
+    if {![string equal $upload_ext $task_ext] && $check_extensions_equal_p} {
 	set error "<li>
 	    [lang::message::lookup "" intranet-translation.File_extensions_dont_match "Your file extensions don't match.:"]<br>
 	    [_ intranet-translation.lt_Your_file_upload_file]<br>
@@ -213,20 +241,23 @@ for {set i 0} {$i < $subfolder_len} {incr i} {
 # Move the file
 #
 if { [catch {
-    ns_log Notice "/bin/mv $tmp_filename $project_path/$upload_folder/$task_name"
-    exec /bin/cp $tmp_filename "$project_path/$upload_folder/$task_name"
-    ns_log Notice "/bin/chmod ug+w $project_path/$upload_folder/$task_name"
-    exec /bin/chmod ug+w $project_path/$upload_folder/$task_name
+    ns_log Notice "/bin/mv $tmp_filename $project_path/$upload_folder/$upload_file_body"
+    exec /bin/cp $tmp_filename "$project_path/$upload_folder/$upload_file_body"
+    ns_log Notice "/bin/chmod ug+w $project_path/$upload_folder/$upload_file_body"
+    exec /bin/chmod ug+w $project_path/$upload_folder/$upload_file_body
 
 } err_msg] } {
     # Probably some permission errors
-    ad_return_complaint  "[_ intranet-translation.lt_Error_writing_upload_]"  $err_msg
+    ad_return_complaint 1 "[_ intranet-translation.lt_Error_writing_upload_]:<br>
+	<pre>$err_msg</pre>during command:
+	<pre>exec /bin/cp $tmp_filename $project_path/$upload_folder/$upload_file_body</pre>
+    "
     return
 }
 
 # Advance the status of the respective im_task.
 #
-im_trans_upload_action $task_id $task_status_id $task_type_id $user_id
+im_trans_upload_action -upload_file $upload_file_body $task_id $task_status_id $task_type_id $user_id
 
 
 # -----------------------------------------------------------------
@@ -243,7 +274,7 @@ if {"" != $comment_body} {
     set owner_id $user_id
     # This comment is only visible to members of the company
     set scope "staff"
-    set subject $task_name
+    set subject $upload_file_body
     set message "$comment_body"
 
     # Limit Subject and message to their field sizes

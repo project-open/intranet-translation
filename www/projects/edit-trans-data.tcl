@@ -24,6 +24,8 @@ set context_bar [im_context_bar [list /intranet/projects/ "[_ intranet-translati
 # set required_field "<font color=red size=+1><B>*</B></font>"
 set required_field ""
 
+set include_source_language_country_locale [ad_parameter -package_id [im_package_translation_id] SourceLanguageWithCountryLocaleP "" 0]
+
 im_project_permissions $user_id $project_id view read write admin
 if {!$write} {
     ad_return_complaint 1 "<li>[_ intranet-translation.lt_You_have_insufficient]"
@@ -45,6 +47,10 @@ where
 if {![db_0or1row "get company info" "select  c.company_name from im_companies c where c.company_id = :company_id"]} {
     set company_name ""
 }
+
+set submit_changes_l10n [lang::message::lookup "" intranet-translation.Submit_Changes "Submit Changes and Create Folder Structure"]
+set create_language_subprojects_l10n [lang::message::lookup "" intranet-translation.Create_Language_Subprojects "Submit Changes and Create Language Subprojects"]
+
 
 set page_body "
                 <form action=edit-trans-data-2 method=post name=edit-trans-data>
@@ -81,7 +87,7 @@ set page_body "
                    <tr>
                       <td>[_ intranet-translation.Source_Language] $required_field </td>
                       <td>
-[im_trans_language_select source_language_id $source_language_id]
+[im_trans_language_select -include_country_locale $include_source_language_country_locale source_language_id $source_language_id]
 [im_admin_category_gif "Intranet Translation Language"]
 [im_gif help "Translation source language"]
                       </td>
@@ -117,9 +123,9 @@ set page_body "
                       <td valign=top></td>
                       <td>
 		 	<p> 
-                          <input type=submit value='Submit changes' name=submit_changes>
+                          <input type=submit value='$submit_changes_l10n' name=submit_changes>
                           [im_gif help "Create the new folder structure"] <br>
-                          <input type=submit value='Create Language Subprojects' name=submit_subprojects>
+                          <input type=submit value='$create_language_subprojects_l10n' name=submit_subprojects>
                           [im_gif help "Create folder structure and create a subproject for each language that you have chosen."] <br>
                         </p>
                       </td>
@@ -128,6 +134,12 @@ set page_body "
                 </form>
 "
 
-ad_return_template
 
+# -------------------------------------------------------------------
+# Project Subnavbar
+# -------------------------------------------------------------------
+
+set bind_vars [ns_set create]
+ns_set put $bind_vars project_id $project_id
+set parent_menu_id [db_string parent_menu "select menu_id from im_menus where label='project'" -default 0]
 

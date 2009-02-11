@@ -82,16 +82,16 @@ set import_method "Asp"
 
 switch $wordcount_application {
     trados {
-	ad_returnredirect trados-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file import_method]
+	ad_returnredirect trados-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file upload_file import_method]
     }
     transit {
-	ad_returnredirect transit-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file import_method]
+	ad_returnredirect transit-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file upload_file import_method]
     }
     freebudget {
-	ad_returnredirect freebudget-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file import_method]
+	ad_returnredirect freebudget-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file upload_file import_method]
     }
     webbudget {
-	ad_returnredirect webbudget-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file import_method]
+	ad_returnredirect webbudget-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file upload_file import_method]
     }
 }
 

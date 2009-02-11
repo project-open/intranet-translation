@@ -28,6 +28,10 @@
             <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="DefaultWordCountingApplication"  default="trados" description="What application do you usually use to determine the wordcount of your projects? Valid choices are currently &quot;trados&quot;, &quot;freebudget&quot; and &quot;webbudget&quot;. More formats are available on request."/>
             <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="EnableAspTradosImport"  default="1" description="Enable the import of Trados wordcount files via web upload? (default yes)"/>
             <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="EnableLocalTradosImport"  default="0" description="Enable the import of Trados wordcount files from the local projects filestorage? (default no)"/>
+
+           <parameter datatype="number" min_n_values="1" max_n_values="1" name="NotifyNextWfStageP" default="0" description="Should we enable the translator to send a notification to his editor? This is useful for tandem translation and companies where projects usually consist of few big files. It is not a good idea in localization projects though."/>
+           <parameter datatype="number" min_n_values="1" max_n_values="1" name="SourceLanguageWithCountryLocaleP" default="0" description="Should we include the country locale (such as &quot;_CH&quot; for Swiss German) for selecting the source language? The default is 0, because for most companies the source language country variants don't matter. This would result in source languages such as &quot;de&quot;, &quot;es&quot; etc., instead of &quot;de_DE&quot;, &quot;es_ES&quot; etc. "/>
+           <parameter datatype="string" min_n_values="1" max_n_values="1" name="TaskListEndDateFormat" default="YYYY-MM-DD" description="Date format for the TaskListComponent. Default is 'YYYY-MM-DD' for showing just the date. As an alternative, you can use 'YYYY-MM-DD HH24:MI' in order to work with date/time."/>
         </parameters>
 
     </version>

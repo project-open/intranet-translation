@@ -18,6 +18,7 @@ ad_page_contract {
     project_id:integer
     task_type_id:integer
     wordcount_file
+    { upload_file "transit.rep" }
     { target_language_id "" }
     {import_method "Asp"}
 }
@@ -40,8 +41,13 @@ set transit_wordcount_file $wordcount_file
 # Check for accents and other non-ascii characters
 set charset [ad_parameter -package_id [im_package_filestorage_id] FilenameCharactersSupported "" "alphanum"]
 
+set org_task_type_id $task_type_id
 
 set transit_batch_default_p 1
+
+# Extract the file body
+set upload_file_pieces [split $upload_file "."]
+set upload_file_body [join [lrange $upload_file_pieces 0 end-1] "."]
 
 # ---------------------------------------------------------------------
 # Get the file and deal with Unicode encoding...
@@ -171,6 +177,7 @@ set transit_version "all"
 set task_html "
 	<table cellpadding=0 cellspacing=2 border=0>
 	<tr>
+          <td class=rowtitle>&nbsp;</td>
 	  <td class=rowtitle align=center>[_ intranet-translation.Filename]</td>
 	  <td class=rowtitle align=center>[_ intranet-translation.XTr]</td>
 	  <td class=rowtitle align=center>[_ intranet-translation.Rep]</td>
@@ -250,11 +257,18 @@ for {set i 1} {$i < $transit_files_len} {incr i} {
 
     # Remove empty lines    
     if {0 == [string length $transit_line]} { continue }
-    
-    if {[regexp {^Totals not reduced by repetitions} $transit_line]} { continue }
-    if {[regexp {^Totals reduced by repetitions} $transit_line]} { continue }
-    if {[regexp {^Totals with weighting factor} $transit_line]} { continue }
-    if {[regexp {^Totals with expansion factor} $transit_line]} { continue }
+
+    set checked_p "checked"
+
+    if {[regexp {^Totals not reduced by repetitions} $transit_line]} { set checked_p "" }
+    if {[regexp {^Totals reduced by repetitions} $transit_line]} { set checked_p "" }
+    if {[regexp {^Totals with weighting factor} $transit_line]} { set checked_p "" }
+    if {[regexp {^Totals with expansion factor} $transit_line]} { set checked_p "" }
+
+    if {[regexp {^Totales reducidos por repeticiones} $transit_line]} { set checked_p "" }
+    if {[regexp {^Totales sin reducc} $transit_line]} { set checked_p "" }
+    if {[regexp {^Totales con factor de pondera} $transit_line]} { set checked_p "" }
+    if {[regexp {^Totales con factor de expan} $transit_line]} { set checked_p "" }
 
     set transit_fields [split $transit_line $separator]
 
@@ -268,19 +282,24 @@ for {set i 1} {$i < $transit_files_len} {incr i} {
 #	7	Remaining not translated units
 #	8	Total:
 
-    set filename		[lindex $transit_fields 0]
-    set px_words		[lindex $transit_fields 1]
-    set prep_words		0
-    set p100_words		[lindex $transit_fields 3]
-    set p95_words		[lindex $transit_fields 4]
-    set p85_words		[lindex $transit_fields 5]
-    set p75_words		[lindex $transit_fields 6]
-    set p50_words		0
-    set p0_words		[expr [lindex $transit_fields 7] + [lindex $transit_fields 2]]
-
+    set filename                [lindex $transit_fields 0]
+    set px_words                [lindex $transit_fields 1]
+    set prep_words              0
+    set p100_words              [lindex $transit_fields 2]
+    set p95_words               [lindex $transit_fields 3]
+    set p85_words               [lindex $transit_fields 4]
+    set p75_words               [lindex $transit_fields 5]
+    set p50_words               [lindex $transit_fields 6]
+    set p0_words                [lindex $transit_fields 7]
+    set task_type_id            $org_task_type_id
 
     # Special treatment of repetitions - count them as negative in a separate task
-    if {[regexp {^Repetitions found \(reduced by limit\)} $transit_line]} {
+    set rep_found_p [expr \
+			 [regexp {^Repetitions found} $transit_line] + \
+			 [regexp {^Repeticiones encontradas} $transit_line] \
+     ]
+
+    if {$rep_found_p} {
 	set px_words		[expr -$px_words]
 	set prep_words		[expr -$prep_words]
 	set p100_words		[expr -$p100_words]
@@ -366,7 +385,14 @@ for {set i 1} {$i < $transit_files_len} {incr i} {
 
     append task_html "
 	<tr $bgcolor([expr $ctr % 2])>
-	  <td>$filename		<input type=hidden name=filename_list.$ctr value=\"$filename\">	</td>
+          <td>
+                <input type=checkbox name=import_p.$ctr value=1 $checked_p>
+          </td>
+          <td>
+                $filename
+                <input type=hidden name=filename_list.$ctr value=\"$filename\">
+                <input type=hidden name=task_type_list.$ctr value=\"$task_type_id\">
+          </td>
 	  <td>$px_words		<input type=hidden name=px_words_list.$ctr value=\"$px_words\">	</td>
 	  <td>$prep_words	<input type=hidden name=prep_words_list.$ctr value=\"$prep_words\">	</td>
 	  <td>$p100_words	<input type=hidden name=p100_words_list.$ctr value=\"$p100_words\">	</td>
@@ -379,14 +405,16 @@ for {set i 1} {$i < $transit_files_len} {incr i} {
 	</tr>
     "
 
-    set sum_px_words [expr $sum_px_words + $px_words]
-    set sum_prep_words [expr $sum_prep_words + $prep_words]
-    set sum_p100_words [expr $sum_p100_words + $p100_words]
-    set sum_p95_words [expr $sum_p95_words + $p95_words]
-    set sum_p85_words [expr $sum_p85_words + $p85_words]
-    set sum_p75_words [expr $sum_p75_words + $p75_words]
-    set sum_p50_words [expr $sum_p50_words + $p50_words]
-    set sum_p0_words [expr $sum_p0_words + $p0_words]
+    if {"" != $checked_p} {
+	set sum_px_words [expr $sum_px_words + $px_words]
+	set sum_prep_words [expr $sum_prep_words + $prep_words]
+	set sum_p100_words [expr $sum_p100_words + $p100_words]
+	set sum_p95_words [expr $sum_p95_words + $p95_words]
+	set sum_p85_words [expr $sum_p85_words + $p85_words]
+	set sum_p75_words [expr $sum_p75_words + $p75_words]
+	set sum_p50_words [expr $sum_p50_words + $p50_words]
+	set sum_p0_words [expr $sum_p0_words + $p0_words]
+    }
 }
 
 

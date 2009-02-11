@@ -16,7 +16,9 @@ ad_page_contract {
     task_type_id:integer
     { target_language_id "" }
     {import_method "Asp"}
+    import_p:array
     filename_list:array
+    task_type_list:array
     px_words_list:array
     prep_words_list:array
     p100_words_list:array
@@ -106,9 +108,13 @@ foreach ctr [array names filename_list] {
     set p75_words		$p75_words_list($ctr)
     set p50_words		$p50_words_list($ctr)
     set p0_words		$p0_words_list($ctr)
+    set task_type_id            $task_type_list($ctr)
 
     set task_name $filename
     
+    set checked_p 0
+    if {[info exists import_p($ctr)]} { set checked_p $import_p($ctr) }
+
     # Determine the wordcount of the task:
     # Get the "task_units" from the company "default_freelance"
     # and the "billable_units" form the project's customer:
@@ -141,25 +147,27 @@ foreach ctr [array names filename_list] {
     "
 
     # Add a new task for every project target language
-    set insert_sql ""
-    foreach target_language_id $target_language_ids {
+    if {$checked_p} {
+
+	set insert_sql ""
+	foreach target_language_id $target_language_ids {
 	
-	if { [catch {
+	    if { [catch {
 	    
-	    set task_name_comps [split $task_name "/"]
-	    set task_name_len [expr [llength $task_name_comps] - 1]
-	    set task_name_body [lindex $task_name_comps $task_name_len]
-	    set filename $task_name_body
-	    
-	    if {![im_filestorage_check_filename $charset $filename]} {
-		return -code 10 [lang::message::lookup "" intranet-filestorage.Invalid_Character_Set "
+		set task_name_comps [split $task_name "/"]
+		set task_name_len [expr [llength $task_name_comps] - 1]
+		set task_name_body [lindex $task_name_comps $task_name_len]
+		set filename $task_name_body
+		
+		if {![im_filestorage_check_filename $charset $filename]} {
+		    return -code 10 [lang::message::lookup "" intranet-filestorage.Invalid_Character_Set "
 			<b>Invalid Character(s) found</b>:<br>
 			Your filename '%filename%' contains atleast one character that is not allowed
 			in your character set '%charset%'."]
-	    }
+		}
 	    
 
-	    set new_task_id [im_exec_dml new_task "im_trans_task__new (
+		set new_task_id [im_exec_dml new_task "im_trans_task__new (
 			null,			-- task_id
 			'im_trans_task',	-- object_type
 			now(),			-- creation_date
@@ -173,9 +181,9 @@ foreach ctr [array names filename_list] {
 			:source_language_id,	-- source_language_id
 			:target_language_id,	-- target_language_id
 			:task_uom_id		-- task_uom_id
-	    )"]
+	        )"]
 
-	    db_dml update_task "
+		db_dml update_task "
 		    UPDATE im_trans_tasks SET
 			tm_integration_type_id = [im_trans_tm_integration_type_external],
 			task_name = :task_name,
@@ -193,28 +201,25 @@ foreach ctr [array names filename_list] {
 			match0 = :p0_words
 		    WHERE 
 			task_id = :new_task_id
-	    "
+	        "
 
-	} err_msg] } {
+	    } err_msg] } {
 
-	    # Failed to create translation task
-	    incr err_count
-	    append page_body "
-<tr><td colspan=10>$insert_sql</td></tr>
-<tr><td colspan=10><font color=red>$err_msg</font></td></tr>
-"
+		# Failed to create translation task
+		incr err_count
+		append page_body "<tr><td colspan=10>$insert_sql</td></tr><tr><td colspan=10><font color=red>$err_msg</font></td></tr>"
 
-	} else {
+	    } else {
 	    
-	    # Successfully created translation task
-	    # Call user_exit to let TM know about the event
-	    im_user_exit_call trans_task_create $new_task_id
-	    
-	}
+		# Successfully created translation task
+		# Call user_exit to let TM know about the event
+		im_user_exit_call trans_task_create $new_task_id
+		
+	    }
 	
+	}
     }
 }
-
 
 append page_body "</table>\n"
 append page_body "\n<P><A HREF=$return_url>[_ intranet-translation.lt_Return_to_previous_pa]</A></P>\n"

@@ -1,6 +1,6 @@
 # /packages/intranet-translation/www/trans-tasks/task-assignments.tcl
 #
-# Copyright (C) 2003-2004 Project/Open
+# Copyright (C) 2003-2009 ]project-open[
 #
 # All rights reserved. Please check
 # http://www.project-open.com/license/ for details.
@@ -145,6 +145,7 @@ if {$wf_installed_p} {
 set task_sql "
 select
 	t.*,
+	ptype_cat.aux_int1 as aux_task_type_id,
 	im_category_from_id(t.task_uom_id) as task_uom,
 	im_category_from_id(t.task_type_id) as task_type,
 	im_category_from_id(t.task_status_id) as task_status,
@@ -158,10 +159,12 @@ select
 	im_email_from_user_id (t.other_id) as other_email,
 	im_name_from_user_id (t.other_id) as other_name
 from
-	im_trans_tasks t
+	im_trans_tasks t,
+	im_categories ptype_cat
 where
-	t.project_id=:project_id
-        and t.task_status_id <> 372
+	t.project_id=:project_id and
+	t.task_status_id <> 372 and
+	ptype_cat.category_id = t.task_type_id
 	$extra_where
 order by
         t.task_name,
@@ -209,6 +212,9 @@ set task_list [array names tasks_id]
 
 db_foreach select_tasks $task_sql {
     ns_log Notice "task_id=$task_id, status_id=$task_status_id"
+
+    # Check if the task_type was set in categories
+    if {"" != $aux_task_type_id} { set task_type_id $aux_task_type_id }
 
     # Determine if this task is auto-assignable or not,
     # depending on the unit of measure (UoM). We currently

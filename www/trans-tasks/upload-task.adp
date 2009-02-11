@@ -7,4 +7,21 @@
 <property name="context">@context_bar@</property>
 <property name="main_navbar_label">projects</property>
 
+<br>
+@project_menu;noquote@
+
+
+<if @filename@ ne "" >
+
 @page_content;noquote@
+
+</if>
+<else>
+
+<h1><%= [lang::message::lookup "" intranet-translation.All_files_OK "All Files OK"] %></h1>
+
+<ul>
+<li><a href="@return_url;noquote@"><%= [lang::message::lookup "" intranet-translation.Return_to_previous_page "Return to previous page"] %></a>
+</ul>
+
+</else>

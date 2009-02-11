@@ -27,12 +27,12 @@
 --
 -- Add some translation specific fields to a project.
 
-alter table im_projects add	company_project_nr	varchar(50);
+alter table im_projects add	company_project_nr	text;
 alter table im_projects add	company_contact_id	integer references users;
 alter table im_projects add	source_language_id	references im_categories;
 alter table im_projects add	subject_area_id		references im_categories;
 alter table im_projects add	expected_quality_id	references im_categories;
-alter table im_projects add	final_company		varchar(50);
+alter table im_projects add	final_company		text;
 
 -- An approximate value for the size (number of words) of the project
 alter table im_projects add	trans_project_words	number(12,0);
@@ -69,7 +69,7 @@ create table im_trans_tasks (
 	task_status_id		integer not null 
 				constraint im_trans_tasks_status_fk
 				references im_categories,
-	description		varchar(4000),
+	description		text,
 	source_language_id	integer not null
 				constraint im_trans_tasks_source_fk
 				references im_categories,

@@ -10,6 +10,11 @@
 
 <H2>#intranet-translation.Upload_Successful#</H2>
 
+<%
+      # Ugly: show the upload_file instead of the org task name in the msg
+      set task_name $upload_file_body
+%>
+
 #intranet-translation.lt_Your_have_successfull#
 
 @comment_html;noquote@
