@@ -1,6 +1,7 @@
 # /packages/intranet-translation/www/upload-task-2.tcl
 #
-# Copyright (C) 2004 Project/Open
+# Copyright (C) 2004 - 2009 ]project-open[
+#
 # All rights reserved (this is not GPLed software!).
 # Please check http://www.project-open.com/ for licensing
 # details.
