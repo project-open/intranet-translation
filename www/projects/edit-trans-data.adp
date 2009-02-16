@@ -7,6 +7,7 @@
 <property name="context">@context_bar@</property>
 <property name="main_navbar_label">projects</property>
 
+<br>
 <%= [im_sub_navbar $parent_menu_id $bind_vars "" "pagedesriptionbar" "project_summary"] %>
 
 @page_body;noquote@

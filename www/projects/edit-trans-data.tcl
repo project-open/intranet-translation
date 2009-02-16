@@ -18,7 +18,7 @@ ad_page_contract {
 }
 
 set user_id [ad_maybe_redirect_for_registration]
-set page_title "[_ intranet-translation.lt_Edit_Translation_Deta]"
+set page_title "$project_nr - $project_name"
 set context_bar [im_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] [list "/intranet/projects/view?[export_url_vars project_id]" "[_ intranet-translation.One_project]"] $page_title]
 
 # set required_field "<font color=red size=+1><B>*</B></font>"

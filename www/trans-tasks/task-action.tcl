@@ -135,7 +135,7 @@ switch -glob $submit {
                     update im_trans_tasks set
                 	task_status_id= '$task_status($task_id)',
                 	task_type_id= '$task_type($task_id)',
-			billable_units = '$billable_units($task_id)'
+			billable_units = :billable_value
                     where project_id=:project_id
                     and task_id=:task_id"
 	    db_dml update_task_status $sql

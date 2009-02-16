@@ -27,7 +27,6 @@ ad_proc -public im_project_type_trans {} { return 93 }
 ad_proc -public im_project_type_trans_spot {} { return 94 }
 ad_proc -public im_project_type_proof {} { return 95 }
 ad_proc -public im_project_type_glossary_comp {} { return 96 }
-
 ad_proc -public im_project_type_translation {} { return 2500 }
 
 
