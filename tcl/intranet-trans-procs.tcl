@@ -127,7 +127,7 @@ where
     set user_is_employee_p [im_user_is_employee_p $user_id]
     set user_admin_p [expr $user_is_admin_p || $user_is_group_admin_p]
 
-    # Dependency with Project/Open Filestorage module:
+    # Dependency with Filestorage module:
     # We need to know where the task-files are stored in the filesystem
     set project_path [im_filestorage_project_path $project_id]
 
