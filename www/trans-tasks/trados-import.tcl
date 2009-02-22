@@ -401,21 +401,14 @@ ns_log Notice "trados-import: common_filename_comps=$common_filename_comps"
 	# a valuation of repetitions
 
 	
-	# Determine the wordcount of the task:
-	# Get the "task_units" from the company "default_freelance"
-	# and the "billable_units" form the project's customer:
+	# Determine the "effective" wordcount of the task:
+	# Get the "task_units" from a special company called "default_freelance"
 	#
-#ad_return_complaint 1 "im_trans_trados_matrix_calculate [im_company_freelance] $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words"
-
-
         set task_units [im_trans_trados_matrix_calculate [im_company_freelance] $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
 
+	# Determine the "billable_units" form the project's customer:
+	#
         set billable_units [im_trans_trados_matrix_calculate $customer_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
-
-
-
-# 060605 fraber: Not necesary anymore: We now have a specific task type
-#	set task_type_id $project_type_id
 
 	set task_status_id 340
 	set task_description ""
