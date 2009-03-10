@@ -325,6 +325,7 @@ ad_proc im_task_insert {
 			description = :task_description,
 			task_units = :task_units,
 			billable_units = :task_units,
+			billable_units_interco = :task_units,
 			match100 = :match100,
 			match95 = :match95,
 			match85 = :match85,

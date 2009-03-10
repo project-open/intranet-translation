@@ -135,6 +135,8 @@ create table im_trans_tasks (
 	task_units		numeric(12,1),
 				-- sometimes, not all units can be billed...
 	billable_units		numeric(12,1),
+				-- ... and not everything to internal customers
+	billable_units_interco	numeric(12,1),
 				-- UoM=Unit of Measure (hours, words, ...)
 	task_uom_id		integer not null 
 				constraint im_trans_tasks_uom_fk
