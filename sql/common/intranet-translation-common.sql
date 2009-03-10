@@ -73,15 +73,18 @@ insert into im_view_columns (column_id, view_id, group_id, column_name, column_r
 extra_select, extra_where, sort_order, visible_for) values (9011,90,NULL,'0 %','$match0',
 '','',11,'im_permission $user_id view_trans_task_matrix');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (9013,90,NULL,'Units','$task_units $uom_name',
-'','',13,'');
+extra_select, extra_where, sort_order, visible_for) values (9012,90,NULL,'Units','$task_units $uom_name',
+'','',12,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (9015,90,NULL,'Bill. Units','$billable_items_input',
-'','',15,'expr $project_write');
+extra_select, extra_where, sort_order, visible_for) values (9013,90,NULL,'Bill. Units','$billable_items_input',
+'','',13,'expr $project_write');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (9014,90,NULL,'Bill. Units Interco','$billable_items_input_interco',
+'','',14,'expr $project_write');
 -- for those who can not write on the project...
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (9014,90,NULL,'End Date','$end_date_formatted',
-'','',14,'expr !$project_write');
+extra_select, extra_where, sort_order, visible_for) values (9015,90,NULL,'End Date','$end_date_formatted',
+'','',16,'expr !$project_write');
 -- for those who _can_ write on the project...
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (9016,90,NULL,'End Date','$end_date_input',

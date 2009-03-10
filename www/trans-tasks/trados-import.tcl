@@ -48,9 +48,11 @@ if {!$write} {
 # Compatibility with old message...
 set trados_wordcount_file $wordcount_file
 
-
 # Check for accents and other non-ascii characters
 set charset [ad_parameter -package_id [im_package_filestorage_id] FilenameCharactersSupported "" "alphanum"]
+
+# Inter-Company invoicing enabled?
+set interco_p [parameter::get_from_package_key -package_key "intranet-translation" -parameter "EnableInterCompanyInvoicingP" -default 0]
 
 
 # ---------------------------------------------------------------------
@@ -410,6 +412,16 @@ ns_log Notice "trados-import: common_filename_comps=$common_filename_comps"
 	#
         set billable_units [im_trans_trados_matrix_calculate $customer_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
 
+	set billable_units_interco $billable_units
+	if {$interco_p} {
+            set interco_company_id [db_string get_interco_company "select interco_company_id from im_projects where project_id=$project_id" -default ""]
+	    if {"" == $interco_company_id} { 
+		set interco_company_id $customer_id 
+		# ad_return_complaint 1 "No InterCo company found, please check project base data"
+	    }
+	    set billable_units_interco [im_trans_trados_matrix_calculate $interco_company $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
+	}
+
 	set task_status_id 340
 	set task_description ""
 	# source_language_id defined by im_project
@@ -477,6 +489,7 @@ ns_log Notice "trados-import: common_filename_comps=$common_filename_comps"
 			description = :task_description,
 			task_units = :task_units,
 			billable_units = :billable_units,
+			billable_units_interco = :billable_units_interco,
 			match_x = :px_words,
 			match_rep = :prep_words,
 			match100 = :p100_words, 

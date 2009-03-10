@@ -1906,6 +1906,10 @@ ad_proc im_task_component {
 
     set company_view_page "/intranet/companies/view"
 
+    # Inter-Company invoicing enabled?
+    set interco_p [parameter::get_from_package_key -package_key "intranet-translation" -parameter "EnableInterCompanyInvoicingP" -default 0]
+
+
     # -------------------- Column Selection ---------------------------------
     # Define the column headers and column contents that
     # we want to show:
@@ -2117,6 +2121,8 @@ ad_proc im_task_component {
 
 	# Billable Items 
 	set billable_items_input "<input type=text size=3 name=billable_units.$task_id value=$billable_units>"
+	set billable_items_input_interco "<input type=text size=3 name=billable_units_interco.$task_id value=$billable_units_interco>"
+
 
 	# End Date Input Field
 	if {"" == $end_date_formatted} { set end_date_formatted $project_end_date }
