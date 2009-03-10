@@ -17,6 +17,7 @@ ad_page_contract {
     project_id:integer
     { delete_task:multiple "" }
     billable_units:array,optional
+    billable_units_interco:array,optional
     end_date:array,optional
     task_status:array,optional
     task_type:array,optional
@@ -118,24 +119,30 @@ switch -glob $submit {
 	    regsub {\,} $task_status($task_id) {.} task_status($task_id)
 	    regsub {\,} $task_type($task_id) {.} task_type($task_id)
 	    regsub {\,} $billable_units($task_id) {.} billable_units($task_id)
+	    regsub {\,} $billable_units_interco($task_id) {.} billable_units_interco($task_id)
 	    append page_body "task_status($task_id)=$task_status($task_id)\n"
 	    append page_body "task_type($task_id)=$task_type($task_id)\n"
 	    append page_body "b._units($task_id)=$billable_units($task_id)\n"
+	    append page_body "b._units_interco($task_id)=$billable_units_interco($task_id)\n"
 
 	    # Static Workflow - just save the values
 	    # The values for status and type are irrelevant
 	    # for the dynamic WF, but they are there for
 	    # compatibility reasons.
 
-            # Error from SAP 080503: Deal with empty billable units
+            # Fixed error from SAP 080503: Deal with empty billable units
             set billable_value $billable_units($task_id)
             if {"" == $billable_value} { set billable_value 0 }
+
+            set billable_value_interco $billable_units_interco($task_id)
+            if {"" == $billable_value_interco} { set billable_value_interco 0 }
 
 	    set sql "
                     update im_trans_tasks set
                 	task_status_id= '$task_status($task_id)',
                 	task_type_id= '$task_type($task_id)',
-			billable_units = :billable_value
+			billable_units = :billable_value,
+			billable_units_interco = :billable_value_interco
                     where project_id=:project_id
                     and task_id=:task_id"
 	    db_dml update_task_status $sql
