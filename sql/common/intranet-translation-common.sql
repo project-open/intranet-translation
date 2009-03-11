@@ -40,76 +40,52 @@ values (90, 'trans_task_list', 'view_trans_tasks');
 
 -- Translation TasksListPage columns
 --
-delete from im_view_columns where column_id >= 9000 and column_id <= 9099;
+delete from im_view_columns where view_id = 90;
 --
-insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (9001,90,NULL,'Task Name','$task_name_splitted',
-'','',1,'');
-insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (9003,90,NULL,'Target Lang','$target_language',
-'','',3,'');
-insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (9004,90,NULL,'XTr','$match_x',
-'','',4,'im_permission $user_id view_trans_task_matrix');
-insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (9005,90,NULL,'Rep','$match_rep',
-'','',5,'im_permission $user_id view_trans_task_matrix');
-insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (9006,90,NULL,'100 %','$match100',
-'','',6,'im_permission $user_id view_trans_task_matrix');
-insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (9007,90,NULL,'95 %','$match95',
-'','',7,'im_permission $user_id view_trans_task_matrix');
-insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (9008,90,NULL,'85 %','$match85',
-'','',8,'im_permission $user_id view_trans_task_matrix');
-insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (9009,90,NULL,'75 %','$match75',
-'','',9,'im_permission $user_id view_trans_task_matrix');
-insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (9010,90,NULL,'50 %','$match50',
-'','',10,'im_permission $user_id view_trans_task_matrix');
-insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (9011,90,NULL,'0 %','$match0',
-'','',11,'im_permission $user_id view_trans_task_matrix');
-insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (9012,90,NULL,'Units','$task_units $uom_name',
-'','',12,'');
-insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (9013,90,NULL,'Bill. Units','$billable_items_input',
-'','',13,'expr $project_write');
-insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (9014,90,NULL,'Bill. Units Interco','$billable_items_input_interco',
-'','',14,'expr $project_write');
--- for those who can not write on the project...
-insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (9015,90,NULL,'End Date','$end_date_formatted',
-'','',16,'expr !$project_write');
--- for those who _can_ write on the project...
-insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (9016,90,NULL,'End Date','$end_date_input',
-'','',16,'expr $project_write');
-insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (9017,90,NULL,'Task Type','$type_select',
-'','',17,'expr $project_write');
-insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (9019,90,NULL,'Task Status','$status_select',
-'','',19,'expr $project_write');
-insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (9021,90,NULL,'[im_gif delete "Delete the Task"]','$del_checkbox',
-'','',21,'expr $project_write');
-insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (9023,90,NULL,'Assigned','$assignments',
-'','',23,'expr $project_write');
-insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (9025,90,NULL,'Message','$message',
-'','',25,'');
-insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (9027,90,NULL,'[im_gif save "Download files"]','$download_link',
-'','',27,'');
-insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (9029,90,NULL,'[im_gif open "Upload files"]','$upload_link',
-'','',29,'');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for) 
+values (9001,90,NULL,'Task Name','$task_name_splitted','','',10,'');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for) 
+values (9003,90,NULL,'Target Lang','$target_language','','',30,'');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for) 
+values (9004,90,NULL,'XTr','$match_x','','',40,'im_permission $user_id view_trans_task_matrix');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for) 
+values (9005,90,NULL,'Rep','$match_rep','','',50,'im_permission $user_id view_trans_task_matrix');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for) 
+values (9006,90,NULL,'100 %','$match100','','',60,'im_permission $user_id view_trans_task_matrix');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for) 
+values (9007,90,NULL,'95 %','$match95','','',70,'im_permission $user_id view_trans_task_matrix');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for) 
+values (9008,90,NULL,'85 %','$match85','','',80,'im_permission $user_id view_trans_task_matrix');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for) 
+values (9009,90,NULL,'75 %','$match75','','',90,'im_permission $user_id view_trans_task_matrix');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for) 
+values (9010,90,NULL,'50 %','$match50','','',100,'im_permission $user_id view_trans_task_matrix');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for) 
+values (9011,90,NULL,'0 %','$match0','','',110,'im_permission $user_id view_trans_task_matrix');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for) 
+values (9012,90,NULL,'Units','$task_units $uom_name','','',120,'');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for) 
+values (9013,90,NULL,'Bill. Units','$billable_items_input','','',130,'expr $project_write');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for) 
+values (9014,90,NULL,'Bill. Units Interco','$billable_items_input_interco','','',140,'expr $project_write && interco_p');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for) 
+values (9015,90,NULL,'End Date','$end_date_formatted','','',160,'expr !$project_write');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for) 
+values (9016,90,NULL,'End Date','$end_date_input','','',160,'expr $project_write');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for) 
+values (9017,90,NULL,'Task Type','$type_select','','',170,'expr $project_write');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for) 
+values (9019,90,NULL,'Task Status','$status_select','','',190,'expr $project_write');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for) 
+values (9021,90,NULL,'[im_gif delete "Delete the Task"]','$del_checkbox','','',210,'expr $project_write');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for) 
+values (9023,90,NULL,'Assigned','$assignments','','',230,'expr $project_write');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for) 
+values (9025,90,NULL,'Message','$message','','',250,'');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for) 
+values (9027,90,NULL,'[im_gif save "Download files"]','$download_link','','',270,'');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for) 
+values (9029,90,NULL,'[im_gif open "Upload files"]','$upload_link','','',290,'');
 
 
 
