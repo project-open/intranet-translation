@@ -57,7 +57,7 @@ if {0 == [llength $target_language_ids]} {
 }
 
 # Check if translation module has been installed
-set trans_quality_exists_p [db_table_exists "im_trans_quality_reports"]
+set trans_quality_exists_p [im_table_exists "im_trans_quality_reports"]
 
 # Is the dynamic WorkFlow module installed?
 set wf_installed_p [im_workflow_installed_p]

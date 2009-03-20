@@ -47,7 +47,7 @@ if {![info exists target_language_ids]} {
     set target_language_ids [list]
 }
 
-set fs_installed_p [db_table_exists im_fs_folders]
+set fs_installed_p [im_table_exists im_fs_folders]
 
 # ---------------------------------------------------------------------
 # 
