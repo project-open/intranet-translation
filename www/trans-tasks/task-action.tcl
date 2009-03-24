@@ -116,6 +116,9 @@ switch -glob $submit {
 
 	foreach task_id $task_list {
 
+	    # Use default values if no InterCo values are available:
+	    if {![info exists billable_units_interco($task_id)]} { set billable_units_interco($task_id) $billable_units($task_id) }
+
 	    regsub {\,} $task_status($task_id) {.} task_status($task_id)
 	    regsub {\,} $task_type($task_id) {.} task_type($task_id)
 	    regsub {\,} $billable_units($task_id) {.} billable_units($task_id)
