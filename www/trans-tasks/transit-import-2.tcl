@@ -15,10 +15,10 @@ ad_page_contract {
     project_id:integer
     task_type_id:integer
     { target_language_id "" }
-    {import_method "Asp"}
-    import_p:array
+    { import_method "Asp" }
+    { import_p:array }
     filename_list:array
-    task_type_list:array
+    { task_type_list:array }
     px_words_list:array
     prep_words_list:array
     p100_words_list:array
