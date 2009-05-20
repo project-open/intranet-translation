@@ -27,11 +27,13 @@ ad_page_contract {
     p75_words_list:array
     p50_words_list:array
     p0_words_list:array
-}
+    repetitions:array
+ }
 
 # ---------------------------------------------------------------------
 # Security
 # ---------------------------------------------------------------------
+
 
 set user_id [ad_maybe_redirect_for_registration]
 set ip_address [ad_conn peeraddr]
@@ -50,6 +52,8 @@ set context_bar [im_context_bar [list /intranet/projects/ "[_ intranet-translati
 set bgcolor(0) " class=roweven"
 set bgcolor(1) " class=rowodd"
 set err_count 0
+
+set interco_p [parameter::get_from_package_key -package_key "intranet-translation" -parameter "EnableInterCompanyInvoicingP" -default 0]
 
 # ---------------------------------------------------------------------
 # Get some more information about the project
@@ -101,7 +105,11 @@ foreach ctr [array names filename_list] {
 
     set filename		$filename_list($ctr)
     set px_words		$px_words_list($ctr)
-    set prep_words		$prep_words_list($ctr)
+    if { "Asp" == $import_method } {	
+	 set prep_words		$repetitions($ctr)
+    } else { 
+         set prep_words		$rep_words_list($ctr)
+    }
     set p100_words		$p100_words_list($ctr)
     set p95_words		$p95_words_list($ctr)
     set p85_words		$p85_words_list($ctr)
@@ -109,10 +117,10 @@ foreach ctr [array names filename_list] {
     set p50_words		$p50_words_list($ctr)
     set p0_words		$p0_words_list($ctr)
     set task_type_id            $task_type_list($ctr)
-
     set task_name $filename
-    
+
     set checked_p 0
+
     if {[info exists import_p($ctr)]} { set checked_p $import_p($ctr) }
 
     # Determine the wordcount of the task:
@@ -183,6 +191,7 @@ foreach ctr [array names filename_list] {
 			:task_uom_id		-- task_uom_id
 	        )"]
 
+		if { !$interco_p } {
 		db_dml update_task "
 		    UPDATE im_trans_tasks SET
 			tm_integration_type_id = [im_trans_tm_integration_type_external],
@@ -202,7 +211,35 @@ foreach ctr [array names filename_list] {
 		    WHERE 
 			task_id = :new_task_id
 	        "
-
+		} else {
+		       
+		    set interco_company_id [db_string get_interco_company "select interco_company_id from im_projects where project_id=$project_id" -default ""]
+		    if {"" == $interco_company_id} {
+			set interco_company_id $customer_id
+		    }
+		    set billable_units_interco [im_trans_trados_matrix_calculate $interco_company_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
+		    
+		    db_dml update_task "
+                    UPDATE im_trans_tasks SET
+                        tm_integration_type_id = [im_trans_tm_integration_type_external],
+                        task_name = :task_name,
+                        task_filename = :task_name,
+                        description = :task_description,
+                        task_units = :task_units,
+                        billable_units = :billable_units,
+                        billable_units_interco = :billable_units_interco,
+                        match_x = :px_words,
+                        match_rep = :prep_words,
+                        match100 = :p100_words,
+                        match95 = :p95_words,
+                        match85 = :p85_words,
+                        match75 = :p75_words,
+                        match50 = :p50_words,
+                        match0 = :p0_words
+                    WHERE
+                        task_id = :new_task_id
+                "
+		}
 	    } err_msg] } {
 
 		# Failed to create translation task
