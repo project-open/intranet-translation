@@ -284,13 +284,14 @@ for {set i 1} {$i < $transit_files_len} {incr i} {
 
     set filename                [lindex $transit_fields 0]
     set px_words                [lindex $transit_fields 1]
-    set prep_words              0
+#   set prep_words              0
     set p100_words              [lindex $transit_fields 2]
     set p95_words               [lindex $transit_fields 3]
     set p85_words               [lindex $transit_fields 4]
     set p75_words               [lindex $transit_fields 5]
     set p50_words               [lindex $transit_fields 6]
     set p0_words                [lindex $transit_fields 7]
+    set prep_words              [lindex $transit_fields 8]
     set task_type_id            $org_task_type_id
 
     # Special treatment of repetitions - count them as negative in a separate task
@@ -300,6 +301,7 @@ for {set i 1} {$i < $transit_files_len} {incr i} {
      ]
 
     if {$rep_found_p} {
+	set repetitions         $prep_words
 	set px_words		[expr -$px_words]
 	set prep_words		[expr -$prep_words]
 	set p100_words		[expr -$p100_words]
@@ -308,10 +310,8 @@ for {set i 1} {$i < $transit_files_len} {incr i} {
 	set p75_words		[expr -$p75_words]
 	set p50_words		[expr -$p50_words]
 	set p0_words		[expr -$p0_words]
-
 	set task_type_id [im_project_type_translation]
     }
-
 	
 	switch $import_method {
 	
@@ -370,8 +370,7 @@ for {set i 1} {$i < $transit_files_len} {incr i} {
     
     set billable_units [im_trans_trados_matrix_calculate $customer_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
     
-    
-    
+   
     # 060605 fraber: Not necesary anymore: We now have a specific task type
     #	set task_type_id $project_type_id
     
@@ -414,7 +413,7 @@ for {set i 1} {$i < $transit_files_len} {incr i} {
 	set sum_p75_words [expr $sum_p75_words + $p75_words]
 	set sum_p50_words [expr $sum_p50_words + $p50_words]
 	set sum_p0_words [expr $sum_p0_words + $p0_words]
-    }
+   }
 }
 
 
