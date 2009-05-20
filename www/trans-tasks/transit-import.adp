@@ -91,6 +91,7 @@
 	<input type=hidden name=p75_words_list.1 value="@sum_p75_words@">
 	<input type=hidden name=p50_words_list.1 value="@sum_p50_words@">
 	<input type=hidden name=p0_words_list.1 value="@sum_p0_words@">
+	<input type=hidden name=repetitions.1 value="@repetitions@">
     </td>
 </tr>
 <tr>
