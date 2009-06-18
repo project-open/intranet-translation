@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<message_catalog package_key="intranet-translation" package_version="3.4.0.6.0" locale="zh_CN" charset="utf-8">
+
+  <msg key="0_">0% </msg>
+  <msg key="50_">50% </msg>
+  <msg key="75_">75% </msg>
+  <msg key="85_">85% </msg>
+  <msg key="95_">95% </msg>
+  <msg key="100_">100% </msg>
+  <msg key="Add">添加</msg>
+  <msg key="Add_a_New_Task">添加新任务</msg>
+  <msg key="Add_File">添加文件</msg>
+  <msg key="Add_Tasks_From_TM_Analysis">从翻译记忆库分析中添加新任务</msg>
+  <msg key="Add_Trados_Wordcount">添加 Trados 字数统计</msg>
+  <msg key="Add_Wordcount">添加字数统计</msg>
+  <msg key="Assign">分配</msg>
+  <msg key="Assign_Tasks">分配任务</msg>
+  <msg key="Assigned">已分配</msg>
+  <msg key="Assignments">分配</msg>
+  <msg key="Auto_Assigment">自动分配</msg>
+  <msg key="Auto_Assign">自动分配</msg>
+  <msg key="Auto_Assignment">自动分配</msg>
+  <msg key="Client_contact">客户合同</msg>
+  <msg key="Client_Project">客户项目编号</msg>
+  <msg key="Client_project_">客户项目编号</msg>
+  <msg key="Comment">备注</msg>
+  <msg key="Comments">备注</msg>
+  <msg key="Companies">公司</msg>
+  <msg key="Company">公司</msg>
+  <msg key="Company_1">公司:</msg>
+  <msg key="Company_Contact">公司合同</msg>
+  <msg key="cost_type_Data">%cost_type% 数据 </msg>
+  <msg key="cost_type_date">%cost_type% 数据:</msg>
+  <msg key="cost_type_nr">%cost_type% nr.: </msg>
+  <msg key="cost_type_status">%cost_type% 状态</msg>
+  <msg key="cost_type_template">%cost_type% 模板: </msg>
+  <msg key="cost_type_type">%cost_type% 类型 </msg>
+  <msg key="Database_Error">数据库错误</msg>
+  <msg key="days">天</msg>
+  <msg key="Del">删除</msg>
+  <msg key="Edit">编辑</msg>
+  <msg key="Editing">编辑</msg>
+  <msg key="End_Date">结束日期</msg>
+  <msg key="File">文件</msg>
+  <msg key="Filename">文件名</msg>
+  <msg key="Final_User">最终用户</msg>
+  <msg key="Help">帮助</msg>
+  <msg key="Input_Error">输入错误</msg>
+  <msg key="Internal_error">内部错误</msg>
+  <msg key="lt_Add_a_new_file_to_the">添加新文件至任务列表。</msg>
+  <msg key="lt_Add_a_new_subject_are">添加新主题区域</msg>
+  <msg key="lt_Add_the_content_of_a_">将本地 Trados“wordcount.csv”文件添加至任务列表。\n该文件应命名为“wordcount.csv”(小写字母)，需存在于项目文件夹内，不应出现同名的多个文件。 </msg>
+  <msg key="lt_Cant_find_the_project">无法找到组 ID 为 %project_id% 的项目</msg>
+  <msg key="lt_Cant_find_the_project_1">无法找到 ID 为 %project_id% 的项目</msg>
+  <msg key="lt_Click_right_and_choos">单机右侧选择“另存为”以下载文件</msg>
+</message_catalog>
