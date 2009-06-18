@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<message_catalog package_key="intranet-translation" package_version="3.4.0.6.0" locale="tr_TR" charset="utf-8">
+
+  <msg key="Client_Project">Müşteri Projesi</msg>
+  <msg key="Edit">Düzenleme</msg>
+  <msg key="Num_Words">Sözcük Sayısı </msg>
+  <msg key="Proof">Düzeltme</msg>
+</message_catalog>

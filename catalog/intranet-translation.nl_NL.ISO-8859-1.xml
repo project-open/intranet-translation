@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<message_catalog package_key="intranet-translation" package_version="3.4.0.6.0" locale="nl_NL" charset="ISO-8859-1">
+
+  <msg key="Client_Project">Klant Project Nr.</msg>
+  <msg key="Client_project_">Klant Project Nr.</msg>
+  <msg key="Companies">Berdrijven </msg>
+  <msg key="Projects">Projecten</msg>
+  <msg key="Provider">Leverancier </msg>
+  <msg key="Provider_1">Leverancier:</msg>
+  <msg key="VATnbsp">BTW&amp;amp;nbsp;</msg>
+</message_catalog>

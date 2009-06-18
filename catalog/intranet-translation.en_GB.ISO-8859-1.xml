@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<message_catalog package_key="intranet-translation" package_version="3.4.0.6.0" locale="en_GB" charset="ISO-8859-1">
+
+  <msg key="Ass">AL</msg>
+  <msg key="Client_Project">Customer Project No.</msg>
+  <msg key="Client_project_">Customer Project No.</msg>
+  <msg key="Dn">DN</msg>
+  <msg key="Final_User">End Client/Target Audience</msg>
+  <msg key="lt_Add_a_new_subject_are">Select a new subject area.</msg>
+  <msg key="lt_An_optional_field_spe">Client PO, WO, Client Reference No., etc.</msg>
+  <msg key="lt_File_is_missing_in_pr">File is missing in project no. %project_nr%: %file_name%</msg>
+  <msg key="lt_Who_is_the_final_cons">Refer to the new_project_defs wiki page.</msg>
+  <msg key="Up">UP</msg>
+</message_catalog>

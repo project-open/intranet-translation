@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<message_catalog package_key="intranet-translation" package_version="3.4.0.6.0" locale="ja_JP" charset="utf-8">
+
+  <msg key="Client_contact">顧客側窓口</msg>
+  <msg key="Company_1">企業 :</msg>
+  <msg key="Company_Contact">企業側窓口</msg>
+  <msg key="lt_An_optional_field_spe">クライアントのプロジェクト参照コードを指定しているオプションのフィールド。請求書を印刷するとき、使われます。例：20030310A12478</msg>
+  <msg key="lt_Return_to_Project_Pag">プロジェクトページへ戻る</msg>
+  <msg key="Other">その他</msg>
+  <msg key="Project_Tasks">プロジェクトタスク</msg>
+  <msg key="Projects">プロジェクト</msg>
+  <msg key="Provider">業者</msg>
+  <msg key="Provider_1">業者:</msg>
+  <msg key="Report">レポート</msg>
+  <msg key="TAXnbsp">税&amp;nbsp;</msg>
+  <msg key="Up">上</msg>
+  <msg key="User_Error">ユーザエラー</msg>
+  <msg key="VATnbsp">付加価値税&amp;nbsp;</msg>
+</message_catalog>
