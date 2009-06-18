@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="intranet-translation" package_version="3.4.0.0.0" locale="es_ES" charset="ISO-8859-1">
+<message_catalog package_key="intranet-translation" package_version="3.4.0.6.0" locale="es_ES" charset="ISO-8859-1">
 
   <msg key="--_Please_Select_--">-- Por favor seleccione --</msg>
   <msg key="0_">0%</msg>
@@ -11,7 +11,10 @@
   <msg key="Add">Añadir</msg>
   <msg key="Add_a_New_Task">Añadir una nueva tarea</msg>
   <msg key="Add_File">Añadir un archivo</msg>
+  <msg key="Add_Individual_Files">Agregar Archivos Individuales</msg>
+  <msg key="Add_Tasks_From_TM_Analysis">Añadir Tareas Nuevas Desde Una Memoria de Analisis de Traduccion</msg>
   <msg key="Add_Trados_Wordcount">Añadir análisis Trados</msg>
+  <msg key="Add_Wordcount">Agregar Conteo de Palabras</msg>
   <msg key="Ass">Asi</msg>
   <msg key="Assign">Assign</msg>
   <msg key="Assign_Tasks">Asignar tareas</msg>
@@ -141,6 +144,7 @@
   <msg key="Other">Otros</msg>
   <msg key="Payment_Method">Forma de pago</msg>
   <msg key="Payment_terms">Condiciones de pago</msg>
+  <msg key="Please_repeat_your_ana">Porfavor intente repetir su analisis Freebudget o informe al administrador del sistema</msg>
   <msg key="Project_Details">Detalles del proyecto</msg>
   <msg key="Project_Tasks">Tareas del proyecto</msg>
   <msg key="Projects">Proyectos</msg>
@@ -178,6 +182,8 @@
   <msg key="Translation_Tasks">Tareas de traducción</msg>
   <msg key="Translator_Comments">Comentarios del traductor</msg>
   <msg key="Units">Unidades</msg>
+  <msg key="Unknown_Freebudget_Version">Version Desconocidad de Freebudget</msg>
+  <msg key="Unknown_Webbudget_Version">Versión desconocidad de Webbudget</msg>
   <msg key="UoM">UM</msg>
   <msg key="Up">Car</msg>
   <msg key="Upload_File">Archivo a cargar</msg>
@@ -200,4 +206,6 @@
   <msg key="Workflow_trans_directory">1_trans</msg>
   <msg key="X_Trans">X Trans</msg>
   <msg key="XTr">XTr</msg>
+  <msg key="Your_file_freebudget_word">El archivo '%freebudget_wordcount_file%' no fue creado con una de las versiones soportadas de Freebudget (4.0, 5.0).</msg>
+  <msg key="Your_file_webbudget_word">El archivo '%webbudget_wordcount_file%' no fue creado con una de las versiones soportadas de Webbudget (3.9).</msg>
 </message_catalog>

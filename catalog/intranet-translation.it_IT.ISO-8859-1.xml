@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="intranet-translation" package_version="3.2.9.0.0" locale="it_IT" charset="ISO-8859-1">
+<message_catalog package_key="intranet-translation" package_version="3.4.0.6.0" locale="it_IT" charset="ISO-8859-1">
 
   <msg key="--_Please_Select_--">-- Seleziona --</msg>
   <msg key="0_">0%</msg>
@@ -15,7 +15,6 @@
   <msg key="Add_Tasks_From_TM_Analysis">Aggiungi nuove attività da un'analisi eseguita con una memoria di traduzione</msg>
   <msg key="Add_Trados_Wordcount">Aggiungi analisi Trados</msg>
   <msg key="Add_Wordcount">Aggiungi analisi</msg>
-  <msg key="All_languages">Tutte le lingue</msg>
   <msg key="Ass">Ass</msg>
   <msg key="Assign">Assegna</msg>
   <msg key="Assign_Tasks">Assegna attività</msg>
@@ -34,7 +33,6 @@
   <msg key="Company">Azienda</msg>
   <msg key="Company_1">Azienda:</msg>
   <msg key="Company_Contact">Contatto in azienda</msg>
-  <msg key="Company_Trados_Matrix">Matrice Trados dell'azienda</msg>
   <msg key="context">contesto</msg>
   <msg key="cost_type_Data">Dati %cost_type%</msg>
   <msg key="cost_type_date">Data %cost_type%:</msg>
@@ -149,8 +147,6 @@
   <msg key="Please_repeat_your_ana">Ripetere l'analisi con Freebudget o informare l'amministratore di sistema.</msg>
   <msg key="Project_Details">Dettagli del progetto</msg>
   <msg key="Project_Tasks">Attività del progetto</msg>
-  <msg key="Project_Translation_Details">Dettagli del progetto di traduzione</msg>
-  <msg key="Project_Translation_Task_Status">Stato attività del progetto di traduzione</msg>
   <msg key="Projects">Progetti</msg>
   <msg key="Proof">Rev</msg>
   <msg key="Proofing">Revisione</msg>
@@ -178,7 +174,6 @@
   <msg key="Task_Status">Stato</msg>
   <msg key="Task_Type">Tipo di attività</msg>
   <msg key="TAXnbsp">RITENUTA&amp;amp;nbsp;</msg>
-  <msg key="The_file_is_trans_by_another_person">Un'altra persona sta traducendo il file</msg>
   <msg key="Trados_Import">Importazione Trados</msg>
   <msg key="Trados_Matrix">Matrice di Trados</msg>
   <msg key="Trados_Upload">Caricamento Trados</msg>
@@ -211,7 +206,6 @@
   <msg key="Workflow_trans_directory">1_trans</msg>
   <msg key="X_Trans">X Trans</msg>
   <msg key="XTr">XTr</msg>
-  <msg key="You_are_the_admin">Sei l'amministratore...</msg>
   <msg key="Your_file_freebudget_word">Il file '%freebudget_wordcount_file%' non è stato creato con una delle versioni di Freebudget supportate (4.0, 5.0).</msg>
   <msg key="Your_file_webbudget_word">Il file '%webbudget_wordcount_file%' non è stato creato con una delle versioni di Webbudget supportate (3.9).</msg>
 </message_catalog>
