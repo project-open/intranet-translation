@@ -33,6 +33,7 @@
            <parameter datatype="number" min_n_values="1" max_n_values="1" name="SourceLanguageWithCountryLocaleP" default="0" description="Should we include the country locale (such as &quot;_CH&quot; for Swiss German) for selecting the source language? The default is 0, because for most companies the source language country variants don't matter. This would result in source languages such as &quot;de&quot;, &quot;es&quot; etc., instead of &quot;de_DE&quot;, &quot;es_ES&quot; etc. "/>
            <parameter datatype="string" min_n_values="1" max_n_values="1" name="TaskListEndDateFormat" default="YYYY-MM-DD" description="Date format for the TaskListComponent. Default is 'YYYY-MM-DD' for showing just the date. As an alternative, you can use 'YYYY-MM-DD HH24:MI' in order to work with date/time."/>
            <parameter datatype="number" min_n_values="1" max_n_values="1" name="EnableInterCompanyInvoicingP" default="0" description="Enable 'interco' inter-company invoicing? InterCo allows you to keep different wordcounts and financial documents when the paying project customer is not the final customer."/>
+           <parameter datatype="number" min_n_values="1" max_n_values="1" name="EnableAutoAssignmentComponentP" default="0" description="Enable auto assignment in the project's 'Assignments' page? Auto assignments are important for L10n companies with many small tasks, but clutter the GUI otherwise. Default is '0'."/>
         </parameters>
 
     </version>

@@ -3,7 +3,9 @@
 <property name="main_navbar_label">projects</property>
 <property name="sub_navbar">@sub_navbar;noquote@</property>
 
-@autoassignment_html;noquote@
+<if @auto_assignment_component_p@>
+@auto_assignment_html;noquote@
+</if>
 
 @task_html;noquote@
 

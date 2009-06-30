@@ -41,6 +41,10 @@ set project_nr [db_string project_nr "select project_nr from im_projects where p
 set page_title "$project_nr - [_ intranet-translation.lt_Translation_Assignmen]"
 set context_bar [im_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] [list "/intranet/projects/view?project_id=$project_id" "[_ intranet-translation.One_project]"] $page_title]
 
+
+set auto_assignment_component_p [parameter::get_from_package_key -package_key intranet-translation -parameter "EnableAutoAssignmentComponentP" -default 0]
+
+
 if {"" == $return_url} { set return_url [im_url_with_query] }
 
 set bgcolor(0) " class=roweven"
@@ -547,33 +551,33 @@ if {0 == $ctr} { set ass_html "" }
 
 
 # -------------------------------------------------------------------
-# Autoassign HTML Component
+# Auto_Assign HTML Component
 # -------------------------------------------------------------------
 
-set autoassignment_html_body ""
-set autoassignment_html_header ""
+set auto_assignment_html_body ""
+set auto_assignment_html_header ""
 
-append autoassignment_html_header "<td class=rowtitle>[_ intranet-translation.Num_Words]</td>\n"
-append autoassignment_html_body "<td><input type=text size=6 name=auto_assigned_words></td>\n"
+append auto_assignment_html_header "<td class=rowtitle>[_ intranet-translation.Num_Words]</td>\n"
+append auto_assignment_html_body "<td><input type=text size=6 name=auto_assigned_words></td>\n"
 
 if { $n_trans > 0 } {
-    append autoassignment_html_header "<td class=rowtitle>[_ intranet-translation.Trans]</td>\n"
-    append autoassignment_html_body "<td>[im_task_user_select trans_auto_id $project_resource_list "" translator]</td>\n"
+    append auto_assignment_html_header "<td class=rowtitle>[_ intranet-translation.Trans]</td>\n"
+    append auto_assignment_html_body "<td>[im_task_user_select trans_auto_id $project_resource_list "" translator]</td>\n"
 }
 if { $n_edit > 0 } {
-    append autoassignment_html_header "<td class=rowtitle>[_ intranet-translation.Edit]</td>\n"
-    append autoassignment_html_body "<td>[im_task_user_select edit_auto_id $project_resource_list "" editor]</td>\n"
+    append auto_assignment_html_header "<td class=rowtitle>[_ intranet-translation.Edit]</td>\n"
+    append auto_assignment_html_body "<td>[im_task_user_select edit_auto_id $project_resource_list "" editor]</td>\n"
 }
 if { $n_proof > 0} {
-    append autoassignment_html_header "<td class=rowtitle>[_ intranet-translation.Proof]</td>\n"
-    append autoassignment_html_body "<td>[im_task_user_select proof_auto_id $project_resource_list "" proof]</td>\n"
+    append auto_assignment_html_header "<td class=rowtitle>[_ intranet-translation.Proof]</td>\n"
+    append auto_assignment_html_body "<td>[im_task_user_select proof_auto_id $project_resource_list "" proof]</td>\n"
 }
 if { $n_other > 0 } {
-    append autoassignment_html_header "<td class=rowtitle>[_ intranet-translation.Other]</td\n>"
-    append autoassignment_html_body "<td>[im_task_user_select other_auto_id $project_resource_list ""]</td>\n"
+    append auto_assignment_html_header "<td class=rowtitle>[_ intranet-translation.Other]</td\n>"
+    append auto_assignment_html_body "<td>[im_task_user_select other_auto_id $project_resource_list ""]</td>\n"
 }
 
-set autoassignment_html "
+set auto_assignment_html "
 <form action=\"task-assignments\" method=POST>
 [export_form_vars project_id return_url orderby]
 <table>
@@ -581,10 +585,10 @@ set autoassignment_html "
   <td colspan=5 class=rowtitle align=center>[_ intranet-translation.Auto_Assignment]</td>
 </tr>
 <tr align=center>
-  $autoassignment_html_header
+  $auto_assignment_html_header
 </tr>
 <tr>
-  $autoassignment_html_body
+  $auto_assignment_html_body
 </tr>
 <tr>
   <td align=left colspan=5>
@@ -596,7 +600,7 @@ set autoassignment_html "
 "
 
 # No static tasks - no auto assignment...
-if {"" == $task_html} { set autoassignment_html "" }
+if {"" == $task_html} { set auto_assignment_html "" }
 
 # -------------------------------------------------------------------
 # Project Subnavbar
