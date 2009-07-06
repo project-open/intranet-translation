@@ -185,6 +185,7 @@ Project: %project_name%
   <msg key="Trados_Matrix">Trados Matrix</msg>
   <msg key="Trados_Upload">Trados Upload</msg>
   <msg key="Trans">Trans</msg>
+  <msg key="Trans_Langs">Trans Langs</msg>
   <msg key="Translation">Translation</msg>
   <msg key="Translation_Tasks">Translation Tasks</msg>
   <msg key="Translator_Comments">Translator's Comments</msg>
