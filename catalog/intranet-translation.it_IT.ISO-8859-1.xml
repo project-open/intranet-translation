@@ -178,13 +178,14 @@
   <msg key="Trados_Matrix">Matrice di Trados</msg>
   <msg key="Trados_Upload">Caricamento Trados</msg>
   <msg key="Trans">Trad</msg>
+  <msg key="Trans_Langs">Lingue trad</msg>
   <msg key="Translation">Traduzione</msg>
   <msg key="Translation_Tasks">Attività di traduzione</msg>
   <msg key="Translator_Comments">Commenti del traduttore</msg>
   <msg key="Units">Unità</msg>
   <msg key="Unknown_Freebudget_Version">Versione sconosciuta di Freebudget</msg>
   <msg key="Unknown_Webbudget_Version">Versione sconosciuta di Webbudget</msg>
-  <msg key="UoM">UdM</msg>
+  <msg key="UoM">UM</msg>
   <msg key="Up">Car</msg>
   <msg key="Upload_File">Carica file</msg>
   <msg key="Upload_file">Carica file</msg>
