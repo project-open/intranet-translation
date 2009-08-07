@@ -30,16 +30,6 @@ ad_proc -public im_project_type_proof {} { return 95 }
 ad_proc -public im_project_type_glossary_comp {} { return 96 }
 ad_proc -public im_project_type_translation {} { return 2500 }
 
-
-
-ad_proc -public im_uom_unit {} { return 322 }
-ad_proc -public im_uom_page {} { return 323 }
-ad_proc -public im_uom_s_word {} { return 324 }
-ad_proc -public im_uom_t_word {} { return 325 }
-ad_proc -public im_uom_s_line {} { return 326 }
-ad_proc -public im_uom_t_line {} { return 327 }
-
-
 ad_proc -public im_trans_tm_integration_type_external {} { return 4200 }
 ad_proc -public im_trans_tm_integration_type_ophelia {} { return 4202 }
 ad_proc -public im_trans_tm_integration_type_none {} { return 4204 }
