@@ -88,7 +88,7 @@ if { ![exists_and_not_null return_url] } {
 }
 
 # Write audit trail
-catch {im_project_audit $project_id } err_msg
+im_project_audit -project_id $project_id
 
 
 # Write the source + target language and subject area to freelance skills
