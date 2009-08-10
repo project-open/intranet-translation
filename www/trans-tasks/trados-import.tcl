@@ -417,7 +417,6 @@ ns_log Notice "trados-import: common_filename_comps=$common_filename_comps"
             set interco_company_id [db_string get_interco_company "select interco_company_id from im_projects where project_id=$project_id" -default ""]
 	    if {"" == $interco_company_id} { 
 		set interco_company_id $customer_id 
-		# ad_return_complaint 1 "No InterCo company found, please check project base data"
 	    }
 	    set billable_units_interco [im_trans_trados_matrix_calculate $interco_company_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
 	}
