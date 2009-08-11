@@ -197,7 +197,7 @@ switch -glob $submit {
 
 	    # Check whether there is a end-date...
 	    if {[info exists end_date($task_id)]} {
-		if {[regexp {^[0-9][0-9][0-9][0-9]\-[0-9][0-9]\-[0-9][0-9]$} $end_date($task_id)]} {
+		# if {[regexp {^[0-9][0-9][0-9][0-9]\-[0-9][0-9]\-[0-9][0-9]$} $end_date($task_id)]} {
 
 		    # Store deadline in with the task
 		    set update_sql "
@@ -217,7 +217,7 @@ switch -glob $submit {
 		    if {[regexp {^[0-9][0-9][0-9][0-9]\-[0-9][0-9]\-[0-9][0-9]$} $end_date($task_id)]} {
 		    }
 
-		}
+		# }
 	    }
 	    
 	    # Successfully updated translation task
