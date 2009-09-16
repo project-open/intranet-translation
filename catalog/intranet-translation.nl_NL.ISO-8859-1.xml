@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="intranet-translation" package_version="3.4.0.6.0" locale="nl_NL" charset="ISO-8859-1">
+<message_catalog package_key="intranet-translation" package_version="3.4.0.7.0" locale="nl_NL" charset="ISO-8859-1">
 
   <msg key="--_Please_Select_--">-- Kies --</msg>
   <msg key="0_">0%</msg>
@@ -86,7 +86,7 @@
   <msg key="lt_Please_start_Trados_a">Start Trados en genereer een bestand voor deze map.</msg>
   <msg key="lt_Please_try_to_repeat_">Probeer om uw Trados analyse te herhalen of neem contact op met uw systeembeheerder.</msg>
   <msg key="lt_Please_upload_a_file_">Upload een bestand me de extensie \&quot;.CSV\&quot;.</msg>
-  <msg key="lt_Project_Workflow_Stat">Project stroomschema status</msg>
+  <msg key="lt_Project_Workflow_Stat">Project werkproces status</msg>
   <msg key="lt_Return_to_previous_pa">Terug naar de vorige pagina</msg>
   <msg key="lt_Return_to_Project_Pag">Terug naar de project pagina</msg>
   <msg key="lt_Shows_the_status_of_a">Toont de status van alle taken s\nToe: Toegewezen betanden\nDn: Gedownloade bestanden\nUp: Uploaded bestanden</msg>
