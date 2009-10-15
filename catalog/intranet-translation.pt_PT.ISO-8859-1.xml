@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<message_catalog package_key="intranet-translation" package_version="3.4.0.7.0" locale="pt_PT" charset="ISO-8859-1">
+
+  <msg key="Add">Adicionar</msg>
+  <msg key="Add_a_New_Task">Adicionar uma tarefa nova</msg>
+  <msg key="Company">Empresa</msg>
+  <msg key="File">Ficheiro</msg>
+</message_catalog>
