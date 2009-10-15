@@ -197,27 +197,28 @@ switch -glob $submit {
 
 	    # Check whether there is a end-date...
 	    if {[info exists end_date($task_id)]} {
-		# if {[regexp {^[0-9][0-9][0-9][0-9]\-[0-9][0-9]\-[0-9][0-9]$} $end_date($task_id)]} {
 
-		    # Store deadline in with the task
-		    set update_sql "
+		set task_end_date $end_date($task_id)
+
+		# Disabled check for end_date in order to allow adding time
+		if {[regexp {^[0-9][0-9][0-9][0-9]\-[0-9][0-9]\-[0-9][0-9]$} $end_date($task_id)]} {
+		}
+
+		# Store deadline in with the task
+		set update_sql "
 			update im_trans_tasks set 
-				end_date = '$end_date($task_id)'::timestamptz
+				end_date = :task_end_date::timestamptz
 			where	project_id = :project_id
 				and task_id = :task_id"
-                    if {[catch {
-			db_dml update_task_deadline $update_sql
-		    } err_msg]} {
-                        ad_return_complaint 1 "<b>[lang::message::lookup "" intranet-translation.Date_conversion_error "Error converting date string into a database date."]</b><br>&nbsp;<br>
+		if {[catch {
+		    db_dml update_task_deadline $update_sql
+		} err_msg]} {
+		    ad_return_complaint 1 "<b>[lang::message::lookup "" intranet-translation.Date_conversion_error "Error converting date string into a database date."]</b><br>&nbsp;<br>
                                 [lang::message::lookup "" intranet-translation.Here_is_the_error "Here is the error. You may copy this text and send it to your system administrator for reference."]<br><pre>$err_msg</pre>
-                        "
-                        ad_script_abort
-                    }
-		    
-		    if {[regexp {^[0-9][0-9][0-9][0-9]\-[0-9][0-9]\-[0-9][0-9]$} $end_date($task_id)]} {
-		    }
-
-		# }
+                    "
+		    ad_script_abort
+		}
+		
 	    }
 	    
 	    # Successfully updated translation task
