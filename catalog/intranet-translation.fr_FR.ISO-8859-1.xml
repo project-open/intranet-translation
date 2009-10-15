@@ -98,6 +98,7 @@ Veuillez contacter le chef de projet de votre projet : </msg>
   <msg key="lt_The_task_id_specified">Lidentifiant de tâche spécifié ne semble pas être un nombre entier.</msg>
   <msg key="lt_This_file_is_used_to_">Ce fichier sert à définir les tâches du projet, une tâche pour chaque ligne du compte de mots.</msg>
   <msg key="lt_This_page_may_take_se">(Cette page risque de prendre plusieurs minutes pour pour charger votre fichier, en fonction de sa taille et de votre connexion Internet. Veuillez ne pas interrompre le système pendant ce processus.)</msg>
+  <msg key="lt_This_task_is_not_goin">cette tache ne sera pas controlée par le workflow de traduction</msg>
   <msg key="lt_Translation_Assignmen">Travaux de traduction</msg>
   <msg key="lt_Translation_source_la">Langue source de la traduction</msg>
   <msg key="lt_Translation_target_la">Langues cible de la traduction. Des fichiers distincts vont être crées pour chaque langue que vous aurez sélectionné</msg>

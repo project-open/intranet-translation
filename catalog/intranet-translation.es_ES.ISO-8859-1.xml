@@ -178,6 +178,7 @@
   <msg key="Trados_Matrix">Matriz Trados</msg>
   <msg key="Trados_Upload">Carga de Trados</msg>
   <msg key="Trans">Trad</msg>
+  <msg key="Trans_Langs">Idiomas trad.</msg>
   <msg key="Translation">Traducción</msg>
   <msg key="Translation_Tasks">Tareas de traducción</msg>
   <msg key="Translator_Comments">Comentarios del traductor</msg>

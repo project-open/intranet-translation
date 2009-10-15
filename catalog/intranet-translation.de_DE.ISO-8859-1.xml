@@ -177,8 +177,12 @@ Projekt: %project_name%
   <msg key="Task_Name">Aufgabenname</msg>
   <msg key="Task_Status">Aufgaben-status</msg>
   <msg key="Task_Type">Aufgaben-typ</msg>
+  <msg key="TAXnbsp">Steuer&amp;amp;nbsp;</msg>
+  <msg key="Trados_Import">Trados-Import</msg>
   <msg key="Trados_Matrix">CAT Matrix</msg>
+  <msg key="Trados_Upload">Trados Upload</msg>
   <msg key="Trans">Übers</msg>
+  <msg key="Trans_Langs">Zielsprachen</msg>
   <msg key="Translation">Übersetzung</msg>
   <msg key="Translation_Tasks">Übersetzungsaufgaben</msg>
   <msg key="Translator_Comments">Kommentare des Übersetzers</msg>
@@ -197,7 +201,14 @@ Projekt: %project_name%
   <msg key="View_Tasks">Aufgaben anzeigen</msg>
   <msg key="Weighted">Gewichtet</msg>
   <msg key="Wordcount">Anzahl Wörter</msg>
+  <msg key="Wordcount_Import">Import Zählbericht</msg>
   <msg key="Words">Wörter</msg>
+  <msg key="Workflow_deliv_directory">9_deliv</msg>
+  <msg key="Workflow_edit_directory">2_edit</msg>
+  <msg key="Workflow_other_directory">8_other</msg>
+  <msg key="Workflow_proof_directory">3_proof</msg>
+  <msg key="Workflow_source_directory">0_source</msg>
+  <msg key="Workflow_trans_directory">1_trans</msg>
   <msg key="X_Trans">X Trans</msg>
   <msg key="XTr">XTr</msg>
   <msg key="Your_file_freebudget_word">Die Datei '%freebudget_wordcount_file%' wurde nicht mit einer der unterstützen Freebudget-Versionen erstellt (4.0, 5.0).</msg>
