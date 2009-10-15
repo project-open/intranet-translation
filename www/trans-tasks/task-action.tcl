@@ -214,8 +214,18 @@ switch -glob $submit {
 		    db_dml update_task_deadline $update_sql
 		} err_msg]} {
 		    ad_return_complaint 1 "<b>[lang::message::lookup "" intranet-translation.Date_conversion_error "Error converting date string into a database date."]</b><br>&nbsp;<br>
-                                [lang::message::lookup "" intranet-translation.Here_is_the_error "Here is the error. You may copy this text and send it to your system administrator for reference."]<br><pre>$err_msg</pre>
+                    [lang::message::lookup "" intranet-translation.Here_is_the_error "Here is the error. You may copy this text and send it to your system administrator for reference."]<br><pre>$err_msg</pre>
                     "
+
+		    # Does this smell fishy?
+		    if {[string length $task_end_date] > 40} {
+			im_security_alert \
+			    -location "intranet-translation/www/trans-tasks/task-action: Save" \
+			    -message "Date string too long?" \
+			    -value $task_end_date \
+			    -severity "Normal"
+		    }
+
 		    ad_script_abort
 		}
 		
