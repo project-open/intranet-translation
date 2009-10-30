@@ -92,9 +92,11 @@ im_project_audit -project_id $project_id
 
 
 # Write the source + target language and subject area to freelance skills
-im_freelance_add_required_skills -object_id $project_id -skill_type_id [im_freelance_skill_type_source_language] -skill_ids $source_language_id
-im_freelance_add_required_skills -object_id $project_id -skill_type_id [im_freelance_skill_type_subject_area] -skill_ids $subject_area_id
-im_freelance_add_required_skills -object_id $project_id -skill_type_id [im_freelance_skill_type_expected_quality] -skill_ids $expected_quality_id
+if {[im_table_exists im_freelancers]} {
+    im_freelance_add_required_skills -object_id $project_id -skill_type_id [im_freelance_skill_type_source_language] -skill_ids $source_language_id
+    im_freelance_add_required_skills -object_id $project_id -skill_type_id [im_freelance_skill_type_subject_area] -skill_ids $subject_area_id
+    im_freelance_add_required_skills -object_id $project_id -skill_type_id [im_freelance_skill_type_expected_quality] -skill_ids $expected_quality_id
+}
 
 
 # Save the information about the project target languages
