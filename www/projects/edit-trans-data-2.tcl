@@ -110,7 +110,9 @@ db_transaction {
 	set sql "insert into im_target_languages values ($project_id, $lang)"
         db_dml insert_im_target_language $sql
 
-	im_freelance_add_required_skills -object_id $project_id -skill_type_id [im_freelance_skill_type_target_language] -skill_ids $lang
+	if {[im_table_exists im_freelancers]} {
+	    im_freelance_add_required_skills -object_id $project_id -skill_type_id [im_freelance_skill_type_target_language] -skill_ids $lang
+	}
     }
 }
 
@@ -217,11 +219,12 @@ if {[exists_and_not_null submit_subprojects]} {
 	catch { im_project_audit $sub_project_id} err_msg
 
 	# Write the source + target language and subject area to freelance skills
-	im_freelance_add_required_skills -object_id $sub_project_id -skill_type_id [im_freelance_skill_type_source_language] -skill_ids $source_language_id
-	im_freelance_add_required_skills -object_id $sub_project_id -skill_type_id [im_freelance_skill_type_target_language] -skill_ids $lang
-	im_freelance_add_required_skills -object_id $sub_project_id -skill_type_id [im_freelance_skill_type_subject_area] -skill_ids $subject_area_id
-	im_freelance_add_required_skills -object_id $sub_project_id -skill_type_id [im_freelance_skill_type_expected_quality] -skill_ids $expected_quality_id
-
+	if {[im_table_exists im_freelancers]} {
+	    im_freelance_add_required_skills -object_id $sub_project_id -skill_type_id [im_freelance_skill_type_source_language] -skill_ids $source_language_id
+	    im_freelance_add_required_skills -object_id $sub_project_id -skill_type_id [im_freelance_skill_type_target_language] -skill_ids $lang
+	    im_freelance_add_required_skills -object_id $sub_project_id -skill_type_id [im_freelance_skill_type_subject_area] -skill_ids $subject_area_id
+	    im_freelance_add_required_skills -object_id $sub_project_id -skill_type_id [im_freelance_skill_type_expected_quality] -skill_ids $expected_quality_id
+	}
 
 	# -----------------------------------------------------------------
 	# Add main project's members to the subproject
