@@ -61,6 +61,38 @@ ad_proc -public im_workflow_installed_p { } {
 }
 
 
+
+# -------------------------------------------------------------------
+# Drop-Down "Selects"
+# -------------------------------------------------------------------
+
+ad_proc -public im_trans_task_type_select { 
+    {-translate_p 1}
+    {-package_key "intranet-core" }
+    {-include_empty_p 0}
+    {-include_empty_name "All"}
+    select_name 
+    { default "" } 
+} {
+    Returns an html select box named $select_name and defaulted to 
+    $default with a list of translation task types.
+    This procedure checks the case that there is no "Intranet Trans
+    Task Type" category entries and the reverts to "Intranet Project
+    Type".
+} {
+    set trans_type_exists_p [util_memoize [list db_string ttypee "
+	select count(*) from im_categories where category_type = 'Intranet Translation Task Type'
+    "]]
+    if {$trans_type_exists_p} {
+	return [im_category_select -translate_p $translate_p -package_key $package_key -include_empty_p $include_empty_p -include_empty_name $include_empty_name "Intranet Translation Task Type" $select_name $default]
+    } else {
+	return [im_category_select -translate_p $translate_p -package_key $package_key -include_empty_p $include_empty_p -include_empty_name $include_empty_name "Intranet Project Type" $select_name $default]
+    }
+}
+
+
+
+
 # -------------------------------------------------------------------
 # Serve the abstract URLs to download im_trans_tasks files and
 # to advance the task status.
@@ -510,17 +542,17 @@ ad_proc -public im_trans_trados_matrix_project { project_id } {
     }
 
     # Get match100, match95, ...
-db_1row matrix_select "
-select
-	m.*,
-	acs_object.name(o.object_id) as object_name
-from
-	acs_objects o,
-	im_trans_trados_matrix m
-where
-	o.object_id = :project_id
-	and o.object_id = m.object_id(+)
-"
+    db_1row matrix_select "
+	select
+		m.*,
+		acs_object.name(o.object_id) as object_name
+	from
+		acs_objects o,
+		im_trans_trados_matrix m
+	where
+		o.object_id = :project_id
+		and o.object_id = m.object_id(+)
+    "
 
     set matrix(x) $match_x
     set matrix(rep) $match_rep
@@ -544,17 +576,17 @@ ad_proc -public im_trans_trados_matrix_company { company_id } {
     if {!$count} { return [im_trans_trados_matrix_internal] }
 
     # Get match100, match95, ...
-db_1row matrix_select "
-select
-	m.*,
-	acs_object.name(o.object_id) as object_name
-from
-	acs_objects o,
-	im_trans_trados_matrix m
-where
-	o.object_id = :company_id
-	and o.object_id = m.object_id(+)
-"
+    db_1row matrix_select "
+	select
+		m.*,
+		acs_object.name(o.object_id) as object_name
+	from
+		acs_objects o,
+		im_trans_trados_matrix m
+	where
+		o.object_id = :company_id
+		and o.object_id = m.object_id(+)
+    "
 
     set matrix(x) $match_x
     set matrix(rep) $match_rep
@@ -579,17 +611,17 @@ ad_proc -public im_trans_trados_matrix_internal { } {
     if {!$count} { return [im_trans_trados_matrix_default] }
 
     # Get match100, match95, ...
-db_1row matrix_select "
-select
-	m.*,
-	acs_object.name(o.object_id) as object_name
-from
-	acs_objects o,
-	im_trans_trados_matrix m
-where
-	o.object_id = :company_id
-	and o.object_id = m.object_id(+)
-"
+    db_1row matrix_select "
+	select
+		m.*,
+		acs_object.name(o.object_id) as object_name
+	from
+		acs_objects o,
+		im_trans_trados_matrix m
+	where
+		o.object_id = :company_id
+		and o.object_id = m.object_id(+)
+    "
 
     set matrix(x) $match_x
     set matrix(rep) $match_rep
@@ -2147,7 +2179,7 @@ ad_proc im_task_component {
 	if {!$dynamic_task_p} {
 
 	    # Static WF: Show drop-down to change the type
-	    set type_select [im_category_select "Intranet Project Type" task_type.$task_id $task_type_id]
+	    set type_select [im_trans_task_type_select task_type.$task_id $task_type_id]
 	} else {
 
 	    # Dynamic WF: We can't change the type for the WF while
@@ -2688,7 +2720,7 @@ ad_proc im_new_task_component {
 "
 	append task_table "<input type=hidden name='tm_integration_type_id' value='[im_trans_tm_integration_type_external]'>\n"
 
-	append task_table [im_project_type_select task_type_id $project_type_id]
+	append task_table [im_trans_task_type_select task_type_id $project_type_id]
 
 	append task_table "
     <select name=target_language_id>
@@ -2771,7 +2803,7 @@ ad_proc im_new_task_component {
     <td>[im_select -translate_p 0 "task_name_file" $task_list]</td>
     <td><input type=text size=2 value=0 name=task_units_file></td>
     <td>[im_category_select "Intranet UoM" "task_uom_file" $default_uom]</td>
-    <td>[im_category_select "Intranet Project Type" task_type_file $project_type_id]</td>
+    <td>[im_trans_task_type_select task_type_file $project_type_id]</td>
     $integration_type_html
     <td><input type=submit value=\"[_ intranet-translation.Add_File]\" name=submit_add_file></td>
     <td>[im_gif help "Add a new file to the list of tasks. \n New files need to be located in the \"source_xx\" folder to appear in the drop-down box on the left."]</td>
@@ -2789,7 +2821,7 @@ ad_proc im_new_task_component {
     <td><input type=text size=20 value=\"\" name=task_name_manual></td>
     <td><input type=text size=2 value=0 name=task_units_manual></td>
     <td>[im_category_select "Intranet UoM" "task_uom_manual" $default_uom]</td>
-    <td>[im_category_select "Intranet Project Type" task_type_manual $project_type_id]</td>
+    <td>[im_trans_task_type_select task_type_manual $project_type_id]</td>
     $integration_type_html
     <td><input type=submit value=\"[_ intranet-translation.Add]\" name=submit_add_manual></td>
     <td>[im_gif help "Add a \"manual\" task to the project. \n This task is not going to controled by the translation workflow."]</td>
