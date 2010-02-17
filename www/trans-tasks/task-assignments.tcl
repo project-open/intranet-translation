@@ -244,42 +244,26 @@ db_foreach select_tasks $task_sql {
     set edit 0
     set proof 0
     set other 0
-    switch $task_type_id {
-	93 { # Trans Only
-	    set trans 1
-	    incr n_trans
-	}
-	87 { # Trans + Edit  
-	    set trans 1 
-	    set edit 1
-	    incr n_trans
-	    incr n_edit
-	}
-	88 { # Edit Only  
-	    set edit 1
-	    incr n_edit
-	}
-	89 { # Trans + Edit + Proof  
-	    set trans 1 
-	    set edit 1 
-	    set proof 1
-	    incr n_trans
-	    incr n_edit
-	    incr n_proof
-	}
-	94 { # Trans + Int. Spotcheck 
-	    set trans 1 
-	    set edit 1
-	    incr n_trans
-	    incr n_edit
-	}
-	95 { # Proof Only
-	    set proof 1 
-	    incr n_proof
-	}
-	default { 
-	    set other 1
-	    incr n_other
+    set wf_list [db_string wf_list "select aux_string1 from im_categories where category_id = :task_type_id"]
+    if {"" == $wf_list} { set wf_list "other" }
+    foreach wf $wf_list {
+	switch $wf {
+	    trans { 
+		set trans 1 
+		incr n_trans
+	    }
+	    edit { 
+		set edit 1 
+		incr n_edit
+	    }
+	    proof { 
+		set proof 1 
+		incr n_proof
+	    }
+	    other { 
+		set other 1 
+		incr n_other
+	    }
 	}
     }
 
