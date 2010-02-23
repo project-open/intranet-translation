@@ -19,6 +19,7 @@
         <requires url="intranet-forum" version="3.4.0.0.0"/>
         <requires url="intranet-invoices" version="3.4.0.0.0"/>
         <requires url="intranet-workflow" version="3.4.0.0.0"/>
+        <requires url="intranet-material" version="3.4.0.0.0"/>
 
         <callbacks>
         </callbacks>
