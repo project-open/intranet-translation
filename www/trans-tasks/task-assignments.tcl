@@ -358,8 +358,7 @@ if {$wf_installed_p && !$ctr} { set task_html "" }
 
 # Determine the header fields for each workflow key
 # Data Structures:
-#	transitions(workflow_key) => [orderd list of transition_keys]
-#	name(transition_key) => transition_name
+#	transitions(workflow_key) => [orderd list of transition-name tuples]
 #
 set wf_header_sql "
 	select distinct
@@ -380,12 +379,11 @@ set wf_header_sql "
 "
 db_foreach wf_header $wf_header_sql {
     set trans_key "$workflow_key $transition_key"
-    set name($trans_key) $transition_name
     set trans_list [list]
     if {[info exists transitions($workflow_key)]} { 
 	set trans_list $transitions($workflow_key) 
     }
-    lappend trans_list $transition_key
+    lappend trans_list [list $transition_key $transition_name]
     ns_log Notice "task-assignments: header: wf=$workflow_key, trans=$transition_key: $trans_list"
     set transitions($workflow_key) $trans_list
 }
@@ -487,9 +485,11 @@ db_foreach wf_assignment $wf_assignments_render_sql {
 
 	set transition_list $transitions($workflow_key)
 	foreach trans $transition_list {
-	    set trans_key "$workflow_key $trans"
+	    set trans_key [lindex $trans 0]
+	    set trans_name [lindex $trans 1]
+	    set key "$workflow_key $trans_key"
 	    append ass_html "<td class=rowtitle align=center
-		>[lang::message::lookup "" intranet-translation.$trans $name($trans_key)]</td>\n"
+		>[lang::message::lookup "" intranet-translation.$trans_key $trans_name]</td>\n"
 	}
 	append ass_html "</tr>\n"
 	set last_workflow_key $workflow_key
@@ -507,15 +507,18 @@ db_foreach wf_assignment $wf_assignments_render_sql {
 	        <td><nobr>$task_uom</nobr></td>
     "
     foreach trans $transitions($workflow_key) {
-	set ass_key "$task_id $trans"
+
+	set trans_key [lindex $trans 0]
+	set trans_name [lindex $trans 1]
+	set ass_key "$task_id $trans_key"
 	set ass_val $ass($ass_key)
 	set deadl_val $deadl($ass_key)
 	if {"" == $deadl_val} { set deadl_val "$end_date_formatted" }
 
 	append ass_html "<td>\n"
-	append ass_html [im_task_user_select -group_list $group_list "assignment.${trans}-$task_id" $project_resource_list $ass_val]
+	append ass_html [im_task_user_select -group_list $group_list "assignment.${trans_key}-$task_id" $project_resource_list $ass_val]
 	append ass_html "\n"
-	append ass_html "<input type=text size=10 name=deadline.${trans}-$task_id value=\"$deadl_val\">"
+	append ass_html "<input type=text size=10 name=deadline.${trans_key}-$task_id value=\"$deadl_val\">"
 	append ass_html "\n"
     }
     append ass_html "</tr>\n"

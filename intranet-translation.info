@@ -9,7 +9,7 @@
     <singleton-p>t</singleton-p>
     <auto-mount>intranet-translation</auto-mount>
 
-    <version name="3.4.1.0.0" url="http://www.project-open.org/download/apm/intranet-translation-3.4.1.0.0.apm">
+    <version name="3.4.1.0.1" url="http://www.project-open.org/download/apm/intranet-translation-3.4.1.0.1.apm">
         <owner url="mailto:frank.bergmann@project-open.com">Frank Bergmann</owner>
         <vendor url="http://www.project-open.com/">]project-open[</vendor>
 
@@ -35,6 +35,8 @@
            <parameter datatype="string" min_n_values="1" max_n_values="1" name="TaskListEndDateFormat" default="YYYY-MM-DD" description="Date format for the TaskListComponent. Default is 'YYYY-MM-DD' for showing just the date. As an alternative, you can use 'YYYY-MM-DD HH24:MI' in order to work with date/time."/>
            <parameter datatype="number" min_n_values="1" max_n_values="1" name="EnableInterCompanyInvoicingP" default="0" description="Enable 'interco' inter-company invoicing? InterCo allows you to keep different wordcounts and financial documents when the paying project customer is not the final customer."/>
            <parameter datatype="number" min_n_values="1" max_n_values="1" name="EnableAutoAssignmentComponentP" default="0" description="Enable auto assignment in the project's 'Assignments' page? Auto assignments are important for L10n companies with many small tasks, but clutter the GUI otherwise. Default is '0'."/>
+
+           <parameter datatype="number" min_n_values="1" max_n_values="1" name="AutomaticProjectAdvanceP" default="1" description="Enable the automatic calculation of percent completed per translation project? Set this parameter to 0 for manual status updates. Default is '1'."/>
         </parameters>
 
     </version>
