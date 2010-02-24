@@ -215,6 +215,20 @@ if {$check_filename_equal_p} {
 # Let's copy the file into the FS
 # -------------------------------------------------------------------
 
+
+set path "$project_path/$upload_folder"
+if {![file isdirectory $path]} {
+    if { [catch {
+            ns_log Notice "/bin/mkdir $path"
+            exec /bin/mkdir "$path"
+    } err_msg] } {
+            # Probably some permission errors
+	ad_return_complaint "[_ intranet-translation.lt_Error_creating_subfol]" $err_msg
+            return
+    }
+}
+
+
 # First make sure that subdirectories exist
 set subfolders [split $task_name "/"]
 set subfolder_len [expr [llength $subfolders]-1]
@@ -224,7 +238,7 @@ for {set i 0} {$i < $subfolder_len} {incr i} {
     append subfolder_path "$subfolder/"
 
     set path "$project_path/$upload_folder/$subfolder_path"
-    ns_log Notice "path=$path"
+    ns_log Notice "upload-tasks-2.tcl: path=$path"
 
     if {![file isdirectory $path]} {
 	if { [catch {
