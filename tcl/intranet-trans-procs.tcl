@@ -2712,7 +2712,7 @@ ad_proc im_new_task_component {
     [export_form_vars project_id return_url]
     <input type=file name=upload_file size=30 value='*.csv'>
     <select name=wordcount_application>
-	<option value=\"trados\" $trados_selected>Trados (3.0 - 7.0) </option>
+	<option value=\"trados\" $trados_selected>Trados (3.0 - 9.0) </option>
 	<option value=\"transit\" $transit_selected>Transit (All)</option>
 	<option value=\"freebudget\" $freebudget_selected>FreeBudget (4.0 - 5.0)</option>
 	<option value=\"webbudget\" $webbudget_selected>WebBudget (4.0 - 5.0)</option>
