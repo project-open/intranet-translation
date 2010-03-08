@@ -142,6 +142,7 @@ if {"" != $notify_next_wf_stage_p} {
 
 set max_n_bytes [ad_parameter -package_id [im_package_filestorage_id] MaxNumberOfBytes "" 0]
 set tmp_filename [ns_queryget upload_file.tmpfile]
+im_security_alert_check_tmpnam -location "trados-task-2.tcl" -value $tmp_filename
 set filesize [file size $tmp_filename]
 
 if { $max_n_bytes && ($filesize > $max_n_bytes) } {
