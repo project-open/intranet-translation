@@ -37,6 +37,7 @@ if {!$write} {
 
 # Compatibility with old message...
 set transit_wordcount_file $wordcount_file
+im_security_alert_check_tmpnam -location "transit-import.tcl" -value $wordcount_file
 
 # Check for accents and other non-ascii characters
 set charset [ad_parameter -package_id [im_package_filestorage_id] FilenameCharactersSupported "" "alphanum"]

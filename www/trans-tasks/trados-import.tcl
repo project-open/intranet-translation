@@ -30,7 +30,8 @@ ad_page_contract {
     task_type_id:integer
     wordcount_file
     { target_language_id "" }
-    {import_method "Asp"}
+    { import_method "Asp" }
+    { upload_file "" }
 }
 
 # ---------------------------------------------------------------------
@@ -41,12 +42,14 @@ set user_id [ad_maybe_redirect_for_registration]
 set ip_address [ad_conn peeraddr]
 im_project_permissions $user_id $project_id view read write admin
 if {!$write} {
-    append 1 "<li>[_ intranet-translation.lt_You_have_insufficient_3]"
-    return
+    ad_return_complaint 1 "<li>[_ intranet-translation.lt_You_have_insufficient_3]"
+    ad_script_abort
 }
 
 # Compatibility with old message...
 set trados_wordcount_file $wordcount_file
+im_security_alert_check_tmpnam -location "trados-xml-import.tcl" -value $wordcount_file
+
 
 # Check for accents and other non-ascii characters
 set charset [ad_parameter -package_id [im_package_filestorage_id] FilenameCharactersSupported "" "alphanum"]
@@ -138,7 +141,7 @@ if { ![db_0or1row projects_info_query $project_query] } {
 
 
 # ---------------------------------------------------------------------
-# Start parsing the wordcount file
+# Read the wordcount file from the /tmp directory
 # ---------------------------------------------------------------------
 
 append page_body "
@@ -156,6 +159,19 @@ if {[catch {
     ad_return_complaint 1 "Unable to open file $wordcount_file:<br><pre>\n$err</pre>"
     return
 }
+
+
+
+# ---------------------------------------------------------------------
+# Check if the file is a Trados 9.x XML file
+# ---------------------------------------------------------------------
+
+
+set file_extension [string tolower [file extension $upload_file]]
+ad_return_complaint 1 $file_extension
+
+
+
 
 set trados_files [split $trados_files_content "\n"]
 set trados_files_len [llength $trados_files]

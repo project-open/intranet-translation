@@ -51,6 +51,7 @@ if {!$write} {
 # number_of_bytes is the upper-limit
 set max_n_bytes [ad_parameter -package_id [im_package_filestorage_id] MaxNumberOfBytes "" 0]
 set tmp_filename [ns_queryget upload_file.tmpfile]
+im_security_alert_check_tmpnam -location "trados-upload.tcl" -value $tmp_filename
 set wordcount_file "$tmp_filename.copy"
 
 ns_log Notice "trados-upload: max_n_bytes=$max_n_bytes"
@@ -67,7 +68,10 @@ ns_log Notice "trados-upload: file_extension=$file_extension"
 # ".rep" is uniquely used for transit
 if {[string equal $file_extension ".rep"]} { set wordcount_application "transit" }
 
-if {![string equal $file_extension ".csv"] && ![string equal $file_extension ".txt"] && ![string equal $file_extension ".rep"]} {
+if {[string equal $file_extension ".xml"]} { set wordcount_application "trados-xml" }
+
+
+if {![string equal $file_extension ".csv"] && ![string equal $file_extension ".txt"] && ![string equal $file_extension ".rep"]&& ![string equal $file_extension ".xml"]} {
     ad_return_complaint 1 "<li>
 	[lang::message::lookup "" intranet-translation.Your_file_is_not_a_wordcount_file "Your file is not a valid wordcount file"]<br>
 	[lang::message::lookup "" intranet-translation.Please_upload_cvs_txt "Please upload a file with the extension '.csv' or '.txt'."]"
@@ -83,6 +87,9 @@ set import_method "Asp"
 switch $wordcount_application {
     trados {
 	ad_returnredirect trados-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file upload_file import_method]
+    }
+    trados-xml {
+	ad_returnredirect trados-xml-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file upload_file import_method]
     }
     transit {
 	ad_returnredirect transit-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file upload_file import_method]
