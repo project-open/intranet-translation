@@ -163,15 +163,8 @@ if {[catch {
 
 
 # ---------------------------------------------------------------------
-# Check if the file is a Trados 9.x XML file
+# Start parsing the file
 # ---------------------------------------------------------------------
-
-
-set file_extension [string tolower [file extension $upload_file]]
-ad_return_complaint 1 $file_extension
-
-
-
 
 set trados_files [split $trados_files_content "\n"]
 set trados_files_len [llength $trados_files]
