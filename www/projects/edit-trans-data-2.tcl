@@ -1,4 +1,4 @@
-# /packages/intranet-translation/projects/edit-company-data-2.tcl
+# /packages/intranet-translation/projects/edit-trans-data-2.tcl
 #
 # Copyright (C) 2003 - 2009 ]project-open[
 #
