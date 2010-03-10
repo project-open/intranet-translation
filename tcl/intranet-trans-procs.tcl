@@ -67,7 +67,7 @@ ad_proc -public im_workflow_installed_p { } {
 # -------------------------------------------------------------------
 
 ad_proc -public im_trans_task_type_select { 
-    {-translate_p 1}
+    {-translate_p 0}
     {-package_key "intranet-core" }
     {-include_empty_p 0}
     {-include_empty_name "All"}
