@@ -23,6 +23,8 @@ if {![info exists project_id]} {
 if {![info exists project_id] || 0 == $project_id} { ad_return_complaint 1 "Trans Task Action Log: No project_id specified" }
 if {![info exists return_url]} { ad_return_complaint 1 "Trans Task Action Log: No return_url specified" }
 
+set task_action_ctr 0
+
 set user_id [ad_maybe_redirect_for_registration]
 im_project_permissions $user_id $project_id view read write admin
 if {!$write} { return "" }
@@ -34,7 +36,6 @@ set project_url "/intranet/projects/view"
 set user_url "/intranet/users/view"
 
 set colspan 3
-
 
 # ----------------------------------------------------
 # "Multirow" to show a list of actions
@@ -80,7 +81,6 @@ list::create \
     }
 
 
-
 multirow create task_actions task_action_type task_action task_action_formatted
 set task_actions_sql "
 	select	im_category_from_id(action_type_id) as action_type,
@@ -105,7 +105,9 @@ set task_actions_sql "
 "
 
 db_multirow -extend { task_url user_url task_name_ext } task_actions task_actions_query $task_actions_sql { 
-	set task_url ""
-	set user_url "/intranet/users/view?user_id=$user_id"
-	set task_name_ext "$task_name ($source_lang -> $target_lang)"
+    set task_url ""
+    set user_url "/intranet/users/view?user_id=$user_id"
+    set task_name_ext "$task_name ($source_lang -> $target_lang)"
+    
+    incr task_action_ctr
 }
