@@ -1,5 +1,3 @@
-<if @task_actions:rowcount@ ne 0>
+<if @task_action_ctr@>
 <listtemplate name="task_actions"></listtemplate>
 </if>
-
-
