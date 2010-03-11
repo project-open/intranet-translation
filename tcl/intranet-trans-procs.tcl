@@ -119,7 +119,7 @@ proc intranet_task_download {} {
     set task_file_body [lindex $path_list 5]
     ns_log Notice "intranet_task_download: task_id=$task_id, task_path=$task_path, task_body=$task_file_body"
 
-    # Make sure $task_id is a number and emit an error otherwise!!!
+    # Make sure $task_id is a number and emit an error otherwise!
 
     # get everything about the specified task
     set task_sql "
@@ -1886,9 +1886,13 @@ ad_proc im_task_freelance_component { user_id project_id return_url } {
     administrators.
 } {
     # Get the permissions for the current _project_
-    im_project_permissions $user_id $project_id project_view project_read project_write project_admin
+#    im_project_permissions $user_id $project_id project_view project_read project_write project_admin
+#    if {$project_write} { return "" }
 
-    if {$project_write} { return "" }
+    # Only freelancers should see this component
+    set freelance_p [im_profile::member_p -profile_id [im_freelance_group_id] -user_id $user_id]
+    if {!$freelance_p} { return "" }
+
     return [im_task_component -include_subprojects_p 1 $user_id $project_id $return_url]
 }
 
@@ -2591,6 +2595,9 @@ ad_proc im_new_task_component {
     Return a piece of HTML to allow to add new tasks
 } {
     if {![im_permission $user_id view_trans_proj_detail]} { return "" }
+    im_project_permissions $user_id $project_id view read write admin
+    if {!$write} { return "" }
+
     set default_uom [parameter::get_from_package_key -package_key intranet-trans-invoices -parameter "DefaultPriceListUomID" -default 324]
 
     # More then one option for a TM?
