@@ -1875,27 +1875,11 @@ where
 
 
 
+
 # -------------------------------------------------------------------
 # Task Component
 # Show the list of tasks for one project
 # -------------------------------------------------------------------
-
-ad_proc im_task_freelance_component { user_id project_id return_url } {
-    Same as im_task_component, 
-    except that this component is only shown to non-project
-    administrators.
-} {
-    # Get the permissions for the current _project_
-#    im_project_permissions $user_id $project_id project_view project_read project_write project_admin
-#    if {$project_write} { return "" }
-
-    # Only freelancers should see this component
-    set freelance_p [im_profile::member_p -profile_id [im_freelance_group_id] -user_id $user_id]
-    if {!$freelance_p} { return "" }
-
-    return [im_task_component -include_subprojects_p 1 $user_id $project_id $return_url]
-}
-
 
 ad_proc im_task_component { 
     {-include_subprojects_p 0}
@@ -2417,11 +2401,14 @@ ad_proc im_task_component {
     if {$project_admin && $ctr > 0} {
 	append task_table "
 <tr align=right> 
-  <td align=left>
+  <td colspan=15 align=left>
+	<select name=action>
+	<option value='save' selected>[lang::message::lookup "" intranet-translation.Save_Changes "Save Changes"]</option>
+	<option value='batch'>[lang::message::lookup "" intranet-translation.Create_Batch "Create Batch"]</option>
+	<option value='delete'>[lang::message::lookup "" intranet-translation.Delete "Delete"]</option>
+	</select>
+	<input type=submit name=submit_submit value=\"[lang::message::lookup "" intranet-translation.Submit "Submit"]\">
   </td>
-  <td colspan=13 align=right>&nbsp;</td>
-  <td align=center><input type=submit value=\"[_ intranet-translation.Save]\" name=submit_save></td>
-  <td align=center><input type=submit value=\"[_ intranet-translation.Del]\" name=submit_del></td>
 </tr>"
     }
 
@@ -2431,6 +2418,28 @@ ad_proc im_task_component {
 
     return $task_table
 }
+
+
+# -------------------------------------------------------------------
+# Freelancer's version of the Task Component
+# -------------------------------------------------------------------
+
+ad_proc im_task_freelance_component { user_id project_id return_url } {
+    Same as im_task_component, 
+    except that this component is only shown to non-project
+    administrators.
+} {
+    # Get the permissions for the current _project_
+#    im_project_permissions $user_id $project_id project_view project_read project_write project_admin
+#    if {$project_write} { return "" }
+
+    # Only freelancers should see this component
+    set freelance_p [im_profile::member_p -profile_id [im_freelance_group_id] -user_id $user_id]
+    if {!$freelance_p} { return "" }
+
+    return [im_task_component -include_subprojects_p 1 $user_id $project_id $return_url]
+}
+
 
 
 # -------------------------------------------------------------------

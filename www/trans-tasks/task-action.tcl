@@ -30,14 +30,14 @@ ad_page_contract {
     { task_units_manual ""}
     { task_uom_manual "" }
     { task_type_manual "" }
-    { submit "" }
     { submit_view ""}
-    { submit_del ""}
-    { submit_save ""}
+    { submit_submit ""}
     { submit_assign "" }
     { submit_trados "" }
     { submit_add_manual "" }
     { submit_add_file "" }
+    { submit_submit "" }
+    { action "" }
 }
 
 set date_format [parameter::get_from_package_key -package_key intranet-translation -parameter "TaskListEndDateFormat" -default "YYYY-MM-DD"]
@@ -65,20 +65,19 @@ set wf_installed_p [im_workflow_installed_p]
 
 # Compatibility with code before L10n.
 # ToDo: Remove this and replace by cleaner code
-if {"" != $submit_view} { set submit "View Tasks" }
-if {"" != $submit_del} { set submit "Del" }
-if {"" != $submit_save} { set submit "Save" }
-if {"" != $submit_assign} { set submit "Assign Tasks" }
-if {"" != $submit_trados} { set submit "Trados Import" }
-if {"" != $submit_add_manual} { set submit "Add" }
-if {"" != $submit_add_file} { set submit "Add File" }
+if {"" != $submit_view} { set action "View Tasks" }
+if {"" != $submit_assign} { set action "Assign Tasks" }
+if {"" != $submit_trados} { set action "Trados Import" }
+if {"" != $submit_add_manual} { set action "Add" }
+if {"" != $submit_add_file} { set action "Add File" }
 
 set user_id [ad_maybe_redirect_for_registration]
 set page_body "<PRE>\n"
 
-switch -glob $submit {
+switch -glob $action {
 
     "" {
+	ad_return_complaint 1 empty
 	# Currently only "Upload" has an empty "submit" string,
 	# because the button needs to caryy the task_id.
 
@@ -88,27 +87,31 @@ switch -glob $submit {
 	    ad_returnredirect $return_url
 	}
 
-	set error "[_ intranet-translation.lt_Unknown_submit_comman]: '$submit'"
+	set error "[_ intranet-translation.lt_Unknown_submit_comman]: '$action'"
 	ad_returnredirect "/error?error=$error"
     }
 
     "Trados Import" {
+	ad_return_complaint 1 trados_import
 	ad_returnredirect "task-trados?[export_url_vars project_id return_url]"
     }
 
     "Assign" {
+	ad_return_complaint 1 assign
 	ad_returnredirect "task-assignments?[export_url_vars project_id return_url]"
     }
 
     "Assign Tasks" {
+	ad_return_complaint 1 assign-tasks
 	ad_returnredirect "task-assignments?[export_url_vars project_id return_url]"
     }
 
     "View Tasks" {
+	ad_return_complaint 1 view_tasks
 	ad_returnredirect "task-list?[export_url_vars project_id return_url]"
     }
 
-    "Save" {
+    "save" {
 	# Save the changes in billable_units and task_status
 	#
 	set task_list [array names task_status]
@@ -241,7 +244,7 @@ switch -glob $submit {
 	return
     }
 
-    "Del" {
+    "delete" {
 	# "Del" button pressed: delete the marked tasks
 	#
 	foreach task_id $delete_task {
@@ -276,7 +279,204 @@ switch -glob $submit {
     }
 
 
+    "batch" {
+	# "Batch Files" button pressed: Group the files into a single batch .zip file
+	#
+	
+	#checking of the batch
+	if {[llength $delete_task] <= 1} {
+	    ad_return_complaint 1 "<p>[lang::message::lookup "" intranet-translation.Less_then_two_files_selected "Less then two files selected"]</b>:<br>
+		[lang::message::lookup "" intranet-translation.No_need_for_batching_msg "
+			There is no need for batching for less then two file.
+		"]
+	    "
+	    ad_script_abort
+	}
+
+#	im_translation_batching_check_tasks $delete_task
+
+	# Base path to files in the filestorage
+	db_1row projects_info "
+		select project_name, project_nr, im_category_from_id(source_language_id) as project_source_language 
+		from im_projects where project_id = :project_id
+	"
+	set server_path [im_filestorage_project_path_helper $project_id]
+	set locale "en_US"
+	set source_dir [lang::message::lookup $locale intranet-translation.Workflow_source_directory "source"]
+	append server_path "/" $source_dir "_" $project_source_language
+
+	# Initialize fiels for summing up tasks
+	set task_description ""
+	set summed_task_units 0
+	set summed_billable_units 0
+	set summed_match_x 0
+	set summed_match_rep 0
+	set summed_match100 0
+	set summed_match95 0
+	set summed_match85 0
+	set summed_match75 0
+	set summed_match50 0
+	set summed_match0 0
+	set summed_billable_units_interco 0
+
+	set comp_source_language_id ""
+	set comp_target_language_id ""
+	set comp_task_type_id ""
+	set comp_task_status_id ""
+	set comp_task_uom_id ""
+	set comp_trans_id ""
+	set comp_edit_id ""
+	set comp_proof_id ""
+	set comp_other_id ""
+	set comp_end_date ""
+ 
+	set sql_query "
+		select	task_filename, task_units, billable_units as bill_units, match_x, match_rep, 
+			match100, match95, match85, match75, match50, match0, billable_units_interco, 
+			task_type_id, task_status_id, source_language_id, target_language_id, task_uom_id,
+			trans_id, edit_id, proof_id, other_id, project_id
+		from	im_trans_tasks
+		where	task_id in ([join $delete_task ", "])
+	"
+  
+	db_foreach task_duplicate $sql_query { 
+	    set full_task_filename ""
+	    append full_task_filename $server_path "/" $task_filename
+	    lappend task_filenames $full_task_filename 
+	    set summed_task_units [expr $task_units+0 + $summed_task_units] 
+	    set summed_billable_units [expr $bill_units+0 + $summed_billable_units] 
+	    set summed_match_x [expr $match_x+0 + $summed_match_x] 
+	    set summed_match_rep [expr $match_rep+0 + $summed_match_rep] 
+	    set summed_match100 [expr $match100+0 + $summed_match100] 
+	    set summed_match95 [expr $match95+0 + $summed_match95] 
+	    set summed_match85 [expr $match85+0 + $summed_match85] 
+	    set summed_match75 [expr $match75+0 + $summed_match75] 
+	    set summed_match50 [expr $match50+0 + $summed_match50] 
+	    set summed_match0 [expr $match0+0 + $summed_match0] 
+	    set summed_billable_units_interco [expr $billable_units_interco+0 + $summed_billable_units_interco]      
+
+	    # Check the parameters of the task.
+	    # We can not batch together tasks of different languages or types.
+	    set err ""
+	    if {"" != $comp_source_language_id && $comp_source_language_id != $source_language_id} { set err "Source language" }
+	    if {"" != $comp_target_language_id && $comp_target_language_id != $target_language_id} { set err "Target language" }
+	    if {"" != $comp_task_type_id && $comp_task_type_id != $task_type_id} { set err "Task type" }
+	    if {"" != $comp_task_uom_id && $comp_task_uom_id != $task_uom_id} { set err "Task UoM" }
+	    if {"" != $trans_id || "" != $edit_id || "" != $proof_id || "" != $other_id} { set err "Already Assigned" }
+#	    if {"" != $comp_ && $comp_ != $} { set err "" }
+	    if {"" != $err} {
+		ad_return_complaint 1 "[lang::message::lookup "" intranet-translation.Invalid_Batching "Invalid Batching"]: $err"
+		ad_script_abort
+	    }
+	    set comp_source_language_id $source_language_id
+	    set comp_target_language_id $target_language_id
+	    set comp_task_type_id $task_type_id
+	    set comp_task_uom_id $task_uom_id
+	}
+
+	# Check that all files are present before we actually start zipping
+	foreach file $task_filenames {
+	     if {![file readable $file]} {
+		ad_return_complaint 1 "[lang::message::lookup "" intranet-translation.Batch_file_not_found "Didn't find batch file '%file%'"]"
+		ad_script_abort
+	     }
+	}
+
+	# Building the batch file name
+	set batch_filename "${project_nr}_batch_"
+  
+	set last_filename ""
+	append batch_filename_query $batch_filename "%"
+	set sql_query "
+		select	task_name as last_filename 
+		from	im_trans_tasks 
+		where	task_name like :batch_filename_query
+		order by length(task_name) desc, task_name desc
+		limit 1
+	"
+	db_0or1row projects_info_query $sql_query 
+    
+	if {$last_filename == ""} {
+	    append batch_filename "0"
+	} else {
+	    # fish out the last order number
+	    set last_underscore [expr [string last "_" $last_filename] + 1]
+	    set last_point_zip [expr [string last "." $last_filename] - 1]
+	    set order_nr [string range $last_filename $last_underscore $last_point_zip]
+	    set order_nr [expr $order_nr + 1]
+	    append batch_filename $order_nr    
+	}
+	append batch_filename ".zip"    
+
+	# Create a new translation task for the batch file
+	set ip_address [ad_conn peeraddr]
+	
+	set new_task_id [im_exec_dml new_task "im_trans_task__new (
+		null,				-- task_id
+		'im_trans_task',		-- object_type
+		now(),				-- creation_date
+		:user_id,			-- creation_user
+		:ip_address,			-- creation_ip	
+		null,				-- context_id	
+		:project_id,			-- project_id	
+		:task_type_id,			-- task_type_id	
+		:task_status_id,		-- task_status_id
+		:source_language_id,		-- source_language_id
+		:target_language_id,		-- target_language_id
+		:task_uom_id			-- task_uom_id 
+	)"]
+	
+	db_dml update_task "
+		UPDATE im_trans_tasks SET
+			tm_integration_type_id = [im_trans_tm_integration_type_none],
+			task_name = :batch_filename,
+			task_filename = :batch_filename,
+			task_units = :summed_task_units,
+			billable_units = :summed_billable_units,
+			billable_units_interco = :summed_billable_units_interco,
+			match_x = :summed_match_x,
+			match_rep = :summed_match_rep,
+			match100 = :summed_match100, 
+			match95 = :summed_match95,
+			match85 = :summed_match85,
+			match75 = :summed_match75, 
+			match50 = :summed_match50,
+			match0 = :summed_match0
+		WHERE 
+			task_id = :new_task_id
+	"  
+      
+	# Zip all batched files into a single new ZIP
+	set full_batch_filename "$server_path/$batch_filename"
+	set zip_command "zip -j $full_batch_filename $task_filenames"
+	exec /bin/bash -c "$zip_command"
+    
+	# Delete the original tasks
+  	foreach task_id $delete_task {
+	    if { [catch {
+		if {$trans_quality_exists_p} {
+		    db_dml del_q_report_entries "delete from im_trans_quality_entries where report_id in (select report_id from im_trans_quality_reports where task_id = :task_id)"
+		    db_dml del_q_reports "delete from im_trans_quality_reports where task_id = :task_id"
+		}
+		im_exec_dml new_task "im_trans_task__delete(:task_id)"
+	    } err_msg] } {
+		ad_return_complaint 1 "<b>[_ intranet-translation.Database_Error]</b><br>
+		[lang::message::lookup "" intranet-translation.Dependent_objects_exist "We have found 'dependent objects' for the translation task '%task_id%'. Such dependant objects may include quality reports etc. Please remove these dependant objects first."]
+		<br>&nbsp;<br>
+		[lang::message::lookup "" intranet-translation.Here_is_the_error "Here is the error. You may copy this text and send it to your system administrator for reference."]
+		<br><pre>$err_msg</pre>"
+	    } else {
+		# Successfully deleted translation task
+		# Call user_exit to let TM know about the event
+		im_user_exit_call trans_task_delete $task_id
+	    }
+       }
+       ad_returnredirect $return_url
+       return
+    }
+
     "Add File" {
+	ad_return_complaint 1 add_file
 
 	# Decode the task_name_file
 	set task_filename [ns_urldecode $task_name_file]
@@ -287,6 +487,7 @@ switch -glob $submit {
     }
 
     "Add" {
+	ad_return_complaint 1 add
 	# Add the task WITHOUT filename.
 	# This means that the task does not require to
 	# have a file associated in the filestorage.
@@ -300,7 +501,7 @@ switch -glob $submit {
     }
 
     default {
-	ad_return_complaint 1 "<li>[_ intranet-translation.lt_Unknown_submit_comman]: '$submit'"
+	ad_return_complaint 1 "<li>[_ intranet-translation.lt_Unknown_submit_comman]: '$action'"
     }
 }
 
