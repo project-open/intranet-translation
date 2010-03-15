@@ -485,7 +485,6 @@ switch -glob $action {
     }
 
     "Add" {
-	ad_return_complaint 1 add
 	# Add the task WITHOUT filename.
 	# This means that the task does not require to
 	# have a file associated in the filestorage.
