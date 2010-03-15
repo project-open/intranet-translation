@@ -476,8 +476,6 @@ switch -glob $action {
     }
 
     "Add File" {
-	ad_return_complaint 1 add_file
-
 	# Decode the task_name_file
 	set task_filename [ns_urldecode $task_name_file]
 
