@@ -840,14 +840,11 @@ ad_proc -public im_trans_project_details_component { user_id project_id return_u
     im_project_permissions $user_id $project_id view read write admin
 
     set query "
-select
-	p.*,
-	im_name_from_user_id(p.company_contact_id) as company_contact_name
-from
-	im_projects p
-where
-	p.project_id=:project_id
-"
+	select	p.*,
+		im_name_from_user_id(p.company_contact_id) as company_contact_name
+	from	im_projects p
+	where	p.project_id=:project_id
+    "
 
     if { ![db_0or1row projects_info_query $query] } {
 	ad_return_complaint 1 "[_ intranet-translation.lt_Cant_find_the_project_1]"
@@ -855,71 +852,94 @@ where
     }
 
     set html "
-  <tr> 
-    <td colspan=2 class=rowtitle align=middle>
-      [_ intranet-translation.Project_Details]
-    </td>
-  </tr>
+	  <tr> 
+	    <td colspan=2 class=rowtitle align=middle>
+	      [_ intranet-translation.Project_Details]
+	    </td>
+	  </tr>
     "
 
     append html "
-  <tr> 
-    <td>[_ intranet-translation.Client_Project]</td>
-    <td>$company_project_nr</td>
-  </tr>
-  <tr> 
-    <td>[_ intranet-translation.Final_User]</td>
-    <td>$final_company</td>
-  </tr>
-  <tr> 
-    <td>[_ intranet-translation.Quality_Level]</td>
-    <td>[im_category_from_id $expected_quality_id]</td>
-  </tr>
-"
+	  <tr> 
+	    <td>[_ intranet-translation.Client_Project]</td>
+	    <td>$company_project_nr</td>
+	  </tr>
+	  <tr> 
+	    <td>[_ intranet-translation.Final_User]</td>
+	    <td>$final_company</td>
+	  </tr>
+	  <tr> 
+	    <td>[_ intranet-translation.Quality_Level]</td>
+	    <td>[im_category_from_id $expected_quality_id]</td>
+	  </tr>
+    "
+
     set company_contact_html [im_render_user_id $company_contact_id $company_contact_name $user_id $project_id]
     if {"" != $company_contact_html} {
 	append html "
-  <tr> 
-    <td>[_ intranet-translation.Company_Contact]</td>
-    <td>$company_contact_html</td>
-  </tr>
-"
+	  <tr> 
+	    <td>[_ intranet-translation.Company_Contact]</td>
+	    <td>$company_contact_html</td>
+	  </tr>
+	"
     }
 
     append html "
-  <tr> 
-    <td>[_ intranet-translation.Subject_Area]</td>
-    <td>[im_category_from_id $subject_area_id]</td>
-  </tr>
-  <tr> 
-    <td>[_ intranet-translation.Source_Language]</td>
-    <td>[im_category_from_id $source_language_id]</td>
-  </tr>
-  <tr> 
-    <td>[_ intranet-translation.Target_Languages_1]</td>
-    <td>[im_target_languages $project_id]</td>
-  </tr>
-"
+	  <tr> 
+	    <td>[_ intranet-translation.Subject_Area]</td>
+	    <td>[im_category_from_id $subject_area_id]</td>
+	  </tr>
+	  <tr> 
+	    <td>[_ intranet-translation.Source_Language]</td>
+	    <td>[im_category_from_id $source_language_id]</td>
+	  </tr>
+	  <tr> 
+	    <td>[_ intranet-translation.Target_Languages_1]</td>
+	    <td>[im_target_languages $project_id]</td>
+	  </tr>
+    "
 
     if {$write} {
 	append html "
-  <tr> 
-    <td></td>
-    <td>
-<form action=/intranet-translation/projects/edit-trans-data method=POST>
-[export_form_vars project_id return_url]
-<input type=submit name=edit value=\"[lang::message::lookup "" intranet-translation.Edit_Button "Edit"]\">
-</form>
-    </td>
-  </tr>
-"
+	  <tr> 
+	    <td></td>
+	    <td>
+	<form action=/intranet-translation/projects/edit-trans-data method=POST>
+	[export_form_vars project_id return_url]
+	<input type=submit name=edit value=\"[lang::message::lookup "" intranet-translation.Edit_Button "Edit"]\">
+	</form>
+	    </td>
+	  </tr>
+	"
+    }
+
+    # Check if there are menus related to translation visible for the current user
+    # Add the <ul>-List of associated menus
+    set bind_vars [list user_id $user_id]
+    set menu_html [im_menu_ul_list -no_cache -package_key "intranet-reporting" "reporting-translation" $bind_vars]
+    if {"" != $menu_html} {
+	append html "
+	<tr>
+	    <td colspan=2>&nbsp;</td>
+	</tr>
+	<tr>
+	    <td colspan=2 class=rowtitle align=middle>
+		[lang::message::lookup "" intranet-translation.Associated_reports "Associated Reports"]
+	    </td>
+	</tr>
+	<tr>
+	    <td colspan=2>
+		$menu_html
+	    </td>
+	</tr>
+	"
     }
 
     return "
-<table cellpadding=0 cellspacing=2 border=0>
-$html
-</table>
-"
+	<table cellpadding=0 cellspacing=2 border=0>
+	$html
+	</table>
+    "
 }
 
 
