@@ -489,6 +489,16 @@ ad_proc -public im_trans_trados_matrix_calculate { object_id px_words prep_words
 ad_proc -public im_trans_trados_matrix_calculate_helper { object_id px_words prep_words p100_words p95_words p85_words p75_words p50_words p0_words } {
     See im_trans_trados_matrix_calculate for comments...
 } {
+
+    if {"" == $px_words} { set px_words 0 }
+    if {"" == $prep_words} { set prep_words 0 }
+    if {"" == $p100_words} { set p100_words 0 }
+    if {"" == $p95_words} { set p95_words 0 }
+    if {"" == $p85_words} { set p85_words 0 }
+    if {"" == $p75_words} { set p75_words 0 }
+    if {"" == $p50_words} { set p50_words 0 }
+    if {"" == $p0_words} { set p0_words 0 }
+
     array set matrix [im_trans_trados_matrix $object_id]
     set task_units [expr \
 		    ($px_words * $matrix(x)) + \
