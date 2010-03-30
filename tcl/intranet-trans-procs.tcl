@@ -2742,12 +2742,14 @@ ad_proc im_new_task_component {
 	set transit_selected ""
 	set freebudget_selected ""
 	set webbudget_selected ""
+	set idiom_selected ""
 
 	switch $default_wordcount_app {
 	    "trados" { set trados_selected "selected" }
 	    "transit" { set transit_selected "selected" }
 	    "freebudget" { set freebudget_selected "selected" }
 	    "webbudget" { set webbudget_selected "selected" }
+	    "idiom" { set idiom_selected "selected" }
 	}
 
 	append task_table "
@@ -2762,6 +2764,7 @@ ad_proc im_new_task_component {
 	<option value=\"transit\" $transit_selected>Transit (All)</option>
 	<option value=\"freebudget\" $freebudget_selected>FreeBudget (4.0 - 5.0)</option>
 	<option value=\"webbudget\" $webbudget_selected>WebBudget (4.0 - 5.0)</option>
+	<option value=\"idiom\" $idiom_selected>Idiom CSV</option>
     </select>
 "
 	append task_table "<input type=hidden name='tm_integration_type_id' value='[im_trans_tm_integration_type_external]'>\n"

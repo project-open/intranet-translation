@@ -100,6 +100,11 @@ switch $wordcount_application {
     webbudget {
 	ad_returnredirect webbudget-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file upload_file import_method]
     }
+    idiom {
+	ad_returnredirect idiom-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file upload_file import_method]
+    }
+
+
 }
 
 ad_return_complaint 1 "Wrong translation memory type selected"
