@@ -68,7 +68,7 @@ ns_log Notice "trados-upload: file_extension=$file_extension"
 # ".rep" is uniquely used for transit
 if {[string equal $file_extension ".rep"]} { set wordcount_application "transit" }
 
-if {[string equal $file_extension ".xml"]} { set wordcount_application "trados-xml" }
+if {"trados" == $wordcount_application && [string equal $file_extension ".xml"]} { set wordcount_application "trados-xml" }
 
 
 if {![string equal $file_extension ".csv"] && ![string equal $file_extension ".txt"] && ![string equal $file_extension ".rep"]&& ![string equal $file_extension ".xml"]} {
@@ -103,8 +103,9 @@ switch $wordcount_application {
     idiom {
 	ad_returnredirect idiom-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file upload_file import_method]
     }
-
-
+    passolo {
+	ad_returnredirect passolo-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file upload_file import_method]
+    }
 }
 
 ad_return_complaint 1 "Wrong translation memory type selected"

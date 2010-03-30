@@ -2743,6 +2743,7 @@ ad_proc im_new_task_component {
 	set freebudget_selected ""
 	set webbudget_selected ""
 	set idiom_selected ""
+	set passolo_selected ""
 
 	switch $default_wordcount_app {
 	    "trados" { set trados_selected "selected" }
@@ -2750,25 +2751,26 @@ ad_proc im_new_task_component {
 	    "freebudget" { set freebudget_selected "selected" }
 	    "webbudget" { set webbudget_selected "selected" }
 	    "idiom" { set idiom_selected "selected" }
+	    "passolo" { set passolo_selected "selected" }
 	}
 
 	append task_table "
-<tr $bgcolor(0)> 
-  <td>
-    <nobr>
-    <form enctype=multipart/form-data method=POST action=/intranet-translation/trans-tasks/trados-upload>
-    [export_form_vars project_id return_url]
-    <input type=file name=upload_file size=30 value='*.csv'>
-    <select name=wordcount_application>
-	<option value=\"trados\" $trados_selected>Trados (3.0 - 9.0) </option>
-	<option value=\"transit\" $transit_selected>Transit (All)</option>
-	<option value=\"freebudget\" $freebudget_selected>FreeBudget (4.0 - 5.0)</option>
-	<option value=\"webbudget\" $webbudget_selected>WebBudget (4.0 - 5.0)</option>
-	<option value=\"idiom\" $idiom_selected>Idiom CSV</option>
-    </select>
-"
+	<tr $bgcolor(0)> 
+	  <td>
+	    <nobr>
+	    <form enctype=multipart/form-data method=POST action=/intranet-translation/trans-tasks/trados-upload>
+	    [export_form_vars project_id return_url]
+	    <input type=file name=upload_file size=30 value='*.csv'>
+	    <select name=wordcount_application>
+		<option value=\"trados\" $trados_selected>Trados (3.0 - 9.0) </option>
+		<option value=\"transit\" $transit_selected>Transit (All)</option>
+		<option value=\"freebudget\" $freebudget_selected>FreeBudget (4.0 - 5.0)</option>
+		<option value=\"webbudget\" $webbudget_selected>WebBudget (4.0 - 5.0)</option>
+		<option value=\"idiom\" $idiom_selected>Idiom CSV (beta)</option>
+		<option value=\"passolo\" $passolo_selected>Passolo CSV (beta)</option>
+	    </select>
+        "
 	append task_table "<input type=hidden name='tm_integration_type_id' value='[im_trans_tm_integration_type_external]'>\n"
-
 	append task_table [im_trans_task_type_select task_type_id $project_type_id]
 
 	append task_table "
