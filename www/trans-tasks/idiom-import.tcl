@@ -177,7 +177,7 @@ if {[catch {
 set idiom_files [split $idiom_files_content "\n"]
 set idiom_files_len [llength $idiom_files]
 set idiom_header [lindex $idiom_files 0]
-set idiom_total [lindex $idiom_files $idiom_files_len-1]
+set idiom_total [lindex $idiom_files [expr $idiom_files_len-1]]
 
 set separator ","
 set idiom_headers [split $idiom_header $separator]
