@@ -27,8 +27,6 @@ set bgcolor(1) " class=rowodd"
 
 set filename [db_string get_filename "select task_name from im_trans_tasks where task_id=:task_id" -default ""]
 
-
-
 # ---------------------------------------------------------------
 # Notify the PM?
 # ---------------------------------------------------------------
@@ -63,9 +61,11 @@ set previous_wf_role_mangled [string tolower $previous_wf_role_mangled]
 set survey_id 0
 set previous_wf_stage_user_id 0
 
-set survey_no [db_list trans_survey_no "
+if {$survey_exists_p} {
+    set survey_no [db_list trans_survey_no "
         select  count(*) from survsimp_surveys
     "]
+}
 
 if {$survey_exists_p && $previous_user_id != 0 && $survey_no != 0} {
     # Check if there is a survey associated with the specific stage
