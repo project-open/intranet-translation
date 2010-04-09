@@ -2495,12 +2495,7 @@ ad_proc im_task_error_component { user_id project_id return_url } {
     set other [lang::message::lookup $locale intranet-translation.Workflow_other_directory "other"]
 
 
-# 050501 Frank Bergmann: Disabled - PMs should be able to see this 
-# component anyway
-#    if {![im_permission $user_id view_trans_proj_detail]} { return "" }
-
-    # Show the missing tasks only to people who can write on the
-    # project
+    # Show the missing tasks only to people who can write on the project
     im_project_permissions $user_id $project_id view read write admin
     if {!$write} { return "" }
 
@@ -2528,31 +2523,31 @@ ad_proc im_task_error_component { user_id project_id return_url } {
 
     # -------------------- SQL -----------------------------------
     set sql "
-select 
-	min(t.task_id) as task_id,
-	t.task_name,
-	t.task_filename,
-	t.task_units,
-	im_category_from_id(t.source_language_id) as source_language,
-	uom_c.category as uom_name,
-	type_c.category as type_name
-from 
-	im_trans_tasks t,
-	im_categories uom_c,
-	im_categories type_c
-where
-	project_id=:project_id
-	and t.task_status_id <> 372
-	and t.task_uom_id=uom_c.category_id(+)
-	and t.task_type_id=type_c.category_id(+)
-group by
-	t.task_name,
-	t.task_filename,
-	t.task_units,
-	t.source_language_id,
-	uom_c.category,
-	type_c.category
-"
+	select 
+		min(t.task_id) as task_id,
+		t.task_name,
+		t.task_filename,
+		t.task_units,
+		im_category_from_id(t.source_language_id) as source_language,
+		uom_c.category as uom_name,
+		type_c.category as type_name
+	from 
+		im_trans_tasks t,
+		im_categories uom_c,
+		im_categories type_c
+	where
+		project_id=:project_id
+		and t.task_status_id <> 372
+		and t.task_uom_id=uom_c.category_id(+)
+		and t.task_type_id=type_c.category_id(+)
+	group by
+		t.task_name,
+		t.task_filename,
+		t.task_units,
+		t.source_language_id,
+		uom_c.category,
+		type_c.category
+    "
 
     set bgcolor(0) " class=roweven"
     set bgcolor(1) " class=rowodd"
