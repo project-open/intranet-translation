@@ -1643,155 +1643,154 @@ ad_proc im_task_status_component { user_id project_id return_url } {
     # assigned. We are going to subtract the assigned files/wcs from it.
 
     set unassigned_files_sql "
-select
-	count(t.trans) as unassigned_trans,
-	count(t.edit) as unassigned_edit,
-	count(t.proof) as unassigned_proof,
-	count(t.other) as unassigned_other,
-	CASE WHEN sum(t.trans) is null THEN 0 ELSE sum(t.trans) END as unassigned_trans_wc,
-	CASE WHEN sum(t.edit) is null THEN 0 ELSE sum(t.edit) END as unassigned_edit_wc,
-	CASE WHEN sum(t.proof) is null THEN 0 ELSE sum(t.proof) END as unassigned_proof_wc,
-	CASE WHEN sum(t.other) is null THEN 0 ELSE sum(t.other) END as unassigned_other_wc
-from
-	(select
-		t.task_type_id,
-		CASE WHEN t.task_type_id in (87,89,94) THEN t.task_units END as trans,
-		CASE WHEN t.task_type_id in (87,88,89,94) THEN t.task_units  END as edit,
-		CASE WHEN t.task_type_id in (89,95) THEN t.task_units  END as proof,
-		CASE WHEN t.task_type_id in (85,86,90,91,92,96) THEN t.task_units END as other
+	select
+		count(t.trans) as unassigned_trans,
+		count(t.edit) as unassigned_edit,
+		count(t.proof) as unassigned_proof,
+		count(t.other) as unassigned_other,
+		CASE WHEN sum(t.trans) is null THEN 0 ELSE sum(t.trans) END as unassigned_trans_wc,
+		CASE WHEN sum(t.edit) is null THEN 0 ELSE sum(t.edit) END as unassigned_edit_wc,
+		CASE WHEN sum(t.proof) is null THEN 0 ELSE sum(t.proof) END as unassigned_proof_wc,
+		CASE WHEN sum(t.other) is null THEN 0 ELSE sum(t.other) END as unassigned_other_wc
 	from
-		im_trans_tasks t
-	where
-		t.project_id = :project_id
-	) t
-"
+		(select
+			t.task_type_id,
+			CASE WHEN t.task_type_id in (87,89,94) THEN t.task_units END as trans,
+			CASE WHEN t.task_type_id in (87,88,89,94) THEN t.task_units  END as edit,
+			CASE WHEN t.task_type_id in (89,95) THEN t.task_units  END as proof,
+			CASE WHEN t.task_type_id in (85,86,90,91,92,96) THEN t.task_units END as other
+		from
+			im_trans_tasks t
+		where
+			t.project_id = :project_id
+		) t
+    "
 
     db_1row unassigned_totals $unassigned_files_sql
-
 
     # ----------------------Get task status ------------------------------
 
     # Aggregate the information from the inner_sql and 
     # order it by user
     set task_status_sql "
-select
-	u.user_id,
-	sum(trans_down) as trans_down,
-	sum(trans_up) as trans_up,
-	sum(edit_down) as edit_down,
-	sum(edit_up) as edit_up,
-	sum(proof_down) as proof_down,
-	sum(proof_up) as proof_up,
-	sum(other_down) as other_down,
-	sum(other_up) as other_up
-from
-	users u,
-	acs_rels r,
-	(select distinct
-		t.task_id,
+	select
 		u.user_id,
-		CASE WHEN u.user_id = t.trans_id and action_type_id=:down THEN 1 END as trans_down,
-		CASE WHEN u.user_id = t.trans_id and action_type_id=:up THEN 1 END as trans_up,
-		CASE WHEN u.user_id = t.edit_id and action_type_id=:down THEN 1 END as edit_down,
-		CASE WHEN u.user_id = t.edit_id and action_type_id=:up THEN 1 END as edit_up,
-		CASE WHEN u.user_id = t.proof_id and action_type_id=:down THEN 1 END as proof_down,
-		CASE WHEN u.user_id = t.proof_id and action_type_id=:up THEN 1 END as proof_up,
-		CASE WHEN u.user_id = t.other_id and action_type_id=:down THEN 1 END as other_down,
-		CASE WHEN u.user_id = t.other_id and action_type_id=:up THEN 1 END as other_up
+		sum(trans_down) as trans_down,
+		sum(trans_up) as trans_up,
+		sum(edit_down) as edit_down,
+		sum(edit_up) as edit_up,
+		sum(proof_down) as proof_down,
+		sum(proof_up) as proof_up,
+		sum(other_down) as other_down,
+		sum(other_up) as other_up
 	from
 		users u,
 		acs_rels r,
-		im_trans_tasks t,
-		im_task_actions a
+		(select distinct
+			t.task_id,
+			u.user_id,
+			CASE WHEN u.user_id = t.trans_id and action_type_id=:down THEN 1 END as trans_down,
+			CASE WHEN u.user_id = t.trans_id and action_type_id=:up THEN 1 END as trans_up,
+			CASE WHEN u.user_id = t.edit_id and action_type_id=:down THEN 1 END as edit_down,
+			CASE WHEN u.user_id = t.edit_id and action_type_id=:up THEN 1 END as edit_up,
+			CASE WHEN u.user_id = t.proof_id and action_type_id=:down THEN 1 END as proof_down,
+			CASE WHEN u.user_id = t.proof_id and action_type_id=:up THEN 1 END as proof_up,
+			CASE WHEN u.user_id = t.other_id and action_type_id=:down THEN 1 END as other_down,
+			CASE WHEN u.user_id = t.other_id and action_type_id=:up THEN 1 END as other_up
+		from
+			users u,
+			acs_rels r,
+			im_trans_tasks t,
+			im_task_actions a
+		where
+			r.object_id_one = :project_id
+			and r.object_id_one = t.project_id
+			and u.user_id = r.object_id_two
+			and (	u.user_id = t.trans_id 
+				or u.user_id = t.edit_id 
+				or u.user_id = t.proof_id 
+				or u.user_id = t.other_id)
+			and a.user_id = u.user_id
+			and a.task_id = t.task_id
+		) t
 	where
 		r.object_id_one = :project_id
-		and r.object_id_one = t.project_id
-		and u.user_id = r.object_id_two
-		and (	u.user_id = t.trans_id 
-			or u.user_id = t.edit_id 
-			or u.user_id = t.proof_id 
-			or u.user_id = t.other_id)
-		and a.user_id = u.user_id
-		and a.task_id = t.task_id
-	) t
-where
-	r.object_id_one = :project_id
-	and r.object_id_two = u.user_id
-	and u.user_id = t.user_id
-group by
-	u.user_id
-"
+		and r.object_id_two = u.user_id
+		and u.user_id = t.user_id
+	group by
+		u.user_id
+    "
 
     # ----- Get the absolute number of tasks by project phase ---------------
 
     set task_filecount_sql "
-select
-	t.user_id,
-	count(trans_ass) as trans_ass,
-	count(edit_ass) as edit_ass,
-	count(proof_ass) as proof_ass,
-	count(other_ass) as other_ass,
-	sum(trans_ass) as trans_words,
-	sum(edit_ass) as edit_words,
-	sum(proof_ass) as proof_words,
-	sum(other_ass) as other_words
-from
-	(select
+	select
+		t.user_id,
+		count(trans_ass) as trans_ass,
+		count(edit_ass) as edit_ass,
+		count(proof_ass) as proof_ass,
+		count(other_ass) as other_ass,
+		sum(trans_ass) as trans_words,
+		sum(edit_ass) as edit_words,
+		sum(proof_ass) as proof_words,
+		sum(other_ass) as other_words
+	from
+		(select
+			u.user_id,
+			t.task_id,
+			CASE WHEN u.user_id = t.trans_id THEN t.task_units END as trans_ass,
+			CASE WHEN u.user_id = t.edit_id THEN t.task_units END as edit_ass,
+			CASE WHEN u.user_id = t.proof_id THEN t.task_units END as proof_ass,
+			CASE WHEN u.user_id = t.other_id THEN t.task_units END as other_ass
+		from
+			users u,
+			acs_rels r,
+			im_trans_tasks t
+		where
+			r.object_id_one = :project_id
+			and r.object_id_one = t.project_id
+			and u.user_id = r.object_id_two
+			and (
+				u.user_id = t.trans_id 
+				or u.user_id = t.edit_id 
+				or u.user_id = t.proof_id 
+				or u.user_id = t.other_id
+			)
+		) t
+	group by t.user_id
+    "
+
+    set task_sql "
+	select
 		u.user_id,
-		t.task_id,
-		CASE WHEN u.user_id = t.trans_id THEN t.task_units END as trans_ass,
-		CASE WHEN u.user_id = t.edit_id THEN t.task_units END as edit_ass,
-		CASE WHEN u.user_id = t.proof_id THEN t.task_units END as proof_ass,
-		CASE WHEN u.user_id = t.other_id THEN t.task_units END as other_ass
+		im_name_from_user_id (u.user_id) as user_name,
+		CASE WHEN c.trans_ass is null THEN 0 ELSE c.trans_ass END as trans_ass,
+		CASE WHEN c.edit_ass is null THEN 0 ELSE c.edit_ass END as edit_ass,
+		CASE WHEN c.proof_ass is null THEN 0 ELSE c.proof_ass END as proof_ass,
+		CASE WHEN c.other_ass is null THEN 0 ELSE c.other_ass END as other_ass,
+		CASE WHEN c.trans_words is null THEN 0 ELSE c.trans_words END as trans_words,
+		CASE WHEN c.edit_words is null THEN 0 ELSE c.edit_words END as edit_words,
+		CASE WHEN c.proof_words is null THEN 0 ELSE c.proof_words END as proof_words,
+		CASE WHEN c.other_words is null THEN 0 ELSE c.other_words END as other_words,
+		s.trans_down,
+		s.trans_up,
+		s.edit_down,
+		s.edit_up,
+		s.proof_down,
+		s.proof_up,
+		s.other_down,
+		s.other_up
 	from
 		users u,
 		acs_rels r,
-		im_trans_tasks t
+		($task_status_sql) s,
+		($task_filecount_sql) c
 	where
 		r.object_id_one = :project_id
-		and r.object_id_one = t.project_id
-		and u.user_id = r.object_id_two
-		and (
-			u.user_id = t.trans_id 
-			or u.user_id = t.edit_id 
-			or u.user_id = t.proof_id 
-			or u.user_id = t.other_id
-		)
-	) t
-group by t.user_id
-"
-
-    set task_sql "
-select
-	u.user_id,
-	im_name_from_user_id (u.user_id) as user_name,
-	CASE WHEN c.trans_ass is null THEN 0 ELSE c.trans_ass END as trans_ass,
-	CASE WHEN c.edit_ass is null THEN 0 ELSE c.edit_ass END as edit_ass,
-	CASE WHEN c.proof_ass is null THEN 0 ELSE c.proof_ass END as proof_ass,
-	CASE WHEN c.other_ass is null THEN 0 ELSE c.other_ass END as other_ass,
-	CASE WHEN c.trans_words is null THEN 0 ELSE c.trans_words END as trans_words,
-	CASE WHEN c.edit_words is null THEN 0 ELSE c.edit_words END as edit_words,
-	CASE WHEN c.proof_words is null THEN 0 ELSE c.proof_words END as proof_words,
-	CASE WHEN c.other_words is null THEN 0 ELSE c.other_words END as other_words,
-	s.trans_down,
-	s.trans_up,
-	s.edit_down,
-	s.edit_up,
-	s.proof_down,
-	s.proof_up,
-	s.other_down,
-	s.other_up
-from
-	users u,
-	acs_rels r,
-	($task_status_sql) s,
-	($task_filecount_sql) c
-where
-	r.object_id_one = :project_id
-	and r.object_id_two = u.user_id
-	and u.user_id = s.user_id(+)
-	and u.user_id = c.user_id(+)
-"
+		and r.object_id_two = u.user_id
+		and u.user_id = s.user_id(+)
+		and u.user_id = c.user_id(+)
+    "
 
     # --------------------- Display the results ----------------------
 
@@ -1851,7 +1850,7 @@ where
     }
 
 
-    append task_status_html "
+    append xxx_task_status_html "
 	<tr $bgcolor([expr $ctr % 2])>
 	  <td>unassigned tasks</td>
 	
