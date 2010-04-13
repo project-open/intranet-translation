@@ -184,11 +184,11 @@ set projectpaths [$root_element getElementsByTagName "projectpath"]
 set node_projectpath [lindex $projectpaths 0]
 set filename [$node_projectpath text]  
 
-#get the name of the file
+#get the name of the file; the file name is the same as the task name 
 set filename_comps [split $filename "\\"]
 set len [expr [llength $filename_comps] - 1]
 set task_name [lindex $filename_comps $len]
-set filename [join $filename_comps "/"]
+set filename $task_name 
 
 #Setting of default values
 set px_words	0
