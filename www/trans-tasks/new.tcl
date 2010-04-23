@@ -90,7 +90,9 @@ set language_options [db_list_of_lists status "select category, category_id from
 set assignee_options [im_user_options]
 set tm_integration_type_options [db_list_of_lists status "select category, category_id from im_categories where category_type = 'Intranet TM Integration Type'"]
 
-set actions [list {"Edit" edit} ]
+set actions [list {"Editt" editt} ]
+set actions [list]
+
 if {[im_permission $user_id add_tasks]} {
     lappend actions {"Delete" delete}
 }
@@ -101,6 +103,7 @@ ad_form \
     -action $action_url \
     -actions $actions \
     -mode $form_mode \
+    -has_edit 1 \
     -export {return_url} \
     -form {
 	task_id:key
