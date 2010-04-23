@@ -83,9 +83,9 @@ values ('im_trans_task', 'im_trans_tasks', 'task_id');
 -- list pages with mixed object types
 --
 insert into im_biz_object_urls (object_type, url_type, url) values (
-'im_trans_task','view','/intranet-translation/view?task_id=');
+'im_trans_task','view','/intranet-translation/trans-tasks/new?form_mode=display&task_id=');
 insert into im_biz_object_urls (object_type, url_type, url) values (
-'im_trans_task','edit','/intranet-translation/new?task_id=');
+'im_trans_task','edit','/intranet-translation/trans-tasks/new?form_mode=edit&task_id=');
 
 
 
