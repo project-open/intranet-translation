@@ -91,6 +91,24 @@ ad_proc -public im_trans_task_type_select {
 }
 
 
+ad_proc -public im_trans_task_type_options { 
+    {-translate_p 0}
+    {-package_key "intranet-core" }
+} {
+    Return a list of options for translation task type.
+} {
+    set trans_type_exists_p [util_memoize [list db_string ttypee "
+	select count(*) from im_categories where category_type = 'Intranet Translation Task Type'
+    "]]
+
+    if {$trans_type_exists_p} {
+	return [db_list_of_lists type "select category, category_id from im_categories where category_type = 'Intranet Trans Task Type'"]
+    } else {
+	return [db_list_of_lists type "select category, category_id from im_categories where category_type = 'Intranet Project Type'"]
+    }
+}
+
+
 
 
 # -------------------------------------------------------------------
