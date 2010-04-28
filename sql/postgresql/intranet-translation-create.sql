@@ -713,6 +713,31 @@ on im_trans_task_progress (task_type_id, task_status_id);
 -- 96 	Glossary Compilation 	Translation Project 	
 
 
+
+
+
+-----------------------------------------------------------
+-- 60000-60999  Intranet Translation Task CSV Importer (1000)
+--
+-- This range allows to plug-in additional CSV importers
+-- into the translation package. Please contact 
+-- support@project-open.com if you need a constant from 
+-- this range.
+
+-- The following importers are defined in intranet-cust-moravia:
+-- 60000	Idiom (Beta)
+-- 60010	Passolo (Beta)
+-- 60010	Helium (Beta)
+-- 60099	reserved (last Moravia importer)
+-- 60100	free until 60999
+
+
+
+
+-----------------------------------------------------------
+-- Trans Task Progress - how many % is a task of a specific
+-- type advanced in a specific state?
+--
 -- values for 340 and 342 are 0 for all task types
 -- values for 354, 356, 358, 360, 365, 370, 372 are always 100%
 
