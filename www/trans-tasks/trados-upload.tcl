@@ -100,11 +100,21 @@ switch $wordcount_application {
     webbudget {
 	ad_returnredirect webbudget-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file upload_file import_method]
     }
-    idiom {
-	ad_returnredirect idiom-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file upload_file import_method]
-    }
-    passolo {
-	ad_returnredirect passolo-import?[export_url_vars project_id task_type_id target_language_id return_url wordcount_file upload_file import_method]
+    default {
+	# Check for valid importer plugins
+	set importer_path [db_string importer_path "
+		select	aux_string1
+		from	im_categories
+		where	category_type = 'Intranet Translation Task CSV Importer' and
+			category = :wordcount_application
+	" -default ""]
+
+	if {"" != $importer_path} {
+	    ad_returnredirect [export_vars -base $importer_path {project_id task_type_id target_language_id return_url wordcount_file upload_file import_method}]
+	} else {
+	    ad_return_complaint 1 "Wrong translation memory type '$wordcount_application' selected"
+	    ad_script_abort
+	}
     }
 }
 

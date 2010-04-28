@@ -2751,21 +2751,32 @@ ad_proc im_new_task_component {
 
     if {[ad_parameter -package_id [im_package_translation_id] EnableAspTradosImport "" 0]} {
 
+	# Prepare the list of importers. 
+	# Start with the hard-coded importers coming with ]po[
+	set importer_option_list [list \
+				  [list trados "Trados (3.0 - 9.0)"] \
+				  [list transit "Transit (all)"] \
+				  [list freebudget "FreeBudget (4.0 - 5.0)"] \
+				  [list webbudget "WebBudget (4.0 - 5.0"] \
+				 ]
+	set importer_sql "
+		select	category
+		from	im_categories
+		where	category_type = 'Intranet Translation Task CSV Importer'
+			and (enabled_p is null OR enabled_p = 't')
+	"
 	set default_wordcount_app [ad_parameter -package_id [im_package_translation_id] "DefaultWordCountingApplication" "" "trados"]
-	set trados_selected ""
-	set transit_selected ""
-	set freebudget_selected ""
-	set webbudget_selected ""
-	set idiom_selected ""
-	set passolo_selected ""
+	db_foreach importers $importer_sql {
+	    lappend importer_option_list [list $category [lang::message::lookup "" intranet-translation.Importer_$category $category]]
+	}
 
-	switch $default_wordcount_app {
-	    "trados" { set trados_selected "selected" }
-	    "transit" { set transit_selected "selected" }
-	    "freebudget" { set freebudget_selected "selected" }
-	    "webbudget" { set webbudget_selected "selected" }
-	    "idiom" { set idiom_selected "selected" }
-	    "passolo" { set passolo_selected "selected" }
+	set importer_options_html ""
+	foreach row $importer_option_list {
+	    set importer [lindex $row 0]
+	    set importer_pretty [lindex $row 1]
+	    set selected ""
+ 	    if {$importer == $default_wordcount_app} { set selected "selected" }
+	    append importer_options_html "<option value=\"[lindex $row 0]\" $selected>$importer_pretty</option>\n"
 	}
 
 	append task_table "
@@ -2776,12 +2787,7 @@ ad_proc im_new_task_component {
 	    [export_form_vars project_id return_url]
 	    <input type=file name=upload_file size=30 value='*.csv'>
 	    <select name=wordcount_application>
-		<option value=\"trados\" $trados_selected>Trados (3.0 - 9.0) </option>
-		<option value=\"transit\" $transit_selected>Transit (All)</option>
-		<option value=\"freebudget\" $freebudget_selected>FreeBudget (4.0 - 5.0)</option>
-		<option value=\"webbudget\" $webbudget_selected>WebBudget (4.0 - 5.0)</option>
-		<option value=\"idiom\" $idiom_selected>Idiom CSV (beta)</option>
-		<option value=\"passolo\" $passolo_selected>Passolo CSV (beta)</option>
+	    $importer_options_html
 	    </select>
         "
 	append task_table "<input type=hidden name='tm_integration_type_id' value='[im_trans_tm_integration_type_external]'>\n"
