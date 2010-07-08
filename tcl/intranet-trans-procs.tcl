@@ -1581,6 +1581,12 @@ ad_proc im_trans_task_project_advance { project_id } {
 
     }
 
+    # "Escalate" to super-projects and mixed translation/consulting projects
+    catch {
+	im_timesheet_project_advance $project_id
+    }
+
+
     return $advance
 }
 	
