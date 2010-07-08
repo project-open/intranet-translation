@@ -41,7 +41,7 @@ ad_page_contract {
 }
 
 set date_format [parameter::get_from_package_key -package_key intranet-translation -parameter "TaskListEndDateFormat" -default "YYYY-MM-DD"]
-
+set org_project_id $project_id
 
 # Get the list of target languages of the current project.
 # We will need this list if a new task is added, because we
@@ -239,9 +239,6 @@ switch -glob $action {
 	    im_user_exit_call trans_task_update $task_id
 
 	}
-	
-	ad_returnredirect $return_url
-	return
     }
 
     "delete" {
@@ -270,14 +267,9 @@ switch -glob $action {
 		# Successfully deleted translation task
 		# Call user_exit to let TM know about the event
 		im_user_exit_call trans_task_delete $task_id
-
 	    }
-
        }
-       ad_returnredirect $return_url
-       return
     }
-
 
     "batch" {
 	# "Batch Files" button pressed: Group the files into a single batch .zip file
@@ -471,8 +463,6 @@ switch -glob $action {
 		im_user_exit_call trans_task_delete $task_id
 	    }
        }
-       ad_returnredirect $return_url
-       return
     }
 
     "Add File" {
@@ -480,8 +470,6 @@ switch -glob $action {
 	set task_filename [ns_urldecode $task_name_file]
 
 	im_task_insert $project_id $task_filename $task_filename $task_units_file $task_uom_file $task_type_file $target_language_ids
-	ad_returnredirect $return_url
-	return
     }
 
     "Add" {
@@ -493,12 +481,15 @@ switch -glob $action {
 	ns_log Notice "task-action: Add manual task: im_task_insert $project_id [ns_urldecode $task_name_manual] $task_filename $task_units_manual $task_uom_manual $task_type_manual $target_language_ids"
 
 	im_task_insert $project_id [ns_urldecode $task_name_manual] $task_filename $task_units_manual $task_uom_manual $task_type_manual $target_language_ids
-	ad_returnredirect $return_url
-	return
     }
 
     default {
 	ad_return_complaint 1 "<li>[_ intranet-translation.lt_Unknown_submit_comman]: '$action'"
     }
 }
+
+
+im_trans_task_project_advance $org_project_id
+
+ad_returnredirect $return_url
 
