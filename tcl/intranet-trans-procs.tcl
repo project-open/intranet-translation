@@ -71,6 +71,7 @@ ad_proc -public im_workflow_installed_p { } {
 ad_proc -public im_trans_task_type_select { 
     {-translate_p 0}
     {-package_key "intranet-core" }
+    {-locale ""}
     {-include_empty_p 0}
     {-include_empty_name "All"}
     select_name 
@@ -86,9 +87,9 @@ ad_proc -public im_trans_task_type_select {
 	select count(*) from im_categories where category_type = 'Intranet Translation Task Type'
     "]]
     if {$trans_type_exists_p} {
-	return [im_category_select -translate_p $translate_p -package_key $package_key -include_empty_p $include_empty_p -include_empty_name $include_empty_name "Intranet Translation Task Type" $select_name $default]
+	return [im_category_select -translate_p $translate_p -package_key $package_key -locale $locale -include_empty_p $include_empty_p -include_empty_name $include_empty_name "Intranet Translation Task Type" $select_name $default]
     } else {
-	return [im_category_select -translate_p $translate_p -package_key $package_key -include_empty_p $include_empty_p -include_empty_name $include_empty_name "Intranet Project Type" $select_name $default]
+	return [im_category_select -translate_p $translate_p -package_key $package_key -locale $locale -include_empty_p $include_empty_p -include_empty_name $include_empty_name "Intranet Project Type" $select_name $default]
     }
 }
 
@@ -783,6 +784,7 @@ ad_proc im_trans_language_select {
     {-include_empty_p 1}
     {-include_empty_name "--_Please_select_--"}
     {-include_country_locale 0}
+    {-locale ""}
     select_name
     { default "" }
 } {
@@ -812,11 +814,8 @@ ad_proc im_trans_language_select {
         order by lower(category)
     "
 
-    return [im_selection_to_select_box -translate_p $translate_p -include_empty_p $include_empty_p -include_empty_name $include_empty_name $bind_vars category_select $sql $select_name $default]
+    return [im_selection_to_select_box -translate_p $translate_p -locale $locale -include_empty_p $include_empty_p -include_empty_name $include_empty_name $bind_vars category_select $sql $select_name $default]
 }
-
-
-
 
 
 ad_proc -public im_target_languages { project_id} {
