@@ -931,7 +931,9 @@ insert into im_trans_task_progress values (96, 372, 100);
 -----------------------------------------------------------
 
 
-
+---------------------------------------------------
+-- Widgets to render DynFields
+--
 select im_dynfield_widget__new (
 	null,					-- widget_id
 	'im_dynfield_widget',			-- object_type
@@ -949,14 +951,181 @@ select im_dynfield_widget__new (
 	'{custom {category_type "Intranet Translation Language"}}' -- parameters
 );
 
+select im_dynfield_widget__new (
+	null,					-- widget_id
+	'im_dynfield_widget',			-- object_type
+	now(),					-- creation_date
+	null,					-- creation_user
+	null,					-- creation_ip
+	null,					-- context_id
+	'translation_subject_area',		-- widget_name
+	'#intranet-translation.Subject_Area#',	-- pretty_name
+	'#intranet-translation.Subject_Area#',	-- pretty_plural
+	10007,					-- storage_type_id
+	'integer',				-- acs_datatype
+	'im_category_tree',			-- widget
+	'integer',				-- sql_datatype
+	'{custom {category_type "Intranet Translation Subject Area"}}' -- parameters
+);
+
+select im_dynfield_widget__new (
+	null,					-- widget_id
+	'im_dynfield_widget',			-- object_type
+	now(),					-- creation_date
+	null,					-- creation_user
+	null,					-- creation_ip
+	null,					-- context_id
+	'translation_quality_type',		-- widget_name
+	'#intranet-translation.Quality_Level#',	-- pretty_name
+	'#intranet-translation.Quality_Level#',	-- pretty_plural
+	10007,					-- storage_type_id
+	'integer',				-- acs_datatype
+	'im_category_tree',			-- widget
+	'integer',				-- sql_datatype
+	'{custom {category_type "Intranet Translation Quality Type"}}' -- parameters
+);
+
+select im_dynfield_widget__new (
+	null,					-- widget_id
+	'im_dynfield_widget',			-- object_type
+	now(),					-- creation_date
+	null,					-- creation_user
+	null,					-- creation_ip
+	null,					-- context_id
+	'translation_file_type',		-- widget_name
+	'#intranet-translation.File_Type#',	-- pretty_name
+	'#intranet-translation.File_Type#',	-- pretty_plural
+	10007,					-- storage_type_id
+	'integer',				-- acs_datatype
+	'im_category_tree',			-- widget
+	'integer',				-- sql_datatype
+	'{custom {category_type "Intranet Translation File Type"}}' -- parameters
+);
+
+
+---------------------------------------------------
+-- DynFields for im_project
+--
+
+alter table im_projects add column source_language_id integer
+constraint im_projects_source_lang_fk references im_categories;
 
 SELECT im_dynfield_attribute_new (
 	'im_project',
 	'source_language_id',
-	'Source Lang',
+	'Translation Source Lang',
 	'translation_languages',
 	'integer',
 	'f',
 	'99',
 	't'
 );
+
+alter table im_projects add column subject_area_id integer
+constraint im_projects_source_lang_fk references im_categories;
+
+SELECT im_dynfield_attribute_new (
+	'im_project',
+	'subject_area_id',
+	'Translation Subject Area',
+	'translation_subject_area',
+	'integer',
+	'f',
+	'99',
+	't'
+);
+
+
+
+
+---------------------------------------------------
+-- DynFields for im_material
+--
+
+alter table im_materials add column task_uom_id integer
+constraint im_materials_task_uom_fk references im_categories;
+
+SELECT im_dynfield_attribute_new (
+	'im_material',
+	'task_uom_id',
+	'Translation UoM Type',
+	'units_of_measure',
+	'integer',
+	'f',
+	'0',
+	't'
+);
+
+
+alter table im_materials add column trans_task_id integer
+constraint im_materials_trans_task_fk references im_categories;
+
+SELECT im_dynfield_attribute_new (
+	'im_material',
+	'task_type_id',
+	'Translation Task Type',
+	'trans_task_types',
+	'integer',
+	'f',
+	'100',
+	't'
+);
+
+
+alter table im_materials add column source_language_id integer
+constraint im_materials_source_lang_fk references im_categories;
+
+SELECT im_dynfield_attribute_new (
+	'im_material',
+	'source_language_id',
+	'Translation Source Lang',
+	'translation_languages',
+	'integer',
+	'f',
+	'200',
+	't'
+);
+
+alter table im_materials add column target_language_id integer
+constraint im_materials_target_lang_fk references im_categories;
+
+SELECT im_dynfield_attribute_new (
+	'im_material',
+	'target_language_id',
+	'Translation Target Lang',
+	'translation_languages',
+	'integer',
+	'f',
+	'300',
+	't'
+);
+
+alter table im_materials add column subject_area_id integer
+constraint im_materials_source_lang_fk references im_categories;
+
+SELECT im_dynfield_attribute_new (
+	'im_material',
+	'subject_area_id',
+	'Translation Subject Area',
+	'translation_subject_area',
+	'integer',
+	'f',
+	'400',
+	't'
+);
+
+
+alter table im_materials add column file_type_id integer
+constraint im_materials_file_type_fk references im_categories;
+
+SELECT im_dynfield_attribute_new (
+	'im_material',
+	'file_type_id',
+	'Translation File Type',
+	'trans_file_types',
+	'integer',
+	'f',
+	'500',
+	't'
+);
+

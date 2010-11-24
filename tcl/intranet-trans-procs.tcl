@@ -1377,8 +1377,6 @@ ad_proc im_task_next_workflow_stage_user {
 }
 
 
-
-
 ad_proc im_task_component_upload {
     user_id
     user_admin_p
@@ -1954,6 +1952,7 @@ ad_proc im_task_component {
     set current_user_id $user_id
     set date_format [parameter::get_from_package_key -package_key intranet-translation -parameter "TaskListEndDateFormat" -default "YYYY-MM-DD"]
     set date_format_len [string length $date_format]
+    set default_currency [ad_parameter -package_id [im_package_cost_id] "DefaultCurrency" "" "EUR"]
 
     # Get the permissions for the current _project_
     im_project_permissions $user_id $project_id project_view project_read project_write project_admin
@@ -1973,6 +1972,8 @@ ad_proc im_task_component {
     # Inter-Company invoicing enabled?
     set interco_p [parameter::get_from_package_key -package_key "intranet-translation" -parameter "EnableInterCompanyInvoicingP" -default 0]
 
+    # Main project
+    set main_project_id [db_string main_project "select project_id from im_projects where tree_sortkey = (select tree_root_key(tree_sortkey) from im_projects where project_id = :project_id)" -default ""]
 
     # -------------------- Column Selection ---------------------------------
     # Define the column headers and column contents that
@@ -2059,6 +2060,67 @@ ad_proc im_task_component {
     }
 
 
+    # -------------------------------------------------------------------
+    # Build the price/cost table
+    #
+    # This query extracts all "line items" of quotes and POs in the project
+    # together with propoerties like source- and target_language etc.
+    # Searching through this table we will be able to determine the gross
+    # margin per task.
+
+    # Get the list of DynField parameters of im_material that are the base
+    # for looking up the price later.
+    set material_dynfield_sql "
+        select  *
+        from    acs_attributes aa,
+                im_dynfield_widgets dw,
+                im_dynfield_attributes da
+                LEFT OUTER JOIN im_dynfield_layout dl ON (da.attribute_id = dl.attribute_id)
+        where   aa.object_type = 'im_material' and
+                aa.attribute_id = da.acs_attribute_id and
+                da.widget_name = dw.widget_name and
+                coalesce(dl.page_url,'default') = 'default'
+        order by dl.pos_y, lower(aa.attribute_id)
+    "
+    set material_dynfields [db_list material_dynfields "select attribute_name from ($material_dynfield_sql) t"]
+
+    # Get all line items for all financial documents in this project.
+    # We only need to consider items with material_id != NULL.
+    set price_cost_sql "
+	select	m.*,
+		ii.invoice_id,
+		ii.item_units,
+		ii.price_per_unit,
+		round((ii.price_per_unit * im_exchange_rate(c.effective_date::date, ii.currency, :default_currency)) :: numeric, 2) as price_per_unit,
+		c.cost_type_id as invoice_type_id
+	from	im_invoices i,
+		im_costs c,
+		im_invoice_items ii,
+		im_materials m
+	where	i.invoice_id = c.cost_id and
+		i.invoice_id = ii.invoice_id and
+		ii.item_material_id = m.material_id and
+		i.invoice_id in (
+			-- Get all financial documents associated with the main project or its children
+			select	r.object_id_two
+			from	im_projects parent,
+				im_projects child,
+				acs_rels r
+			where	parent.project_id = :main_project_id and
+				child.tree_sortkey between parent.tree_sortkey and tree_right(parent.tree_sortkey) and
+				child.project_status_id not in ([im_project_status_deleted]) and
+				r.object_id_one = child.project_id
+		)
+    "
+    set price_cost_lines [list]
+    db_foreach price_cost $price_cost_sql {
+	set line [list]
+	lappend line invoice_id $invoice_id invoice_type_id $invoice_type_id
+        lappend line item_units $item_units price_per_unit $price_per_unit
+        foreach param $material_dynfields { lappend line $param [eval "set a \$${param}"] }
+	lappend price_cost_lines $line
+    }
+
     # -------------------- Task List SQL -----------------------------------
     #
     set bgcolor(0) " class=roweven"
@@ -2131,6 +2193,8 @@ ad_proc im_task_component {
 
     set last_task_id 0
     db_foreach select_tasks "" {
+
+	ns_log Notice "im_task_component: task: task_id $task_id task_uom_id $task_uom_id task_type_id $task_type_id source_language_id $source_language_id target_language_id $target_language_id subject_area_id $subject_area_id"
 
 	set dynamic_task_p 0
 	if {$wf_installed_p} {
@@ -2237,6 +2301,95 @@ ad_proc im_task_component {
 
 	# Delete Checkbox
 	set del_checkbox "<input type=checkbox name=delete_task value=$task_id id=\"task,$task_id\">"
+
+	# ------------------------------------------
+	# price and cost
+	# Check if we find suitable entries for the material's parameters in the quote/PO lines
+	# of the project.
+
+	set quoted_price_min ""
+	set quoted_price_max ""
+	set po_cost_min ""
+	set po_cost_max ""
+
+        set po_cost ""
+	set quoted_price ""
+	set gross_margin ""
+
+	# set price_cost_lines [lrange $price_cost_lines 0 end-1]
+	# ad_return_complaint 1 "<pre>[join $price_cost_lines "\n"]</pre>"
+	foreach line_list $price_cost_lines {
+
+	    # Load the list into a hash
+	    array unset line_hash
+	    array set line_hash $line_list
+	    ns_log Notice "im_task_component: line: $line_list"
+
+	    # Check if the lines has the same parameters as the current task	    
+	    set found_p 1
+	    foreach dynfield $material_dynfields {
+		set task_value [eval "set a \$$dynfield"]
+		ns_log Notice "im_task_component: $dynfield=$task_value"
+		set line_value $line_hash($dynfield)
+		if {$task_value != $line_value} { 
+		    set found_p 0 
+		    ns_log Notice "im_task_component: found_p=$found_p because of $dynfield"
+		}
+	    }
+	    ns_log Notice "im_task_component: found_p=$found_p"
+	    if {!$found_p} { continue }
+
+	    # We have found a perfectly matching price/cost line for this task.
+	    # Let's check that it's a Quote or PO and assign the price to the right
+	    # field
+	    set invoice_type_id $line_hash(invoice_type_id)
+	    set amount $line_hash(price_per_unit)
+	    ns_log Notice "im_task_component: invoice_id=$invoice_id, type_id=$invoice_type_id, amount=$amount"
+	    switch $invoice_type_id {
+		3702 {
+		    # Quote
+		    if {"" == $quoted_price_min} { set quoted_price_min $amount }
+		    if {"" == $quoted_price_max} { set quoted_price_max $amount }
+		    if {$amount < $quoted_price_min} { set quoted_price_min $amount }
+		    if {$amount > $quoted_price_max} { set quoted_price_max $amount }
+		}
+		3706 {
+		    # Purchase Order
+		    if {"" == $po_cost_min} { set po_cost_min $amount }
+		    if {"" == $po_cost_max} { set po_cost_max $amount }
+		    if {$amount < $po_cost_min} { set po_cost_min $amount }
+		    if {$amount > $po_cost_max} { set po_cost_max $amount }
+		}
+		default {
+		    # Ignore any other type.
+		}
+	    }
+	}
+
+        ns_log Notice "im_task_component: invoice_id=$invoice_id, type_id=$invoice_type_id, qmin=$quoted_price_min, qmax=$quoted_price_max"
+        ns_log Notice "im_task_component: invoice_id=$invoice_id, type_id=$invoice_type_id, pmin=$po_cost_min, pmax=$po_cost_max"
+
+	set gross_margin_valid_p 1
+	if {$quoted_price_min == $quoted_price_max} {
+	    set quoted_price $quoted_price_min
+	    if {"" == $quoted_price} { set gross_margin_valid_p 0 }
+	} else {
+	    set quoted_price "$quoted_price_min - $quoted_price_max"
+	    set gross_margin_valid_p 0
+	}
+
+	if {$po_cost_min == $po_cost_max} {
+	    set po_cost $po_cost_min
+	    if {"" == $po_cost} { set gross_margin_valid_p 0 }
+	} else {
+	    set po_cost "$po_cost_min - $po_cost_max"
+	    set gross_margin_valid_p 0
+	}
+
+	if {$gross_margin_valid_p} { set gross_margin [expr 100.0 * ($quoted_price - $po_cost) / $quoted_price] }
+	
+#        if {"" != $quoted_price} { set quoted_price "$quoted_price $default_currency" }
+#        if {"" != $po_cost} { set po_cost "$po_cost $default_currency" }
 
 	# ------------------------------------------
 	# The Static Workflow -

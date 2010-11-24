@@ -104,30 +104,29 @@ where
 
   <fullquery name="im_task_error_component.select_tasks">
     <querytext>
-select
-        min(t.task_id) as task_id,
-        t.task_name,
-        t.task_filename,
-        t.task_units,
-        im_category_from_id(t.source_language_id) as source_language,
-        uom_c.category as uom_name,
-        type_c.category as type_name
-from
-        im_trans_tasks t
-      LEFT JOIN
-        im_categories uom_c ON t.task_uom_id=uom_c.category_id
-      LEFT JOIN
-        im_categories type_c ON t.task_type_id=type_c.category_id
-where
-        project_id=:project_id
-        and t.task_status_id <> 372
-group by
-        t.task_name,
-        t.task_filename,
-        t.task_units,
-        t.source_language_id,
-        uom_c.category,
-        type_c.category
+
+	select
+	        min(t.task_id) as task_id,
+	        t.task_name,
+	        t.task_filename,
+	        t.task_units,
+	        im_category_from_id(t.source_language_id) as source_language,
+	        uom_c.category as uom_name,
+	        type_c.category as type_name
+	from
+	        im_trans_tasks t
+		LEFT JOIN im_categories uom_c ON t.task_uom_id = uom_c.category_id
+		LEFT JOIN im_categories type_c ON t.task_type_id = type_c.category_id
+	where
+	        project_id=:project_id
+	        and t.task_status_id <> 372
+	group by
+	        t.task_name,
+	        t.task_filename,
+	        t.task_units,
+	        t.source_language_id,
+	        uom_c.category,
+	        type_c.category
 
     </querytext>
   </fullquery>
@@ -136,6 +135,8 @@ group by
     <querytext>
 select 
 	t.*,
+	p.subject_area_id,
+	p.source_language_id,
 	im_category_from_id(t.tm_integration_type_id) as tm_integration_type,
 	to_char(t.end_date, :date_format) as end_date_formatted,
         im_category_from_id(t.source_language_id) as source_language,
@@ -149,9 +150,11 @@ select
         im_initials_from_user_id (t.other_id) as other_name
 	$extra_select
 from 
+	im_projects p,
 	im_trans_tasks t
 	$extra_from
 where
+	t.project_id = p.project_id and
 	$project_where
 	$extra_where
 order by
