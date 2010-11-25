@@ -2386,7 +2386,7 @@ ad_proc im_task_component {
 	    set gross_margin_valid_p 0
 	}
 
-	if {$gross_margin_valid_p} { set gross_margin [expr 100.0 * ($quoted_price - $po_cost) / $quoted_price] }
+	if {$gross_margin_valid_p} { set gross_margin "[expr round(10.0 * 100.0 * ($quoted_price - $po_cost) / $quoted_price) / 10.0]%" }
 	
 #        if {"" != $quoted_price} { set quoted_price "$quoted_price $default_currency" }
 #        if {"" != $po_cost} { set po_cost "$po_cost $default_currency" }
