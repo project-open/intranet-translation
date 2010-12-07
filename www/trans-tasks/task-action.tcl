@@ -22,6 +22,7 @@ ad_page_contract {
     task_status:array,optional
     task_type:array,optional
     task_wf_status:array,optional
+    { target_language_id:multiple {}}
     { task_name_file "" }
     { task_units_file ""}
     { task_uom_file "" }
@@ -46,7 +47,10 @@ set org_project_id $project_id
 # Get the list of target languages of the current project.
 # We will need this list if a new task is added, because we
 # will have to add the task for each of the target languages...
-set target_language_ids [im_target_language_ids $project_id]
+set target_language_ids $target_language_id
+if {"" == $target_language_id} {
+    set target_language_ids [im_target_language_ids $project_id]
+}
 
 if {0 == [llength $target_language_ids]} {
     # No target languages defined -

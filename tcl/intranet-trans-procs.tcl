@@ -2312,6 +2312,7 @@ ad_proc im_task_component {
 	set po_cost_min ""
 	set po_cost_max ""
 
+	set invoice_type_id ""
         set po_cost ""
 	set quoted_price ""
 	set gross_margin ""
@@ -2973,10 +2974,10 @@ ad_proc im_new_task_component {
     if {$ophelia_installed_p} {
 	set integration_type_html [im_category_select "Intranet TM Integration Type" tm_integration_type_id $ext]
 	set integration_type_html "<td>$integration_type_html</td>"
-	set colspan 7
+	set colspan 8
     } else {
 	set integration_type_html "<input type=hidden name=tm_integration_type_id value=$ext>"
-	set colspan 6
+	set colspan 7
     }
 
 
@@ -3004,6 +3005,9 @@ ad_proc im_new_task_component {
 	  <td class=rowtitle align=center>
 	    [_ intranet-translation.Task_Type]
 	  </td>
+	  <td class=rowtitle align=center>
+	    [lang::message::lookup "" intranet-translation.Target_Language "Target Language"]
+	  </td>
 	"
 
     if {$ophelia_installed_p} {
@@ -3014,10 +3018,10 @@ ad_proc im_new_task_component {
 	"
     }
     append task_table "
-	  <td class=rowtitle align=center>
+	    <td class=rowtitle align=center>
 	    [_ intranet-translation.Task_Action]
-	  </td>
-	  <td class=rowtitle align=center>&nbsp;</td>
+	    </td>
+	    <td class=rowtitle align=center>&nbsp;</td>
 	</tr>
      "
 
@@ -3033,6 +3037,12 @@ ad_proc im_new_task_component {
     <td><input type=text size=2 value=0 name=task_units_file></td>
     <td>[im_category_select "Intranet UoM" "task_uom_file" $default_uom]</td>
     <td>[im_trans_task_type_select task_type_file $project_type_id]</td>
+	    <td>
+		    <select name=target_language_id>
+			<option value=\"\">[lang::message::lookup "" intranet-translation.All_languages "All Languages"]</option>
+			$target_language_options
+		    </select>
+	    </td>
     $integration_type_html
     <td><input type=submit value=\"[_ intranet-translation.Add_File]\" name=submit_add_file></td>
     <td>[im_gif help "Add a new file to the list of tasks. \n New files need to be located in the \"source_xx\" folder to appear in the drop-down box on the left."]</td>
@@ -3051,6 +3061,12 @@ ad_proc im_new_task_component {
     <td><input type=text size=2 value=0 name=task_units_manual></td>
     <td>[im_category_select "Intranet UoM" "task_uom_manual" $default_uom]</td>
     <td>[im_trans_task_type_select task_type_manual $project_type_id]</td>
+	    <td>
+		    <select name=target_language_id>
+			<option value=\"\">[lang::message::lookup "" intranet-translation.All_languages "All Languages"]</option>
+			$target_language_options
+		    </select>
+	    </td>
     $integration_type_html
     <td><input type=submit value=\"[_ intranet-translation.Add]\" name=submit_add_manual></td>
     <td>[im_gif help "Add a \"manual\" task to the project. \n This task is not going to controled by the translation workflow."]</td>
