@@ -50,6 +50,7 @@ where
 
     # Notify system about the joyful act
     im_user_exit_call trans_task_assign $task_id
+    im_audit -object_type "im_trans_task" -action after_update -object_id $task_id
 
 }
 

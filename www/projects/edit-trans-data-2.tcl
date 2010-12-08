@@ -293,6 +293,7 @@ if {[exists_and_not_null submit_subprojects]} {
     # Call the "project_update" user_exit
 
     im_user_exit_call project_update $project_id
+    im_audit -object_type im_project -action after_update -object_id $project_id
 
 }
 

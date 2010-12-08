@@ -241,7 +241,7 @@ switch -glob $action {
 	    # Successfully updated translation task
 	    # Call user_exit to let TM know about the event
 	    im_user_exit_call trans_task_update $task_id
-
+	    im_audit -object_type "im_trans_task" -object_id $task_id -action "after_update" -status_id $task_status($task_id) -type_id $task_type($task_id)
 	}
     }
 
@@ -271,6 +271,8 @@ switch -glob $action {
 		# Successfully deleted translation task
 		# Call user_exit to let TM know about the event
 		im_user_exit_call trans_task_delete $task_id
+		im_audit -object_type "im_trans_task" -object_id $task_id -action after_delete
+
 	    }
        }
     }
@@ -465,6 +467,7 @@ switch -glob $action {
 		# Successfully deleted translation task
 		# Call user_exit to let TM know about the event
 		im_user_exit_call trans_task_delete $task_id
+		im_audit -object_type "im_trans_task" -object_id $task_id -action "after_delete"
 	    }
        }
     }

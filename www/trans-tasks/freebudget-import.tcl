@@ -399,6 +399,7 @@ foreach line_fields $values_list_of_lists {
 	    # Successfully created translation task
 	    # Call user_exit to let TM know about the event
 	    im_user_exit_call trans_task_create $new_task_id
+	    im_audit -object_type "im_trans_task" -object_id $new_task_id -action after_create -status_id $task_status_id -type_id $task_type_id
 	    
 	}
     }

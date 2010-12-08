@@ -419,7 +419,7 @@ ad_proc im_task_insert {
 	    # Successfully created translation task
 	    # Call user_exit to let TM know about the event
 	    im_user_exit_call trans_task_create $new_task_id
-
+	    im_audit -object_type "im_trans_task" -action after_create -object_id $new_task_id -status_id $task_status_id -type_id $task_type
 	}
     }
 }
@@ -1059,6 +1059,7 @@ ad_proc im_trans_upload_action {
 	} else {
 	    im_user_exit_call trans_task_update $task_id
 	}
+	im_audit -object_type im_trans_task -action after_update -object_id $task_id -status_id $new_status_id -type_id $task_type_id
 
     }
 
@@ -1144,6 +1145,7 @@ ad_proc im_trans_download_action {task_id task_status_id task_type_id user_id} {
         # Successfully modified translation task
         # Call user_exit to let TM know about the event
         im_user_exit_call trans_task_update $task_id
+	im_audit -object_type im_trans_task -action after_update -object_id $task_id -status_id $new_status_id -type_id $task_type_id
 
     }
 
