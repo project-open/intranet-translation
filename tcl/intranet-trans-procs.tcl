@@ -2981,9 +2981,7 @@ where
 	set find_cmd [im_filestorage_find_cmd]
 	set file_list [exec $find_cmd $source_folder -type f]
     } err_msg] } {
-	# The directory probably doesn't exist yet, so don't generate
-	# an error !!!
-
+	# The directory probably doesn't exist yet, so don't generate an error 
         if {$no_complain} { return "" }
 	ad_return_complaint 1 "im_task_missing_file_list: directory $source_folder<br>
 		       probably does not exist:<br>$err_msg"
