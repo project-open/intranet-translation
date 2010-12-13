@@ -1037,6 +1037,20 @@ SELECT im_dynfield_attribute_new (
 
 
 
+---------------------------------------------------
+-- DynFields for im_company
+--
+
+-- alter table im_companies drop column default_pm_fee_percentage;
+-- alter table im_companies add default_pm_fee_percentage float;
+alter table im_companies add default_pm_fee_perc numeric(12,2);
+alter table im_companies add default_surcharge_perc numeric(12,2);
+alter table im_companies add default_discount_perc numeric(12,2);
+SELECT im_dynfield_attribute_new ('im_company', 'default_pm_fee_perc', 'Default PM Fee Percentage', 'numeric', 'float', 'f');
+SELECT im_dynfield_attribute_new ('im_company', 'default_surcharge_perc', 'Default Surcharge Percentage', 'numeric', 'float', 'f');
+SELECT im_dynfield_attribute_new ('im_company', 'default_discount_perc', 'Default Discount Percentage', 'numeric', 'float', 'f');
+
+
 
 ---------------------------------------------------
 -- DynFields for im_material
