@@ -22,6 +22,16 @@ ad_page_contract {
     task_status:array,optional
     task_type:array,optional
     task_wf_status:array,optional
+    
+    match_x:array,optional
+    match_rep:array,optional
+    match100:array,optional
+    match95:array,optional
+    match85:array,optional
+    match75:array,optional
+    match50:array,optional
+    match0:array,optional
+
     { target_language_id:multiple {}}
     { task_name_file "" }
     { task_units_file ""}
@@ -76,7 +86,6 @@ if {"" != $submit_add_manual} { set action "Add" }
 if {"" != $submit_add_file} { set action "Add File" }
 
 set user_id [ad_maybe_redirect_for_registration]
-set page_body "<PRE>\n"
 
 switch -glob $action {
 
@@ -119,21 +128,21 @@ switch -glob $action {
 	# Save the changes in billable_units and task_status
 	#
 	set task_list [array names task_status]
-        append page_body "task_list=$task_list\n"
+
+#	ad_return_complaint 1 "$task_list - [array get match_x]"
+
 
 	foreach task_id $task_list {
 
 	    # Use default values if no InterCo values are available:
-	    if {![info exists billable_units_interco($task_id)]} { set billable_units_interco($task_id) $billable_units($task_id) }
+	    if {![info exists billable_units_interco($task_id)]} { 
+		set billable_units_interco($task_id) $billable_units($task_id) 
+	    }
 
 	    regsub {\,} $task_status($task_id) {.} task_status($task_id)
 	    regsub {\,} $task_type($task_id) {.} task_type($task_id)
 	    regsub {\,} $billable_units($task_id) {.} billable_units($task_id)
 	    regsub {\,} $billable_units_interco($task_id) {.} billable_units_interco($task_id)
-	    append page_body "task_status($task_id)=$task_status($task_id)\n"
-	    append page_body "task_type($task_id)=$task_type($task_id)\n"
-	    append page_body "b._units($task_id)=$billable_units($task_id)\n"
-	    append page_body "b._units_interco($task_id)=$billable_units_interco($task_id)\n"
 
 	    # Static Workflow - just save the values
 	    # The values for status and type are irrelevant
@@ -147,12 +156,40 @@ switch -glob $action {
             set billable_value_interco $billable_units_interco($task_id)
             if {"" == $billable_value_interco} { set billable_value_interco 0 }
 
+	    set trados_reuse_update ""
+	    if {[info exists match_x($task_id)]} {
+		
+		set p_match_x $match_x($task_id)
+		set p_match_rep $match_rep($task_id)
+		set p_match100 $match100($task_id)
+		set p_match95 $match95($task_id)
+		set p_match85 $match85($task_id)
+		set p_match75 $match75($task_id)
+		set p_match50 $match50($task_id)
+		set p_match0 $match0($task_id)
+		set task_units [im_trans_trados_matrix_calculate [im_company_freelance] $p_match_x $p_match_rep $p_match100 $p_match95 $p_match85 $p_match75 $p_match50 $p_match0]
+
+		set trados_reuse_update ",
+			match_x = :p_match_x,
+			match_rep = :p_match_rep,
+			match100 = :p_match100,
+			match95 = :p_match95,
+			match85 = :p_match85,
+			match75 = :p_match75,
+			match50 = :p_match50,
+			match0 = :p_match0,
+			task_units = :task_units
+		"
+
+	    }
+
 	    set sql "
                     update im_trans_tasks set
                 	task_status_id= '$task_status($task_id)',
                 	task_type_id= '$task_type($task_id)',
 			billable_units = :billable_value,
 			billable_units_interco = :billable_value_interco
+			$trados_reuse_update
                     where project_id=:project_id
                     and task_id=:task_id"
 	    db_dml update_task_status $sql
