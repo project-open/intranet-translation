@@ -735,6 +735,8 @@ ad_proc -public im_translation_task_permissions {user_id task_id view_var read_v
 # -------------------------------------------------------------------
 
 ad_proc im_task_user_select {
+    {-source_language_id 0}
+    {-target_language_id 0}
     {-group_list {}}
     select_name 
     user_list 
@@ -752,9 +754,53 @@ ad_proc im_task_user_select {
 	append select_html "<option value=''>[_ intranet-translation.--_Please_Select_--]</option>\n"
     }
 
+    # Check if the filtering option is enabled or not.
+    set source_target_select_p [ad_parameter -package_id [im_package_translation_id] EnableTaskAssignmentBasedOnSourceTargetLanguageP "" 0]
+    if {!$source_target_select_p} {
+       set source_language_id 0
+       set target_language_id 0
+    }
+
+    # Deal with task specific resource - only show the guys who match
+    # the source- and target language
+    if {0 != $source_language_id} {
+        set source_language [im_category_from_id $source_language_id]
+	set source_language_uids [util_memoize [list db_list source_lang_uids "
+		select	user_id
+		from	im_freelance_skills fs,
+			im_categories sl
+		where	fs.skill_id = sl.category_id and
+			skill_type_id in (select category_id from im_categories where category = 'Source Language') and
+			-- only compare the first two letter of the source language
+			lower(substring(sl.category from 1 for 2)) = lower(substring('$source_language' from 1 for 2))
+	"] 60]
+    }
+
+    if {0 != $target_language_id} {
+        set target_language [im_category_from_id $target_language_id]
+	set target_language_uids [util_memoize [list db_list target_lang_uids "
+		select	user_id
+		from	im_freelance_skills fs,
+			im_categories sl
+		where	fs.skill_id = sl.category_id and
+			skill_type_id in (select category_id from im_categories where category = 'Target Language') and
+			-- only compare the first two letter of the target language
+			lower(substring(sl.category from 1 for 2)) = lower(substring('$target_language' from 1 for 2))
+	"] 60]
+    }
+
+
     foreach user_list_entry $user_list {
 	set user_id [lindex $user_list_entry 0]
 	set user_name [lindex $user_list_entry 1]
+
+	if {0 != $source_language_id} {
+	    if {[lsearch $source_language_uids $user_id] < 0} { continue }
+	}
+	if {0 != $target_language_id} {
+	    if {[lsearch $target_language_uids $user_id] < 0} { continue }
+	}
+
 	set selected ""
 	if {$default_user_id == $user_id} { set selected "selected"}
 	append select_html "<option value='$user_id' $selected>$user_name</option>\n"

@@ -307,7 +307,7 @@ db_foreach select_tasks $task_sql {
 
     # Render the 4 possible workflow roles to assign
     if {$trans} {
-	append task_html [im_task_user_select task_trans.$task_id $project_resource_list $trans_id translator]
+	append task_html [im_task_user_select -source_language_id $source_language_id -target_language_id $target_language_id task_trans.$task_id $project_resource_list $trans_id translator]
     } else {
 	append task_html "<input type=hidden name='task_trans.$task_id' value=''>"
     }
@@ -315,7 +315,7 @@ db_foreach select_tasks $task_sql {
     append task_html "</td><td>"
 
     if {$edit} {
-	append task_html [im_task_user_select task_edit.$task_id $project_resource_list $edit_id editor]
+	append task_html [im_task_user_select -source_language_id $source_language_id -target_language_id $target_language_id task_edit.$task_id $project_resource_list $edit_id editor]
     } else {
 	append task_html "<input type=hidden name='task_edit.$task_id' value=''>"
     }
@@ -323,7 +323,7 @@ db_foreach select_tasks $task_sql {
     append task_html "</td><td>"
 
     if {$proof} {
-	append task_html [im_task_user_select task_proof.$task_id $project_resource_list $proof_id proofer]
+	append task_html [im_task_user_select -source_language_id $source_language_id -target_language_id $target_language_id task_proof.$task_id $project_resource_list $proof_id proofer]
     } else {
 	append task_html "<input type=hidden name='task_proof.$task_id' value=''>"
     }

@@ -9,7 +9,7 @@
     <singleton-p>t</singleton-p>
     <auto-mount>intranet-translation</auto-mount>
 
-    <version name="4.0.0.0.0" url="http://www.project-open.org/download/apm/intranet-translation-4.0.0.0.0.apm">
+    <version name="4.0.0.0.1" url="http://www.project-open.org/download/apm/intranet-translation-4.0.0.0.1.apm">
         <owner url="mailto:frank.bergmann@project-open.com">Frank Bergmann</owner>
         <vendor url="http://www.project-open.com/">]project-open[</vendor>
 
@@ -37,6 +37,9 @@
            <parameter datatype="number" min_n_values="1" max_n_values="1" name="EnableAutoAssignmentComponentP" default="0" description="Enable auto assignment in the project's 'Assignments' page? Auto assignments are important for L10n companies with many small tasks, but clutter the GUI otherwise. Default is '0'."/>
 
            <parameter datatype="number" min_n_values="1" max_n_values="1" name="AutomaticProjectAdvanceP" default="1" description="Enable the automatic calculation of percent completed per translation project? Set this parameter to 0 for manual status updates. Default is '1'."/>
+
+           <parameter datatype="number" min_n_values="1" max_n_values="1" name="EnableTaskAssignmentBasedOnSourceTargetLanguageP" default="0" description="In the Translation Task Assignment Page, should we filter users based on their source- and target language? Default is 0 for compatibility with installations without the freelance module. Enabling this option reduces the size of the candidates to who to assign a task, thus reducing error and saving time to project managers."/>
+
         </parameters>
 
     </version>
