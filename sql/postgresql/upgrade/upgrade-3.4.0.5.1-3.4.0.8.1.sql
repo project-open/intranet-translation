@@ -34,7 +34,7 @@ insert into im_view_columns (
         sort_order, visible_for
 ) values (
         9021,90,NULL,
-        '<input type=checkbox name=_dummy onclick=\\"acs_ListCheckAll(''task'',this.checked)\\">',
+        '<input type=checkbox name=_dummy onclick=acs_ListCheckAll(''task'',this.checked)>',
         '$del_checkbox','','',
         0,'expr $project_write'
 );
