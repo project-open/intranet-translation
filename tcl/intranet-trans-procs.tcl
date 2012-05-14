@@ -2128,7 +2128,7 @@ ad_proc im_task_component {
                 aa.attribute_id = da.acs_attribute_id and
                 da.widget_name = dw.widget_name and
                 coalesce(dl.page_url,'default') = 'default'
-        order by dl.pos_y, lower(aa.attribute_id)
+        order by dl.pos_y, aa.attribute_id
     "
     set material_dynfields [db_list material_dynfields "select attribute_name from ($material_dynfield_sql) t"]
 
