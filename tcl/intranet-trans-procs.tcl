@@ -396,6 +396,16 @@ ad_proc im_task_insert {
 			where object_type = :workflow_key
 		"]
 		
+		if { "proof" == $workflow_key } {
+			set task_status_id 352
+			db_dml update_task "
+                		UPDATE im_trans_tasks SET
+                        		task_status_id = :task_status_id
+        	        	WHERE	
+                	        	task_id = :new_task_id
+            		"
+		}
+
 		if {$wf_valid_p} {
 		    # Context_key not used aparently...
 		    set context_key ""
