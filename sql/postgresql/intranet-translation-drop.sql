@@ -1,4 +1,4 @@
--- /packages/intranet-translation/sql/postgresql/intranet-translation.sql
+-- /packages/intranet-translation/sql/postgresql/intranet-translation-drop.sql
 --
 -- Copyright (c) 2003 - 2009 ]project-open[
 --
@@ -7,6 +7,7 @@
 --
 -- @author frank.bergmann@project-open.com
 -- @author juanjoruizx@yahoo.es
+
 
 
 -- Remove added fields to im_projects
@@ -45,9 +46,7 @@ BEGIN
 
     return 0;
 end;' language 'plpgsql';
-
 select inline_01 ();
-
 drop function inline_01 ();
 
 
@@ -115,25 +114,53 @@ drop table im_task_actions;
 drop sequence im_task_actions_seq;
 drop table im_trans_tasks;
 drop table im_trans_trados_matrix;
+drop table im_trans_task_progress;
 
 -- ToDo: Add drop for im_trans_task object type
 
 
+
+-- Translation Quality Views
+delete from im_view_columns where view_id = 250;
+delete from im_view_columns where view_id = 251;
+delete from im_views where view_id = 250;
+delete from im_views where view_id = 251;
+
 -- Delete intranet views
-delete from im_view_columns where column_id >= 9000 and column_id <= 9099;
-delete from im_views where view_id = 90;
-delete from im_view_columns where column_id = 2023;
-
-
------------------------------------------------------------
--- Remove backup views 
---
+delete from im_view_columns where view_id = 90;
 delete from im_view_columns where view_id = 150;
-delete from im_views where view_id = 150;
-
 delete from im_view_columns where view_id = 151;
-delete from im_views where view_id = 151;
-
 delete from im_view_columns where view_id = 152;
+delete from im_view_columns where view_id = 152;
+
+delete from im_views where view_id = 90;
+delete from im_views where view_id = 150;
+delete from im_views where view_id = 151;
 delete from im_views where view_id = 152;
+delete from im_views where view_id = 152;
+
+
+-- Categories
+
+delete from im_trans_task_progress where task_type_id in (87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 2500, 2503);
+delete from im_invoice_items where item_type_id in (87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 2500, 2503);
+update im_projects set project_type_id = 86 where project_type_id in (87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 2500, 2503);
+delete from  where  in (87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 2500, 2503);
+
+delete from im_dynfield_type_attribute_map where object_type_id in (87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 2500, 2503);
+delete from im_category_hierarchy where child_id in (87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 2500, 2503);
+delete from im_categories where category_id in (87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 2500, 2503);
+
+
+
+delete from im_categories where category_type = 'Intranet Trans RFQ Type';
+delete from im_categories where category_type = 'Intranet Trans RFQ Status';
+delete from im_categories where category_type = 'Intranet Trans RFQ Overall Status';
+delete from im_categories where category_type = 'Intranet Translation Task Status';
+delete from im_categories where category_type = 'Intranet Translation Subject Area';
+delete from im_categories where category_type = 'Intranet Translation Quality Type';
+delete from im_categories where category_type = 'Intranet Translation Language';
+delete from im_categories where category_type = 'Intranet TM Integration Type';
+delete from im_categories where category_type = 'Intranet Quality';
+delete from im_categories where category_type = 'Intranet LOC Tool';
 
