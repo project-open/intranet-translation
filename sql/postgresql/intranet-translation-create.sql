@@ -609,7 +609,7 @@ begin
 	null,		   -- creation_user
 	null,		   -- creation_ip
 	null,		   -- context_id
-	''intranet'',     -- package_name
+	''intranet-translation'',     -- package_name
 	''project_trans_tasks'', -- label
 	''Trans Tasks'',	       -- name
 	''/intranet-translation/trans-tasks/task-list?view_name=trans_tasks'', -- url
@@ -634,7 +634,7 @@ begin
 	null,		   -- creation_user
 	null,		   -- creation_ip
 	null,		   -- context_id
-	''intranet'',     -- package_name
+	''intranet-translation'',     -- package_name
 	''project_trans_tasks_assignments'', -- label
 	''Assignments'',	-- name
 	''/intranet-translation/trans-tasks/task-assignments?view=standard'', -- url
