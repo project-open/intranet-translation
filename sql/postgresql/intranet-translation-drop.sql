@@ -11,8 +11,10 @@
 
 
 -- Remove added fields to im_projects
-alter table im_projects drop     company_project_nr;
-alter table im_projects drop     company_contact_id;
+
+-- These fields are used everywhere now...
+-- alter table im_projects drop     company_project_nr;
+-- alter table im_projects drop     company_contact_id;
 alter table im_projects drop     source_language_id;
 alter table im_projects drop     subject_area_id;
 alter table im_projects drop     expected_quality_id;
