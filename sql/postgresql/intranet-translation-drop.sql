@@ -15,10 +15,12 @@
 -- These fields are used everywhere now...
 -- alter table im_projects drop     company_project_nr;
 -- alter table im_projects drop     company_contact_id;
+-- alter table im_projects drop     final_company;
+
 alter table im_projects drop     source_language_id;
 alter table im_projects drop     subject_area_id;
 alter table im_projects drop     expected_quality_id;
-alter table im_projects drop     final_company;
+
 
 -- An approximate value for the size (number of words) of the project
 alter table im_projects drop     trans_project_words;
