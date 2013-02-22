@@ -1001,7 +1001,7 @@ ad_proc -public im_trans_project_details_component { user_id project_id return_u
     # Check if there are menus related to translation visible for the current user
     # Add the <ul>-List of associated menus
     set bind_vars [list user_id $user_id]
-    set menu_html [im_menu_ul_list -no_cache -package_key "intranet-reporting" "reporting-translation" $bind_vars]
+    set menu_html [im_menu_ul_list -no_cache "reporting-translation" $bind_vars]
     if {"" != $menu_html} {
 	append html "
 	<tr>
