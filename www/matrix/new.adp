@@ -23,6 +23,16 @@
   <td>#intranet-translation.Repetitions#</td>
   <td><input type=text name=match_rep size=8 value=@match_rep@></td>
 </tr>
+
+<tr>
+  <td><%= [lang::message::lookup "" intranet-translation.Perf "Perfect Match"] %></td>
+  <td><input type=text name=match_perf size=8 value=@match_perf@></td>
+</tr>
+<tr>
+  <td><%= [lang::message::lookup "" intranet-translation.Cfr "Cross File Repetitions"] %></td>
+  <td><input type=text name=match_cfr size=8 value=@match_cfr@></td>
+</tr>
+
 <tr>
   <td>100%</td>
   <td><input type=text name=match100 size=8 value=@match100@></td>
@@ -47,6 +57,24 @@
   <td>#intranet-translation.No_Match#</td>
   <td><input type=text name=match0 size=8 value=@match0@></td>
 </tr>
+
+<tr>
+  <td><%= [lang::message::lookup "" intranet-translation.Same_File_Fuzzy "Same File Fuzzy Matches"] %> 95% - 99%</td>
+  <td><input type=text name=match_f95 size=8 value=@match_f95@></td>
+</tr>
+<tr>
+  <td><%= [lang::message::lookup "" intranet-translation.Same_File_Fuzzy "Same File Fuzzy Matches"] %> 85% - 94%</td>
+  <td><input type=text name=match_f85 size=8 value=@match_f85@></td>
+</tr>
+<tr>
+  <td><%= [lang::message::lookup "" intranet-translation.Same_File_Fuzzy "Same File Fuzzy Matches"] %> 75% - 84%</td>
+  <td><input type=text name=match_f75 size=8 value=@match_f75@></td>
+</tr>
+<tr>
+  <td><%= [lang::message::lookup "" intranet-translation.Same_File_Fuzzy "Same File Fuzzy Matches"] %> 50% - 74%</td>
+  <td><input type=text name=match_f50 size=8 value=@match_f50@></td>
+</tr>
+
 <tr>
   <td colspan=2 align=middle>
     <input type=submit value=Save>

@@ -442,36 +442,56 @@ ad_proc im_task_insert {
 # -------------------------------------------------------------------
 
 
-ad_proc -public im_trans_trados_matrix_component { user_id object_id return_url } {
+ad_proc -public im_trans_trados_matrix_component { 
+    user_id 
+    object_id 
+    return_url 
+} {
     Return a formatted HTML table showing the trados matrix
     related to the current object
 } {
 
-    if {![im_permission $user_id view_costs]} {
-	return ""
-    }
+    if {![im_permission $user_id view_costs]} { return "" }
 
     array set matrix [im_trans_trados_matrix $object_id]
     set header_html "
 <td class=rowtitle align=center>[_ intranet-translation.XTr]</td>
 <td class=rowtitle align=center>[_ intranet-translation.Rep]</td>
+
+<td class=rowtitle align=center>[lang::message::lookup "" intranet-translation.Perfect "Perf"]</td>
+<td class=rowtitle align=center>[lang::message::lookup "" intranet-translation.Cfr "Cfr"]</td>
+
 <td class=rowtitle align=center>100%</td>
 <td class=rowtitle align=center>95%</td>
 <td class=rowtitle align=center>85%</td>
 <td class=rowtitle align=center>75%</td>
 <td class=rowtitle align=center>50%</td>
 <td class=rowtitle align=center>0%</td>
+
+<td class=rowtitle align=center>f95%</td>
+<td class=rowtitle align=center>f85%</td>
+<td class=rowtitle align=center>f75%</td>
+<td class=rowtitle align=center>f50%</td>
 "
 
     set value_html "
-<td align=right>[expr 100 * $matrix(x)]%</td>
-<td align=right>[expr 100 * $matrix(rep)]%</td>
-<td align=right>[expr 100 * $matrix(100)]%</td>
-<td align=right>[expr 100 * $matrix(95)]%</td>
-<td align=right>[expr 100 * $matrix(85)]%</td>
-<td align=right>[expr 100 * $matrix(75)]%</td>
-<td align=right>[expr 100 * $matrix(50)]%</td>
-<td align=right>[expr 100 * $matrix(0)]%</td>
+<td align=right>[expr round(1000.0 * $matrix(x)) / 10.0]%</td>
+<td align=right>[expr round(1000.0 * $matrix(rep)) / 10.0]%</td>
+
+<td align=right>[expr round(1000.0 * $matrix(perf)) / 10.0]%</td>
+<td align=right>[expr round(1000.0 * $matrix(cfr)) / 10.0]%</td>
+
+<td align=right>[expr round(1000.0 * $matrix(100)) / 10.0]%</td>
+<td align=right>[expr round(1000.0 * $matrix(95)) / 10.0]%</td>
+<td align=right>[expr round(1000.0 * $matrix(85)) / 10.0]%</td>
+<td align=right>[expr round(1000.0 * $matrix(75)) / 10.0]%</td>
+<td align=right>[expr round(1000.0 * $matrix(50)) / 10.0]%</td>
+<td align=right>[expr round(1000.0 * $matrix(0)) / 10.0]%</td>
+
+<td align=right>[expr round(1000.0 * $matrix(f95)) / 10.0]%</td>
+<td align=right>[expr round(1000.0 * $matrix(f85)) / 10.0]%</td>
+<td align=right>[expr round(1000.0 * $matrix(f75)) / 10.0]%</td>
+<td align=right>[expr round(1000.0 * $matrix(f50)) / 10.0]%</td>
 "
 
     set html "
@@ -501,7 +521,23 @@ ad_proc -public im_trans_trados_matrix_component { user_id object_id return_url 
 
 
 
-ad_proc -public im_trans_trados_matrix_calculate { object_id px_words prep_words p100_words p95_words p85_words p75_words p50_words p0_words } {
+ad_proc -public im_trans_trados_matrix_calculate { 
+    object_id 
+    px_words 
+    prep_words 
+    p100_words 
+    p95_words 
+    p85_words 
+    p75_words 
+    p50_words 
+    p0_words 
+    { pperfect_words 0}
+    { pcfr_words 0 }
+    { f95_words 0 }
+    { f85_words 0 }
+    { f75_words 0 }
+    { f50_words 0 }
+} {
     Calculate the number of "effective" words based on
     a valuation of repetitions from the associated tradox
     matrix.<br>
@@ -513,11 +549,28 @@ ad_proc -public im_trans_trados_matrix_calculate { object_id px_words prep_words
     If the "Internal" company doesn't have a matrix fall
     back to some default values.
 } {
-    return [im_trans_trados_matrix_calculate_helper $object_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
+    return [im_trans_trados_matrix_calculate_helper $object_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words \
+		$pperfect_words $pcfr_words $f95_words $f85_words $f75_words $f50_words]
 }
 
 
-ad_proc -public im_trans_trados_matrix_calculate_helper { object_id px_words prep_words p100_words p95_words p85_words p75_words p50_words p0_words } {
+ad_proc -public im_trans_trados_matrix_calculate_helper {
+    object_id
+    px_words
+    prep_words
+    p100_words
+    p95_words
+    p85_words
+    p75_words
+    p50_words
+    p0_words 
+    { pperfect_words 0}
+    { pcfr_words 0 }
+    { f95_words 0 }
+    { f85_words 0 }
+    { f75_words 0 }
+    { f50_words 0 }
+} {
     See im_trans_trados_matrix_calculate for comments...
 } {
 
@@ -534,12 +587,18 @@ ad_proc -public im_trans_trados_matrix_calculate_helper { object_id px_words pre
     set task_units [expr \
 		    ($px_words * $matrix(x)) + \
 		    ($prep_words * $matrix(rep)) + \
+		    ($prep_words * $matrix(perf)) + \
+		    ($prep_words * $matrix(cfr)) + \
 		    ($p100_words * $matrix(100)) + \
 		    ($p95_words * $matrix(95)) + \
 		    ($p85_words * $matrix(85)) + \
 		    ($p75_words * $matrix(75)) + \
 		    ($p50_words * $matrix(50)) + \
-		    ($p0_words * $matrix(0))]
+		    ($p0_words * $matrix(0)) + \
+		    ($p95_words * $matrix(f95)) + \
+		    ($p85_words * $matrix(f85)) + \
+		    ($p75_words * $matrix(f75)) + \
+		    ($p50_words * $matrix(f50))]
     return $task_units
 }
 
@@ -584,25 +643,30 @@ ad_proc -public im_trans_trados_matrix_project { project_id } {
 
     # Get match100, match95, ...
     db_1row matrix_select "
-	select
-		m.*,
+	select	m.*,
 		acs_object.name(o.object_id) as object_name
-	from
-		acs_objects o,
+	from	acs_objects o,
 		im_trans_trados_matrix m
-	where
-		o.object_id = :project_id
+	where	o.object_id = :project_id
 		and o.object_id = m.object_id(+)
     "
 
     set matrix(x) $match_x
     set matrix(rep) $match_rep
+    set matrix(perf) $match_perf
+    set matrix(cfr) $match_cfr
     set matrix(100) $match100
     set matrix(95) $match95
     set matrix(85) $match85
     set matrix(75) $match75
     set matrix(50) $match50
     set matrix(0) $match0
+
+    set matrix(f95) $match_f95
+    set matrix(f85) $match_f85
+    set matrix(f75) $match_f75
+    set matrix(f50) $match_f50
+
     set matrix(type) company
     set matrix(object) $project_id
 
@@ -618,25 +682,30 @@ ad_proc -public im_trans_trados_matrix_company { company_id } {
 
     # Get match100, match95, ...
     db_1row matrix_select "
-	select
-		m.*,
+	select	m.*,
 		acs_object.name(o.object_id) as object_name
-	from
-		acs_objects o,
+	from	acs_objects o,
 		im_trans_trados_matrix m
-	where
-		o.object_id = :company_id
+	where	o.object_id = :company_id
 		and o.object_id = m.object_id(+)
     "
 
     set matrix(x) $match_x
     set matrix(rep) $match_rep
+    set matrix(perf) $match_perf
+    set matrix(cfr) $match_cfr
     set matrix(100) $match100
     set matrix(95) $match95
     set matrix(85) $match85
     set matrix(75) $match75
     set matrix(50) $match50
     set matrix(0) $match0
+
+    set matrix(f95) $match_f95
+    set matrix(f85) $match_f85
+    set matrix(f75) $match_f75
+    set matrix(f50) $match_f50
+
     set matrix(type) company
     set matrix(object) $company_id
 
@@ -653,25 +722,28 @@ ad_proc -public im_trans_trados_matrix_internal { } {
 
     # Get match100, match95, ...
     db_1row matrix_select "
-	select
-		m.*,
+	select	m.*,
 		acs_object.name(o.object_id) as object_name
-	from
-		acs_objects o,
+	from	acs_objects o,
 		im_trans_trados_matrix m
-	where
-		o.object_id = :company_id
+	where	o.object_id = :company_id
 		and o.object_id = m.object_id(+)
     "
 
     set matrix(x) $match_x
     set matrix(rep) $match_rep
+    set matrix(perf) $match_perf
+    set matrix(cfr) $match_cfr
     set matrix(100) $match100
     set matrix(95) $match95
     set matrix(85) $match85
     set matrix(75) $match75
     set matrix(50) $match50
     set matrix(0) $match0
+    set matrix(f95) $match_f95
+    set matrix(f85) $match_f85
+    set matrix(f75) $match_f75
+    set matrix(f50) $match_f50
     set matrix(type) internal
     set matrix(object) 0
     return [array get matrix]
@@ -683,12 +755,18 @@ ad_proc -public im_trans_trados_matrix_default { } {
 } {
     set matrix(x) 0.25
     set matrix(rep) 0.25
+    set matrix(perf) 0.25
+    set matrix(cfr) 0.25
     set matrix(100) 0.25
     set matrix(95) 0.3
     set matrix(85) 0.5
     set matrix(75) 1.0
     set matrix(50) 1.0
     set matrix(0) 1.0
+    set matrix(f95) 0.3
+    set matrix(f85) 0.5
+    set matrix(f75) 1.0
+    set matrix(f50) 1.0
     set matrix(type) default
     set matrix(object) 0
 
@@ -899,13 +977,10 @@ ad_proc -public im_target_language_ids { project_id} {
 } {
     set result [list]
     set sql "
-select
-	language_id
-from 
-	im_target_languages
-where 
-	project_id=:project_id
-"
+	select	language_id
+	from	im_target_languages
+	where	project_id=:project_id
+    "
     db_foreach select_target_languages $sql {
 	lappend result $language_id
     }

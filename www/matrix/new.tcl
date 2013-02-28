@@ -26,15 +26,12 @@ set export_vars [export_form_vars object_id return_url]
 
 # Get match100, match95, ...
 db_1row matrix_select "
-select
-	m.*,
-	acs_object.name(o.object_id) as object_name
-from
-	acs_objects o,
-	im_trans_trados_matrix m
-where
-	o.object_id = :object_id
-	and o.object_id = m.object_id(+)
+	select	m.*,
+		acs_object.name(o.object_id) as object_name
+	from	acs_objects o,
+		im_trans_trados_matrix m
+	where	o.object_id = :object_id
+		and o.object_id = m.object_id(+)
 "
 
 # Get the default trados matrix
@@ -48,6 +45,14 @@ if {"" == $match95} { set match95 $default(95) }
 if {"" == $match100} { set match100 $default(100) }
 if {"" == $match_rep} { set match_rep $default(rep) }
 if {"" == $match_x} { set match_x $default(x) }
+
+if {"" == $match_perf} { set match_perf $default(perf) }
+if {"" == $match_cfr} { set match_perf $default(cfr) }
+
+if {"" == $match_f50} { set match50 $default(f50) }
+if {"" == $match_f75} { set match75 $default(f75) }
+if {"" == $match_f85} { set match85 $default(f85) }
+if {"" == $match_f95} { set match95 $default(f95) }
 
 
 set page_title "[_ intranet-translation.lt_Edit_Trados_Matrix_of]"

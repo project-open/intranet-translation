@@ -346,12 +346,18 @@ switch -glob $action {
 	set summed_billable_units 0
 	set summed_match_x 0
 	set summed_match_rep 0
+	set summed_match_perf 0
+	set summed_match_cfr 0
 	set summed_match100 0
 	set summed_match95 0
 	set summed_match85 0
 	set summed_match75 0
 	set summed_match50 0
 	set summed_match0 0
+	set summed_match_f95 0
+	set summed_match_f85 0
+	set summed_match_f75 0
+	set summed_match_f50 0
 	set summed_billable_units_interco 0
 
 	set comp_source_language_id ""
@@ -366,8 +372,11 @@ switch -glob $action {
 	set comp_end_date ""
  
 	set sql_query "
-		select	task_filename, task_units, billable_units as bill_units, match_x, match_rep, 
-			match100, match95, match85, match75, match50, match0, billable_units_interco, 
+		select	task_filename, task_units, billable_units as bill_units, 
+			match_x, match_rep, match_perf, match_cfr,
+			match100, match95, match85, match75, match50, match0, 
+			match_f95, match_f85, match_f75, match_f50,
+			billable_units_interco, 
 			task_type_id, task_status_id, source_language_id, target_language_id, task_uom_id,
 			trans_id, edit_id, proof_id, other_id, project_id
 		from	im_trans_tasks
@@ -382,12 +391,19 @@ switch -glob $action {
 	    set summed_billable_units [expr $bill_units+0 + $summed_billable_units] 
 	    set summed_match_x [expr $match_x+0 + $summed_match_x] 
 	    set summed_match_rep [expr $match_rep+0 + $summed_match_rep] 
+	    set summed_match_perf [expr $match_perf+0 + $summed_match_perf]
+	    set summed_match_cfr [expr $match_cfr+0 + $summed_match_cfr]
 	    set summed_match100 [expr $match100+0 + $summed_match100] 
 	    set summed_match95 [expr $match95+0 + $summed_match95] 
 	    set summed_match85 [expr $match85+0 + $summed_match85] 
 	    set summed_match75 [expr $match75+0 + $summed_match75] 
 	    set summed_match50 [expr $match50+0 + $summed_match50] 
 	    set summed_match0 [expr $match0+0 + $summed_match0] 
+	    set summed_match_f95 [expr $match_f95+0 + $summed_match_f95] 
+	    set summed_match_f85 [expr $match_f85+0 + $summed_match_f85] 
+	    set summed_match_f75 [expr $match_f75+0 + $summed_match_f75] 
+	    set summed_match_f50 [expr $match_f50+0 + $summed_match_f50] 
+
 	    set summed_billable_units_interco [expr $billable_units_interco+0 + $summed_billable_units_interco]      
 
 	    # Check the parameters of the task.
@@ -471,12 +487,18 @@ switch -glob $action {
 			billable_units_interco = :summed_billable_units_interco,
 			match_x = :summed_match_x,
 			match_rep = :summed_match_rep,
+			match_perf = :summed_match_perf,
+			match_cfr = :summed_match_cfr,
 			match100 = :summed_match100, 
 			match95 = :summed_match95,
 			match85 = :summed_match85,
 			match75 = :summed_match75, 
 			match50 = :summed_match50,
-			match0 = :summed_match0
+			match0 = :summed_match0,
+			match_f95 = :summed_match_f95,
+			match_f85 = :summed_match_f85,
+			match_f75 = :summed_match_f75, 
+			match_f50 = :summed_match_f50
 		WHERE 
 			task_id = :new_task_id
 	"  

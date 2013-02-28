@@ -96,6 +96,8 @@ values (9064,90,NULL,'Task Type','$type_select','','',640,'expr $project_write')
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
 values (9066,90,NULL,'Task Status','$status_select','','',660,'expr $project_write');
 
+-- 9068-9079 reserved
+
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
 values (9080,90,NULL,'Assigned','$assignments','','',800,'expr $project_write');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)

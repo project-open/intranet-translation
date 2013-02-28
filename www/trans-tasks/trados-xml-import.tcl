@@ -199,6 +199,64 @@ if { [string tolower $nodeName] == "task" } {
 set ctr 0
 for {set i 0} {$i < $trados_files_len} {incr i} {
 
+    set px_segments 0
+    set px_words 0 
+    set px_placeables 0  
+    
+    set p100_segments 0
+    set p100_words 0 
+    set p100_placeables 0		    
+    
+    set prep_segments 0
+    set prep_words 0 
+    set prep_placeables 0
+    
+    set p0_segments 0
+    set p0_words 0 
+    set p0_placeables 0
+    
+    set pperfect_segments 0
+    set pperfect_words 0 
+    set pperfect_placeables 0
+    
+    set pcrossfilerepeated_segments 0
+    set pcrossfilerepeated_words 0 
+    set pcrossfilerepeated_placeables 0
+    
+    set f95_segments 0
+    set f95_words 0 
+    set f95_placeables 0
+    
+    set f85_segments 0
+    set f85_words 0 
+    set f85_placeables 0			  
+    
+    set f75_segments 0
+    set f75_words 0 
+    set f75_placeables 0			  
+    
+    set f50_segments 0
+    set f50_words 0 
+    set f50_placeables 0			  
+    
+    set p95_segments 0
+    set p95_words 0 
+    set p95_placeables 0
+    
+    set p85_segments 0
+    set p85_words 0 
+    set p85_placeables 0			  
+    
+    set p75_segments 0
+    set p75_words 0 
+    set p75_placeables 0			  
+    
+    set p50_segments 0
+    set p50_words 0 
+    set p50_placeables 0			  
+
+
+
     if {[string equal $trados_version "9.0"]} {
 	set childnode [lindex $list_files $i]
 	set filename [$childnode getAttribute $attr_name]
@@ -231,10 +289,54 @@ for {set i 0} {$i < $trados_files_len} {incr i} {
 		    set p0_words [$analyseChildElement getAttribute $attr_words] 
 		    set p0_placeables [$analyseChildElement getAttribute $attr_placeables]
 		}
-		"fuzzy" {
-		    
+		"perfect" {
+		    # new
+		    set pperfect_segments [$analyseChildElement getAttribute $attr_segments]
+		    set pperfect_words [$analyseChildElement getAttribute $attr_words] 
+		    set pperfect_placeables [$analyseChildElement getAttribute $attr_placeables]
+		}
+		"crossfilerepeated" {
+		    # new
+		    set pcrossfilerepeated_segments [$analyseChildElement getAttribute $attr_segments]
+		    set pcrossfilerepeated_words [$analyseChildElement getAttribute $attr_words] 
+		    set pcrossfilerepeated_placeables [$analyseChildElement getAttribute $attr_placeables]
+		}
+		"total" {
+		    # ignore
+		}
+		"internalfuzzy" {
 		    #going through all "fuzzy" elements
-		    switch [$analyseChildElement getAttribute $attr_min] {
+		    set fuzzy_min_attribute [$analyseChildElement getAttribute $attr_min]
+		    switch $fuzzy_min_attribute {
+			"95" {
+			    set f95_segments [$analyseChildElement getAttribute $attr_segments]
+			    set f95_words [$analyseChildElement getAttribute $attr_words] 
+			    set f95_placeables [$analyseChildElement getAttribute $attr_placeables]
+			}
+			"85" {
+			    set f85_segments [$analyseChildElement getAttribute $attr_segments]
+			    set f85_words [$analyseChildElement getAttribute $attr_words] 
+			    set f85_placeables [$analyseChildElement getAttribute $attr_placeables]			  
+			}
+			"75" {
+			    set f75_segments [$analyseChildElement getAttribute $attr_segments]
+			    set f75_words [$analyseChildElement getAttribute $attr_words] 
+			    set f75_placeables [$analyseChildElement getAttribute $attr_placeables]			  
+			}
+			"50" {
+			    set f50_segments [$analyseChildElement getAttribute $attr_segments]
+			    set f50_words [$analyseChildElement getAttribute $attr_words] 
+			    set f50_placeables [$analyseChildElement getAttribute $attr_placeables]			  
+			}
+			default {
+			    ad_return_complaint 1 "trados-xml-import: Found unknown fuzzy min attribute '$fuzzy_min_attribute'"
+			}
+		    }
+		}
+		"fuzzy" {
+		    #going through all "fuzzy" elements
+		    set fuzzy_min_attribute [$analyseChildElement getAttribute $attr_min]
+		    switch $fuzzy_min_attribute {
 			"95" {
 			    set p95_segments [$analyseChildElement getAttribute $attr_segments]
 			    set p95_words [$analyseChildElement getAttribute $attr_words] 
@@ -254,9 +356,15 @@ for {set i 0} {$i < $trados_files_len} {incr i} {
 			    set p50_segments [$analyseChildElement getAttribute $attr_segments]
 			    set p50_words [$analyseChildElement getAttribute $attr_words] 
 			    set p50_placeables [$analyseChildElement getAttribute $attr_placeables]			  
-			}				
-		    } 
-		} 
+			}
+			default {
+			    ad_return_complaint 1 "trados-xml-import: Found unknown fuzzy min attribute '$fuzzy_min_attribute'"
+			}
+		    }
+		}
+		default {
+		    ad_return_complaint 1 "trados-xml-import: Found unknown element '$elementName'"
+		}
 	    }  
 	}  
     } 
@@ -270,12 +378,14 @@ for {set i 0} {$i < $trados_files_len} {incr i} {
     # Determine the "effective" wordcount of the task:
     # Get the "task_units" from a special company called "default_freelance"
     #
-    set task_units [im_trans_trados_matrix_calculate [im_company_freelance] $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
+    set task_units [im_trans_trados_matrix_calculate [im_company_freelance] $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words \
+		       $pperfect_words $pcrossfilerepeated_words $f95_words $f85_words $f75_words $f50_words]
 
     # Determine the "billable_units" form the project's customer:
     #
     
-    set billable_units [im_trans_trados_matrix_calculate $customer_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
+    set billable_units [im_trans_trados_matrix_calculate $customer_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words \
+		       $pperfect_words $pcrossfilerepeated_words $f95_words $f85_words $f75_words $f50_words]
     
     set billable_units_interco $billable_units
     if {$interco_p} {
@@ -283,7 +393,8 @@ for {set i 0} {$i < $trados_files_len} {incr i} {
 	if {"" == $interco_company_id} { 
 	    set interco_company_id $customer_id 
 	}
-	set billable_units_interco [im_trans_trados_matrix_calculate $interco_company_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words]
+	set billable_units_interco [im_trans_trados_matrix_calculate $interco_company_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words \
+					$pperfect_words $pcrossfilerepeated_words $f95_words $f85_words $f75_words $f50_words]
     }
     
     set task_status_id 340
@@ -306,6 +417,15 @@ for {set i 0} {$i < $trados_files_len} {incr i} {
   <td>$p75_words</td>
   <td>$p50_words</td>
   <td>$p0_words</td>
+
+  <td>$pperfect_words</td>
+  <td>$pcrossfilerepeated_words</td>
+
+  <td>$f95_words</td>
+  <td>$f85_words</td>
+  <td>$f75_words</td>
+  <td>$f50_words</td>
+
   <td>$task_units</td>
 </tr>
     "
@@ -361,7 +481,13 @@ for {set i 0} {$i < $trados_files_len} {incr i} {
 			match85 = :p85_words,
 			match75 = :p75_words, 
 			match50 = :p50_words,
-			match0 = :p0_words
+			match0 = :p0_words,
+			match_perf = :pperfect_words,
+			match_cfr = :pcrossfilerepeated_words,
+			match_f95 = :f95_words,
+			match_f85 = :f85_words,
+			match_f75 = :f75_words,
+			match_f50 = :f50_words
 		    WHERE 
 			task_id = :new_task_id
 	        "

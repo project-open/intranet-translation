@@ -29,6 +29,13 @@ ad_page_contract {
     match75:float
     match50:float
     match0:float
+
+    match_perf:float
+    match_cfr:float
+    match_f95:float
+    match_f85:float
+    match_f75:float
+    match_f50:float
 }
 
 # -----------------------------------------------------------------
@@ -71,7 +78,13 @@ update im_trans_trados_matrix set
 	match85 = :match85,
 	match75 = :match75,
 	match50 = :match50,
-	match0 = :match0
+	match0 = :match0,
+	match_perf = :match_perf,
+	match_cfr = :match_cfr,
+	match_f95 = :match_f95,
+	match_f85 = :match_f85,
+	match_f75 = :match_f75,
+	match_f50 = :match_f50
 where
 	object_id = :object_id
 "

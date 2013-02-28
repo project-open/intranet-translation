@@ -35,17 +35,15 @@ where
 
   <fullquery name="im_trans_trados_matrix_company.matrix_select">
     <querytext>
-
-select
-        m.*,
-        acs_object__name(o.object_id) as object_name
-from
-        acs_objects o
-      LEFT JOIN
-        im_trans_trados_matrix m USING (object_id)
-where
-        o.object_id = :company_id
-      
+		select
+		        m.*,
+		        acs_object__name(o.object_id) as object_name
+		from
+		        acs_objects o
+		      LEFT JOIN
+		        im_trans_trados_matrix m USING (object_id)
+		where
+		        o.object_id = :company_id
     </querytext>
   </fullquery>
 
