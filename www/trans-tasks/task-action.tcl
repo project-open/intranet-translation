@@ -90,7 +90,6 @@ set user_id [ad_maybe_redirect_for_registration]
 switch -glob $action {
 
     "" {
-	ad_return_complaint 1 empty
 	# Currently only "Upload" has an empty "submit" string,
 	# because the button needs to caryy the task_id.
 
@@ -105,22 +104,18 @@ switch -glob $action {
     }
 
     "Trados Import" {
-	ad_return_complaint 1 trados_import
 	ad_returnredirect "task-trados?[export_url_vars project_id return_url]"
     }
 
     "Assign" {
-	ad_return_complaint 1 assign
 	ad_returnredirect "task-assignments?[export_url_vars project_id return_url]"
     }
 
     "Assign Tasks" {
-	ad_return_complaint 1 assign-tasks
 	ad_returnredirect "task-assignments?[export_url_vars project_id return_url]"
     }
 
     "View Tasks" {
-	ad_return_complaint 1 view_tasks
 	ad_returnredirect "task-list?[export_url_vars project_id return_url]"
     }
 
@@ -128,9 +123,6 @@ switch -glob $action {
 	# Save the changes in billable_units and task_status
 	#
 	set task_list [array names task_status]
-
-#	ad_return_complaint 1 "$task_list - [array get match_x]"
-
 
 	foreach task_id $task_list {
 
