@@ -1236,12 +1236,24 @@ ad_proc im_trans_upload_action {
 # after a successful download of the related file
 ad_proc im_trans_download_action {task_id task_status_id task_type_id user_id} {
 } {
+
     set new_status_id $task_status_id
+
     switch $task_status_id {
 	340 { 
 	    # Created: Maybe in the future there maybe a step between
 	    # created and "for Trans", but today it's the same.
-	    set new_status_id 344
+	    switch $task_type_id {
+		88 {
+		    set new_status_id 348
+		}
+		95 {
+		    set new_status_id 352
+		}
+		default {
+		    set new_status_id 344
+		}
+	    }
 	}
 	342 { # for Trans: 
 	    set new_status_id 344
@@ -1566,7 +1578,6 @@ ad_proc im_task_component_upload {
 
 
     # Other
-
     set msg_you_are_the_admin [lang::message::lookup "" intranet-translation.You_are_the_admin "You are the administrator..."]
 
 
@@ -1582,6 +1593,11 @@ ad_proc im_task_component_upload {
 	    if {$user_id == $trans_id} {
 		return [list "${source}_$source_language" "" $msg_please_download_source]
 	    } 
+
+            # User should also be allowed to upload/download file when Project Type is 'EDIT ONLY' or 'PROOF ONLY'
+            if { $user_id == $edit_id || $user_id == $proof_id} {
+                return [list "${source}_$source_language" "" $msg_please_download_source]
+            }
 
 	    if {"" != $trans_id} {
 		return [list "" "" $msg_ready_to_be_trans_by_other]
@@ -3020,6 +3036,8 @@ ad_proc im_new_task_component {
 
     # -------------------- Add subheader for New Task  --------------------------
     set task_table "
+	    <form enctype=multipart/form-data method=POST action=/intranet-translation/trans-tasks/trados-upload>
+	    [export_form_vars project_id return_url]
 <table border=0>
 <tr>
   <td colspan=1 class=rowtitle align=center>
@@ -3075,8 +3093,6 @@ ad_proc im_new_task_component {
 	<tr $bgcolor(0)> 
 	  <td>
 	    <nobr>
-	    <form enctype=multipart/form-data method=POST action=/intranet-translation/trans-tasks/trados-upload>
-	    [export_form_vars project_id return_url]
 	    <input type=file name=upload_file size=30 value='*.csv'>
 	    <select name=wordcount_application>
 	    $importer_options_html
@@ -3117,6 +3133,11 @@ ad_proc im_new_task_component {
     # -------------------- Add an Intermediate Header -----------------------
     append task_table "
 	</table>
+	</form>
+
+	<form action=/intranet-translation/trans-tasks/task-action method=POST>
+	[export_form_vars project_id return_url]
+
 	<table border=0>
 	<tr><td colspan=$colspan></td></br>
 	
@@ -3162,8 +3183,6 @@ ad_proc im_new_task_component {
 
     if {0 < [llength $task_list]} {
 	append task_table "
-<form action=/intranet-translation/trans-tasks/task-action method=POST>
-[export_form_vars project_id return_url]
   <tr $bgcolor(0)> 
 
     <td>[im_select -translate_p 0 "task_name_file" $task_list]</td>
@@ -3180,14 +3199,12 @@ ad_proc im_new_task_component {
     <td><input type=submit value=\"[_ intranet-translation.Add_File]\" name=submit_add_file></td>
     <td>[im_gif help "Add a new file to the list of tasks. \n New files need to be located in the \"source_xx\" folder to appear in the drop-down box on the left."]</td>
   </tr>
-</form>
 "
     }
 
     # -------------------- Add Task Manually --------------------------
     append task_table "
-<form action=\"/intranet-translation/trans-tasks/task-action\" method=POST>
-[export_form_vars project_id return_url]
+
   <tr $bgcolor(0)> 
 
     <td><input type=text size=20 value=\"\" name=task_name_manual></td>
@@ -3203,11 +3220,11 @@ ad_proc im_new_task_component {
     $integration_type_html
     <td><input type=submit value=\"[_ intranet-translation.Add]\" name=submit_add_manual></td>
     <td>[im_gif help "Add a \"manual\" task to the project. \n This task is not going to controled by the translation workflow."]</td>
-  </tr>
-</form>"
+  </tr>"
 
     append task_table "
 </table>
+</form>
 "
     return $task_table
 }
