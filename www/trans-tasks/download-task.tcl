@@ -45,7 +45,7 @@ if {![db_0or1row task_info_query $task_sql] } {
 # Get the overall permissions
 im_translation_task_permissions $user_id $task_id view read write admin
 
-set upload_list [im_task_component_upload $user_id $admin $task_status_id $source_language $target_language $trans_id $edit_id $proof_id $other_id]
+set upload_list [im_task_component_upload $user_id $admin $task_status_id $task_type_id $source_language $target_language $trans_id $edit_id $proof_id $other_id]
 set upload [lindex $upload_list 0]
 set folder [lindex $upload_list 1]
 
@@ -63,6 +63,7 @@ set file "$project_path/$folder/$file_name"
 ns_log notice "file_name=$file_name"
 ns_log notice "file=$file"
 
+
 if [file readable $file] {
 
     # Update the task to advance to the next status
@@ -73,7 +74,6 @@ if [file readable $file] {
 	set task_status_id=(task_status_id+2) 
 	where task_id=1458
     "
-
     rp_serve_concrete_file $file
 } else {
     ad_return_complaint 1 "<li>[_ intranet-translation.lt_The_specified_file_fi]"
