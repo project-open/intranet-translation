@@ -74,7 +74,7 @@ im_translation_task_permissions $user_id $task_id view read write admin
 # upload a file for this task, depending on the task
 # status (engine) and the assignment to a specific phase.
 #
-set upload_list [im_task_component_upload $user_id $admin $task_status_id $source_language $target_language $trans_id $edit_id $proof_id $other_id]
+set upload_list [im_task_component_upload $user_id $admin $task_status_id $task_type_id $source_language $target_language $trans_id $edit_id $proof_id $other_id]
 set download_folder [lindex $upload_list 0]
 set upload_folder [lindex $upload_list 1]
 if {"" == $upload_folder} {

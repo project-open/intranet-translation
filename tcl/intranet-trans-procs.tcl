@@ -147,6 +147,7 @@ proc intranet_task_download {} {
 select
 	t.*,
 	p.project_nr,
+	p.project_type_id,
 	im_name_from_user_id(p.project_lead_id) as project_lead_name,
 	im_email_from_user_id(p.project_lead_id) as project_lead_email,
 	im_category_from_id(t.source_language_id) as source_language,
@@ -178,7 +179,7 @@ where
     # #1: Download folder or "" if not allowed to download
     # #2: Upload folder or "" if not allowed to upload
     # #3: A message for the user (ignored here)
-    set upload_list [im_task_component_upload $user_id $user_admin_p $task_status_id $source_language $target_language $trans_id $edit_id $proof_id $other_id]
+    set upload_list [im_task_component_upload $user_id $user_admin_p $task_status_id $task_type_id $source_language $target_language $trans_id $edit_id $proof_id $other_id]
     set download_folder [lindex $upload_list 0]
     set upload_folder [lindex $upload_list 1]
     ns_log Notice "intranet_task_download: download_folder=$download_folder, upload_folder=$upload_folder"
@@ -299,7 +300,8 @@ ad_proc im_task_insert {
     set query "
 	select
 		p.source_language_id,
-		p.end_date as project_end_date
+		p.end_date as project_end_date,
+		p.project_type_id
 	from
 		im_projects p
 	where
@@ -549,6 +551,7 @@ ad_proc -public im_trans_trados_matrix_calculate {
     If the "Internal" company doesn't have a matrix fall
     back to some default values.
 } {
+    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate: -------- object_id: $object_id"
     return [im_trans_trados_matrix_calculate_helper $object_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words \
 		$pperfect_words $pcfr_words $f95_words $f85_words $f75_words $f50_words]
 }
@@ -573,7 +576,7 @@ ad_proc -public im_trans_trados_matrix_calculate_helper {
 } {
     See im_trans_trados_matrix_calculate for comments...
 } {
-
+    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: object_id: $object_id"
     if {"" == $px_words} { set px_words 0 }
     if {"" == $prep_words} { set prep_words 0 }
     if {"" == $p100_words} { set p100_words 0 }
@@ -583,7 +586,11 @@ ad_proc -public im_trans_trados_matrix_calculate_helper {
     if {"" == $p50_words} { set p50_words 0 }
     if {"" == $p0_words} { set p0_words 0 }
 
+
+    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: Getting matrix for object_id: $object_id"
     array set matrix [im_trans_trados_matrix $object_id]
+
+    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: Array found: [array get matrix]"
     set task_units [expr \
 		    ($px_words * $matrix(x)) + \
 		    ($prep_words * $matrix(rep)) + \
@@ -598,7 +605,22 @@ ad_proc -public im_trans_trados_matrix_calculate_helper {
 		    ($p95_words * $matrix(f95)) + \
 		    ($p85_words * $matrix(f85)) + \
 		    ($p75_words * $matrix(f75)) + \
-		    ($p50_words * $matrix(f50))]
+		    ($p50_words * $matrix(f50)) \
+    ]
+
+    # Probably added by KH
+    # Until further clarification ignore fuzzy values 
+    set task_units [expr \
+                    ($px_words * $matrix(x)) + \
+                    ($prep_words * $matrix(rep)) + \
+                    ($p100_words * $matrix(100)) + \
+                    ($p95_words * $matrix(95)) + \
+                    ($p85_words * $matrix(85)) + \
+                    ($p75_words * $matrix(75)) + \
+                    ($p50_words * $matrix(50)) + \
+                    ($p0_words * $matrix(0))  \
+    ]
+    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: Found task_units: $task_units" 
     return $task_units
 }
 
@@ -607,6 +629,7 @@ ad_proc -public im_trans_trados_matrix { object_id } {
     Returns an array with the trados matrix values for an object.
 } {
     set object_type [db_string get_object_type "select object_type from acs_objects where object_id=:object_id" -default none]
+    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix: Object_id: $object_id -> object_type: $object_type"
 
     switch $object_type {
 	im_project {
@@ -635,10 +658,12 @@ ad_proc -public im_trans_trados_matrix { object_id } {
 ad_proc -public im_trans_trados_matrix_project { project_id } {
     Returns an array with the trados matrix values for a project.
 } {
+    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_project: Entering ..."    
     set count [db_string matrix_count "select count(*) from im_trans_trados_matrix where object_id=:project_id"]
     if {!$count} { 
 	set company_id [db_string project_company "select company_id from im_projects project_id=:project_id"]
-	return [im_trans_trados_matrix_company] 
+	ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_project: Found company_id $company_id, calling: im_trans_trados_matrix_company" 
+	return [im_trans_trados_matrix_company $company_id] 
     }
 
     # Get match100, match95, ...
@@ -677,8 +702,12 @@ ad_proc -public im_trans_trados_matrix_project { project_id } {
 ad_proc -public im_trans_trados_matrix_company { company_id } {
     Returns an array with the trados matrix values for a company.
 } {
+    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_company: Entering ..."
     set count [db_string matrix_count "select count(*) from im_trans_trados_matrix where object_id=:company_id"]
-    if {!$count} { return [im_trans_trados_matrix_internal] }
+    if {!$count} { 
+	ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_company: No entries found in table im_trans_trados_matrix, now calling im_trans_trados_matrix_internal" 
+	return [im_trans_trados_matrix_internal] 
+    }
 
     # Get match100, match95, ...
     db_1row matrix_select "
@@ -715,10 +744,16 @@ ad_proc -public im_trans_trados_matrix_company { company_id } {
 ad_proc -public im_trans_trados_matrix_internal { } {
     Returns an array with the trados matrix values for the "Internal" company.
 } {
+
+    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_internal: Entering im_trans_trados_matrix_internal"
+
     set company_id [im_company_internal]
     
     set count [db_string matrix_count "select count(*) from im_trans_trados_matrix where object_id=:company_id"]
-    if {!$count} { return [im_trans_trados_matrix_default] }
+    if {!$count} { 
+	ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_internal: No entries in table im_trans_trados_matrix found for company_id: company_id, calling im_trans_trados_matrix_default"
+	return [im_trans_trados_matrix_default] 
+    }
 
     # Get match100, match95, ...
     db_1row matrix_select "
@@ -753,6 +788,7 @@ ad_proc -public im_trans_trados_matrix_internal { } {
 ad_proc -public im_trans_trados_matrix_default { } {
     Returns an array with the trados matrix values for the "Internal" company.
 } {
+    ns_log NOTICE "intranet-trans-procs.tcl::im_trans_trados_matrix_default: Returning default matrix"
     set matrix(x) 0.25
     set matrix(rep) 0.25
     set matrix(perf) 0.25
@@ -1526,6 +1562,7 @@ ad_proc im_task_component_upload {
     user_id
     user_admin_p
     task_status_id
+    task_type_id
     source_language
     target_language
     trans_id
@@ -1540,7 +1577,7 @@ ad_proc im_task_component_upload {
     2. the folder for upload or "" and
     3. a message for the user
 } {
-    ns_log Notice "im_task_component_upload(user_id=$user_id user_admin_p=$user_admin_p task_status_id=$task_status_id target_language=$target_language trans_id=$trans_id edit_id=$edit_id proof_id=$proof_id other_id=$other_id)"
+    ns_log Notice "im_task_component_upload(user_id=$user_id user_admin_p=$user_admin_p task_status_id=$task_status_id task_type_id=$task_type_id target_language=$target_language trans_id=$trans_id edit_id=$edit_id proof_id=$proof_id other_id=$other_id)"
 
     # Localize the workflow stage directories
     set locale "en_US"
@@ -1553,19 +1590,16 @@ ad_proc im_task_component_upload {
 
 
     # Download
-
     set msg_please_download_source [lang::message::lookup "" intranet-translation.Please_download_the_source_file "Please download the source file"]
     set msg_please_download_translated [lang::message::lookup "" intranet-translation.Please_download_the_translated_file "Please download the translated file"]
     set msg_please_download_edited [lang::message::lookup "" intranet-translation.Please_download_the_edited_file "Please download the edited file"]
 
     # Translation
-
     set msg_ready_to_be_trans_by_other [lang::message::lookup "" intranet-translation.The_file_is_ready_to_be_trans_by_other "The file is ready to be translated by another person."]
     set msg_file_translated_by_other [lang::message::lookup "" intranet-translation.The_file_is_trans_by_another_person "The file is being translated by another person"]
     set msg_please_upload_translated [lang::message::lookup "" intranet-translation.Please_upload_the_translated_file "Please upload the translated file"]
 
     # Edit
-
     set msg_please_upload_the_edited_file [lang::message::lookup "" intranet-translation.Please_upload_the_edited_file "Please upload the edited file"]
     set msg_you_are_allowed_to_upload_again [lang::message::lookup "" intranet-translation.You_are_allowed_to_upload_again "You are allowed to upload the file again while the Editor has not started editing yet..."]
     set msg_file_is_ready_to_be_edited_by_other [lang::message::lookup "" intranet-translation.File_is_ready_to_be_edited_by_other "The file is ready to be edited by another person"]
@@ -1580,24 +1614,32 @@ ad_proc im_task_component_upload {
     # Other
     set msg_you_are_the_admin [lang::message::lookup "" intranet-translation.You_are_the_admin "You are the administrator..."]
 
-
     switch $task_status_id {
 	340 { # Created:
-	    # The user is admin, so he may upload the file
+	    # The user is admin, so he may upload/download the file
 	    if {$user_admin_p} {
 		return [list "${source}_$source_language" "${source}_$source_language" $msg_you_are_the_admin]
 	    }
 
 	    # Created: In the future there maybe a step between
 	    # created and "for Trans", but today it's the same.
-	    if {$user_id == $trans_id} {
+
+	    if {$user_id == $trans_id } {
 		return [list "${source}_$source_language" "" $msg_please_download_source]
 	    } 
 
-            # User should also be allowed to upload/download file when Project Type is 'EDIT ONLY' or 'PROOF ONLY'
-            if { $user_id == $edit_id || $user_id == $proof_id} {
-                return [list "${source}_$source_language" "" $msg_please_download_source]
-            }
+	    # User should also be allowed to upload/download file when Project Type is 'EDIT ONLY' or 'PROOF ONLY'
+	    # fraber: Fixed error by KH
+	    if {$task_type_id == 88 || $task_type_id == 95} {
+		if { $user_id == $edit_id || $user_id == $proof_id} {
+		    return [list "${source}_$source_language" "" $msg_please_download_source]
+		} 
+		
+		# User should also be allowed to upload/download file when Project Type is 'EDIT ONLY' or 'PROOF ONLY'
+		if { $user_id == $edit_id || $user_id == $proof_id} {
+		    return [list "${source}_$source_language" "" $msg_please_download_source]
+		}
+	    }
 
 	    if {"" != $trans_id} {
 		return [list "" "" $msg_ready_to_be_trans_by_other]
@@ -2556,7 +2598,7 @@ ad_proc im_task_component {
 	    # Check if the user is a freelance who is allowed to
 	    # upload a file for this task, depending on the task
 	    # status (engine) and the assignment to a specific phase.
-	    set upload_list [im_task_component_upload $user_id $project_admin $task_status_id $source_language $target_language $trans_id $edit_id $proof_id $other_id]
+	    set upload_list [im_task_component_upload $user_id $project_admin $task_status_id $task_type_id $source_language $target_language $trans_id $edit_id $proof_id $other_id]
 
 	    set download_folder [lindex $upload_list 0]
 	    set upload_folder [lindex $upload_list 1]
@@ -2569,12 +2611,10 @@ ad_proc im_task_component {
 
 		switch $tm_integration_type {
 		    External {
-
 			# Standard - Download to start editing
 			set download_url "/intranet-translation/download-task/$task_id/$download_folder/$task_name"
 			set download_gif [im_gif save "Click right and choose \"Save target as\" to download the file"]
 		    }
-
 		    Ophelia {
 			
 			# Ophelia - Redirect to Ophelia page
@@ -2582,7 +2622,6 @@ ad_proc im_task_component {
 			set download_help [lang::message::lookup "" intranet-translation.Start_task "Start the task"]
 			set download_gif [im_gif control_play_blue $download_help]
 		    }
-
 		    default {
 
 			set download_url ""
