@@ -7,7 +7,12 @@
 @auto_assignment_html;noquote@
 </if>
 
+<if @task_html@ ne "">
 @task_html;noquote@
+</if>
+<else>
+<%=[lang::message::lookup "" intranet-translation.No_tasks_found "No tasks found"]%>
+</else>
 
 <p>
 
