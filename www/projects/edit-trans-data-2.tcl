@@ -173,7 +173,7 @@ if {[exists_and_not_null submit_subprojects]} {
 
 	if {!$sub_project_id} {
 
-	    set sub_project_id [project::new \
+	    set sub_project_id [im_project::new \
 	        -project_name           $sub_project_name \
 	        -project_nr             $sub_project_nr \
 	        -project_path           $sub_project_path \
