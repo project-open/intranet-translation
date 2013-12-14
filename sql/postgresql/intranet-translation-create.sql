@@ -34,24 +34,118 @@
 --
 -- Add some translation specific fields to a project.
 
-alter table im_projects add source_language_id integer;
-alter table im_projects add FOREIGN KEY (source_language_id) references im_categories;
+CREATE OR REPLACE FUNCTION inline_0 ()
+RETURNS INTEGER AS $BODY$
+declare
+        v_count                 integer;
+begin
+        select count(*) into v_count from user_tab_columns
+        where lower(table_name) = 'im_projects' and lower(column_name) = 'source_language_id';
+        IF      0 = v_count
+        THEN
+		alter table im_projects add source_language_id integer
+		constraint im_projects_source_lang_fk references im_categories;
+                return 0;
+        END IF;
+        return 1;
+end;$BODY$ LANGUAGE 'plpgsql';
+SELECT inline_0 ();
+DROP FUNCTION inline_0 ();
 
-alter table im_projects add subject_area_id integer;
-alter table im_projects add FOREIGN KEY (subject_area_id) references im_categories;
+CREATE OR REPLACE FUNCTION inline_0 ()
+RETURNS INTEGER AS $BODY$
+declare
+        v_count                 integer;
+begin
+        select count(*) into v_count from user_tab_columns
+        where lower(table_name) = 'im_projects' and lower(column_name) = 'subject_area_id';
+        IF      0 = v_count
+        THEN
+		alter table im_projects add subject_area_id integer;
+		alter table im_projects add FOREIGN KEY (subject_area_id) references im_categories;
+                return 0;
+        END IF;
+        return 1;
+end;$BODY$ LANGUAGE 'plpgsql';
+SELECT inline_0 ();
+DROP FUNCTION inline_0 ();
 
-alter table im_projects add expected_quality_id integer;
-alter table im_projects add FOREIGN KEY (expected_quality_id) references im_categories;
+
+CREATE OR REPLACE FUNCTION inline_0 ()
+RETURNS INTEGER AS $BODY$
+declare
+        v_count                 integer;
+begin
+        select count(*) into v_count from user_tab_columns
+        where lower(table_name) = 'im_projects' and lower(column_name) = 'expected_quality_id';
+        IF      0 = v_count
+        THEN
+		alter table im_projects add expected_quality_id integer;
+		alter table im_projects add FOREIGN KEY (expected_quality_id) references im_categories;
+                return 0;
+        END IF;
+        return 1;
+end;$BODY$ LANGUAGE 'plpgsql';
+SELECT inline_0 ();
+DROP FUNCTION inline_0 ();
+
+CREATE OR REPLACE FUNCTION inline_0 ()
+RETURNS INTEGER AS $BODY$
+declare
+        v_count                 integer;
+begin
+        select count(*) into v_count from user_tab_columns
+        where lower(table_name) = 'im_projects' and lower(column_name) = 'trans_project_words';
+        IF      0 = v_count
+        THEN
+		alter table im_projects add trans_project_words	numeric(12,0);
+                return 0;
+        END IF;
+        return 1;
+end;$BODY$ LANGUAGE 'plpgsql';
+SELECT inline_0 ();
+DROP FUNCTION inline_0 ();
+
+CREATE OR REPLACE FUNCTION inline_0 ()
+RETURNS INTEGER AS $BODY$
+declare
+        v_count                 integer;
+begin
+        select count(*) into v_count from user_tab_columns
+        where lower(table_name) = 'im_projects' and lower(column_name) = 'trans_project_hours';
+        IF      0 = v_count
+        THEN
+		alter table im_projects add trans_project_hours	numeric(12,0);
+                return 0;
+        END IF;
+        return 1;
+end;$BODY$ LANGUAGE 'plpgsql';
+SELECT inline_0 ();
+DROP FUNCTION inline_0 ();
 
 
 -- An approximate value for the size (number of words) of the project
-alter table im_projects add trans_project_words	numeric(12,0);
-alter table im_projects add trans_project_hours	numeric(12,0);
 
 -- New form of adding the approximate size of the project:
 -- Text format, because there are just too many UoMs around
 -- that are necessary to consider
-alter table im_projects add	trans_size		varchar(200);
+
+CREATE OR REPLACE FUNCTION inline_0 ()
+RETURNS INTEGER AS $BODY$
+declare
+        v_count                 integer;
+begin
+        select count(*) into v_count from user_tab_columns
+        where lower(table_name) = 'im_projects' and lower(column_name) = 'trans_size';
+        IF      0 = v_count
+        THEN
+		alter table im_projects add     trans_size              varchar(200);
+                return 0;
+        END IF;
+        return 1;
+end;$BODY$ LANGUAGE 'plpgsql';
+SELECT inline_0 ();
+DROP FUNCTION inline_0 ();
 
 
 -----------------------------------------------------------
@@ -88,13 +182,11 @@ insert into im_biz_object_urls (object_type, url_type, url) values (
 'im_trans_task','edit','/intranet-translation/trans-tasks/new?form_mode=edit&task_id=');
 
 
-
 update acs_object_types set
         status_type_table = 'im_trans_tasks',
         status_column = 'task_status_id',
         type_column = 'task_type_id'
 where object_type = 'im_trans_task';
-
 
 
 -- Main Object Table
@@ -1007,9 +1099,6 @@ select im_dynfield_widget__new (
 -- DynFields for im_project
 --
 
-alter table im_projects add column source_language_id integer
-constraint im_projects_source_lang_fk references im_categories;
-
 SELECT im_dynfield_attribute_new (
 	'im_project',
 	'source_language_id',
@@ -1020,9 +1109,6 @@ SELECT im_dynfield_attribute_new (
 	'99',
 	't'
 );
-
-alter table im_projects add column subject_area_id integer
-constraint im_projects_source_lang_fk references im_categories;
 
 SELECT im_dynfield_attribute_new (
 	'im_project',
@@ -1035,29 +1121,90 @@ SELECT im_dynfield_attribute_new (
 	't'
 );
 
-
-
 ---------------------------------------------------
 -- DynFields for im_company
 --
 
 -- alter table im_companies drop column default_pm_fee_percentage;
 -- alter table im_companies add default_pm_fee_percentage float;
-alter table im_companies add default_pm_fee_perc numeric(12,2);
-alter table im_companies add default_surcharge_perc numeric(12,2);
-alter table im_companies add default_discount_perc numeric(12,2);
+
+CREATE OR REPLACE FUNCTION inline_0 ()
+RETURNS INTEGER AS $BODY$
+declare
+        v_count                 integer;
+begin
+        select count(*) into v_count from user_tab_columns
+        where lower(table_name) = 'im_companies' and lower(column_name) = 'default_pm_fee_perc';
+        IF      0 = v_count
+        THEN
+		alter table im_companies add default_pm_fee_perc numeric(12,2);
+                return 0;
+        END IF;
+        return 1;
+end;$BODY$ LANGUAGE 'plpgsql';
+SELECT inline_0 ();
+DROP FUNCTION inline_0 ();
+
+CREATE OR REPLACE FUNCTION inline_0 ()
+RETURNS INTEGER AS $BODY$
+declare
+        v_count                 integer;
+begin
+        select count(*) into v_count from user_tab_columns
+        where lower(table_name) = 'im_companies' and lower(column_name) = 'default_surcharge_perc';
+        IF      0 = v_count
+        THEN
+		alter table im_companies add default_surcharge_perc numeric(12,2);
+                return 0;
+        END IF;
+        return 1;
+end;$BODY$ LANGUAGE 'plpgsql';
+SELECT inline_0 ();
+DROP FUNCTION inline_0 ();
+
+CREATE OR REPLACE FUNCTION inline_0 ()
+RETURNS INTEGER AS $BODY$
+declare
+        v_count                 integer;
+begin
+        select count(*) into v_count from user_tab_columns
+        where lower(table_name) = 'im_companies' and lower(column_name) = 'default_discount_perc';
+        IF      0 = v_count
+        THEN
+                alter table im_companies add default_discount_perc numeric(12,2);
+                return 0;
+        END IF;
+        return 1;
+end;$BODY$ LANGUAGE 'plpgsql';
+SELECT inline_0 ();
+DROP FUNCTION inline_0 ();
+
+
 SELECT im_dynfield_attribute_new ('im_company', 'default_pm_fee_perc', 'Default PM Fee Percentage', 'numeric', 'float', 'f');
 SELECT im_dynfield_attribute_new ('im_company', 'default_surcharge_perc', 'Default Surcharge Percentage', 'numeric', 'float', 'f');
 SELECT im_dynfield_attribute_new ('im_company', 'default_discount_perc', 'Default Discount Percentage', 'numeric', 'float', 'f');
-
-
 
 ---------------------------------------------------
 -- DynFields for im_material
 --
 
-alter table im_materials add column task_uom_id integer
-constraint im_materials_task_uom_fk references im_categories;
+CREATE OR REPLACE FUNCTION inline_0 ()
+RETURNS INTEGER AS $BODY$
+declare
+        v_count                 integer;
+begin
+        select count(*) into v_count from user_tab_columns
+        where lower(table_name) = 'im_materials' and lower(column_name) = 'task_uom_id';
+        IF      0 = v_count
+        THEN
+		alter table im_materials add column task_uom_id integer
+		constraint im_materials_task_uom_fk references im_categories;
+                return 0;
+        END IF;
+        return 1;
+end;$BODY$ LANGUAGE 'plpgsql';
+SELECT inline_0 ();
+DROP FUNCTION inline_0 ();
 
 SELECT im_dynfield_attribute_new (
 	'im_material',
@@ -1071,8 +1218,24 @@ SELECT im_dynfield_attribute_new (
 );
 
 
-alter table im_materials add column trans_task_id integer
-constraint im_materials_trans_task_fk references im_categories;
+CREATE OR REPLACE FUNCTION inline_0 ()
+RETURNS INTEGER AS $BODY$
+declare
+        v_count                 integer;
+begin
+        select count(*) into v_count from user_tab_columns
+        where lower(table_name) = 'im_materials' and lower(column_name) = 'trans_task_id';
+        IF      0 = v_count
+        THEN
+                alter table im_materials add column trans_task_id integer
+                constraint im_materials_task_uom_fk references im_categories;
+                return 0;
+        END IF;
+        return 1;
+end;$BODY$ LANGUAGE 'plpgsql';
+SELECT inline_0 ();
+DROP FUNCTION inline_0 ();
+
 
 SELECT im_dynfield_attribute_new (
 	'im_material',
@@ -1086,8 +1249,23 @@ SELECT im_dynfield_attribute_new (
 );
 
 
-alter table im_materials add column source_language_id integer
-constraint im_materials_source_lang_fk references im_categories;
+CREATE OR REPLACE FUNCTION inline_0 ()
+RETURNS INTEGER AS $BODY$
+declare
+        v_count                 integer;
+begin
+        select count(*) into v_count from user_tab_columns
+        where lower(table_name) = 'im_materials' and lower(column_name) = 'source_language_id';
+        IF      0 = v_count
+        THEN
+		alter table im_materials add column source_language_id integer
+		constraint im_materials_source_lang_fk references im_categories;
+                return 0;
+        END IF;
+        return 1;
+end;$BODY$ LANGUAGE 'plpgsql';
+SELECT inline_0 ();
+DROP FUNCTION inline_0 ();
 
 SELECT im_dynfield_attribute_new (
 	'im_material',
@@ -1100,8 +1278,23 @@ SELECT im_dynfield_attribute_new (
 	't'
 );
 
-alter table im_materials add column target_language_id integer
-constraint im_materials_target_lang_fk references im_categories;
+CREATE OR REPLACE FUNCTION inline_0 ()
+RETURNS INTEGER AS $BODY$
+declare
+        v_count                 integer;
+begin
+        select count(*) into v_count from user_tab_columns
+        where lower(table_name) = 'im_materials' and lower(column_name) = 'target_language_id';
+        IF      0 = v_count
+        THEN
+		alter table im_materials add column target_language_id integer
+		constraint im_materials_target_lang_fk references im_categories;
+                return 0;
+        END IF;
+        return 1;
+end;$BODY$ LANGUAGE 'plpgsql';
+SELECT inline_0 ();
+DROP FUNCTION inline_0 ();
 
 SELECT im_dynfield_attribute_new (
 	'im_material',
@@ -1114,8 +1307,25 @@ SELECT im_dynfield_attribute_new (
 	't'
 );
 
-alter table im_materials add column subject_area_id integer
-constraint im_materials_source_lang_fk references im_categories;
+
+CREATE OR REPLACE FUNCTION inline_0 ()
+RETURNS INTEGER AS $BODY$
+declare
+        v_count                 integer;
+begin
+        select count(*) into v_count from user_tab_columns
+        where lower(table_name) = 'im_materials' and lower(column_name) = 'subject_area_id';
+        IF      0 = v_count
+        THEN
+
+		alter table im_materials add column subject_area_id integer
+		constraint im_materials_source_lang_fk references im_categories;
+                return 0;
+        END IF;
+        return 1;
+end;$BODY$ LANGUAGE 'plpgsql';
+SELECT inline_0 ();
+DROP FUNCTION inline_0 ();
 
 SELECT im_dynfield_attribute_new (
 	'im_material',
@@ -1128,9 +1338,23 @@ SELECT im_dynfield_attribute_new (
 	't'
 );
 
-
-alter table im_materials add column file_type_id integer
-constraint im_materials_file_type_fk references im_categories;
+CREATE OR REPLACE FUNCTION inline_0 ()
+RETURNS INTEGER AS $BODY$
+declare
+        v_count                 integer;
+begin
+        select count(*) into v_count from user_tab_columns
+        where lower(table_name) = 'im_materials' and lower(column_name) = 'file_type_id';
+        IF      0 = v_count
+        THEN
+		alter table im_materials add column file_type_id integer
+		constraint im_materials_file_type_fk references im_categories;
+                return 0;
+        END IF;
+        return 1;
+end;$BODY$ LANGUAGE 'plpgsql';
+SELECT inline_0 ();
+DROP FUNCTION inline_0 ();
 
 SELECT im_dynfield_attribute_new (
 	'im_material',
