@@ -32,6 +32,10 @@
   <td><%= [lang::message::lookup "" intranet-translation.Cfr "Cross File Repetitions"] %></td>
   <td><input type=text name=match_cfr size=8 value=@match_cfr@></td>
 </tr>
+<tr>
+  <td><%= [lang::message::lookup "" intranet-translation.Locked "Locked"] %></td>
+  <td><input type=text name=locked size=8 value=@locked@></td>
+</tr>
 
 <tr>
   <td>100%</td>

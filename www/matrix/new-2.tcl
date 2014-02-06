@@ -36,6 +36,8 @@ ad_page_contract {
     match_f85:float
     match_f75:float
     match_f50:float
+
+    locked:float
 }
 
 # -----------------------------------------------------------------
@@ -84,7 +86,8 @@ update im_trans_trados_matrix set
 	match_f95 = :match_f95,
 	match_f85 = :match_f85,
 	match_f75 = :match_f75,
-	match_f50 = :match_f50
+	match_f50 = :match_f50,
+	locked = :locked
 where
 	object_id = :object_id
 "

@@ -474,6 +474,9 @@ ad_proc -public im_trans_trados_matrix_component {
 <td class=rowtitle align=center>f85%</td>
 <td class=rowtitle align=center>f75%</td>
 <td class=rowtitle align=center>f50%</td>
+
+<td class=rowtitle align=center>[lang::message::lookup "" intranet-translation.Locked "Locked"]</td>
+
 "
 
     set value_html "
@@ -494,6 +497,9 @@ ad_proc -public im_trans_trados_matrix_component {
 <td align=right>[expr round(1000.0 * $matrix(f85)) / 10.0]%</td>
 <td align=right>[expr round(1000.0 * $matrix(f75)) / 10.0]%</td>
 <td align=right>[expr round(1000.0 * $matrix(f50)) / 10.0]%</td>
+
+<td align=right>[expr round(1000.0 * $matrix(locked)) / 10.0]%</td>
+
 "
 
     set html "
@@ -671,7 +677,7 @@ ad_proc -public im_trans_trados_matrix_project { project_id } {
 	select	m.*,
 		acs_object.name(o.object_id) as object_name
 	from	acs_objects o,
-		im_trans_trados_matrix m
+im_trans_trados_matrix_project		im_trans_trados_matrix m
 	where	o.object_id = :project_id
 		and o.object_id = m.object_id(+)
     "
@@ -691,6 +697,8 @@ ad_proc -public im_trans_trados_matrix_project { project_id } {
     set matrix(f85) $match_f85
     set matrix(f75) $match_f75
     set matrix(f50) $match_f50
+
+    set matrix(locked) $locked
 
     set matrix(type) company
     set matrix(object) $project_id
@@ -734,6 +742,8 @@ ad_proc -public im_trans_trados_matrix_company { company_id } {
     set matrix(f85) $match_f85
     set matrix(f75) $match_f75
     set matrix(f50) $match_f50
+
+    set matrix(locked) $locked
 
     set matrix(type) company
     set matrix(object) $company_id
@@ -779,6 +789,7 @@ ad_proc -public im_trans_trados_matrix_internal { } {
     set matrix(f85) $match_f85
     set matrix(f75) $match_f75
     set matrix(f50) $match_f50
+    set matrix(locked) $locked
     set matrix(type) internal
     set matrix(object) 0
     return [array get matrix]
@@ -803,6 +814,7 @@ ad_proc -public im_trans_trados_matrix_default { } {
     set matrix(f85) 0.5
     set matrix(f75) 1.0
     set matrix(f50) 1.0
+    set matrix(locked) 1.0
     set matrix(type) default
     set matrix(object) 0
 
@@ -2114,8 +2126,6 @@ ad_proc im_task_status_component { user_id project_id return_url } {
 
     return $task_status_html
 }
-
-
 
 
 
