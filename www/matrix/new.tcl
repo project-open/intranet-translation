@@ -54,6 +54,7 @@ if {"" == $match_f75} { set match75 $default(f75) }
 if {"" == $match_f85} { set match85 $default(f85) }
 if {"" == $match_f95} { set match95 $default(f95) }
 
+if {"" == $locked} { set match_locked $default(locked) }
 
 set page_title "[_ intranet-translation.lt_Edit_Trados_Matrix_of]"
 if {"" != $match100} { set page_title "[_ intranet-translation.lt_New_Trados_Matrix_of_]" }

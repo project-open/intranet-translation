@@ -218,6 +218,10 @@ for {set i 0} {$i < $trados_files_len} {incr i} {
     set pperfect_segments 0
     set pperfect_words 0 
     set pperfect_placeables 0
+
+    set locked_segments 0
+    set locked_words 0
+    set locked_placeables 0
     
     set pcrossfilerepeated_segments 0
     set pcrossfilerepeated_words 0 
@@ -238,6 +242,10 @@ for {set i 0} {$i < $trados_files_len} {incr i} {
     set f50_segments 0
     set f50_words 0 
     set f50_placeables 0			  
+
+    set locked_segments 0
+    set locked_words 0 
+    set locked_placeables 0			  
     
     set p95_segments 0
     set p95_words 0 
@@ -278,6 +286,11 @@ for {set i 0} {$i < $trados_files_len} {incr i} {
 		    set p100_segments [$analyseChildElement getAttribute $attr_segments]
 		    set p100_words [$analyseChildElement getAttribute $attr_words] 
 		    set p100_placeables [$analyseChildElement getAttribute $attr_placeables]		    
+		}
+		"locked" {
+		    set locked_segments [$analyseChildElement getAttribute $attr_segments]
+		    set locked_words [$analyseChildElement getAttribute $attr_words] 
+		    set locked_placeables [$analyseChildElement getAttribute $attr_placeables]
 		}
 		"repeated" {
 		    set prep_segments [$analyseChildElement getAttribute $attr_segments]
@@ -426,6 +439,8 @@ for {set i 0} {$i < $trados_files_len} {incr i} {
   <td>$f75_words</td>
   <td>$f50_words</td>
 
+  <td>$locked_words</td>
+
   <td>$task_units</td>
 </tr>
     "
@@ -487,7 +502,8 @@ for {set i 0} {$i < $trados_files_len} {incr i} {
 			match_f95 = :f95_words,
 			match_f85 = :f85_words,
 			match_f75 = :f75_words,
-			match_f50 = :f50_words
+			match_f50 = :f50_words,
+			locked = :locked_words
 		    WHERE 
 			task_id = :new_task_id
 	        "

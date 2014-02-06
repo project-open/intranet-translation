@@ -1,6 +1,6 @@
 # /packages/intranet-translation/www/trans-tasks/trados-import.tcl
 #
-# Copyright (C) 2003 - 2009 ]project-open[
+# Copyright (C) 2003-2014 ]project-open[
 #
 # All rights reserved. Please check
 # http://www.project-open.com/license/ for details.
@@ -304,6 +304,9 @@ ns_log Notice "trados-import: common_filename_comps=$common_filename_comps"
 	set tagging_errors	[lindex $trados_fields 1]
 	set chars_per_word	[lindex $trados_fields 2]
 
+
+ad_return_complaint xx $trados_fields
+
 	if {[string equal $trados_version "3"]} {
 	    set px_segments	0
 	    set px_words	0
@@ -445,6 +448,7 @@ ns_log Notice "trados-import: common_filename_comps=$common_filename_comps"
   <td>$task_name</td>
   <td>$px_words</td>
   <td>$prep_words</td>
+
   <td>$p100_words</td>
   <td>$p95_words</td>
   <td>$p85_words</td>

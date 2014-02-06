@@ -32,6 +32,8 @@ ad_page_contract {
     match50:array,optional
     match0:array,optional
 
+    
+
     { target_language_id:multiple {}}
     { task_name_file "" }
     { task_units_file ""}
@@ -351,6 +353,7 @@ switch -glob $action {
 	set summed_match_f85 0
 	set summed_match_f75 0
 	set summed_match_f50 0
+	set summed_locked 0
 	set summed_billable_units_interco 0
 
 	set comp_source_language_id ""
@@ -368,7 +371,7 @@ switch -glob $action {
 		select	task_filename, task_units, billable_units as bill_units, 
 			match_x, match_rep, match_perf, match_cfr,
 			match100, match95, match85, match75, match50, match0, 
-			match_f95, match_f85, match_f75, match_f50,
+			match_f95, match_f85, match_f75, match_f50,locked 
 			billable_units_interco, 
 			task_type_id, task_status_id, source_language_id, target_language_id, task_uom_id,
 			trans_id, edit_id, proof_id, other_id, project_id
@@ -395,7 +398,9 @@ switch -glob $action {
 	    set summed_match_f95 [expr $match_f95+0 + $summed_match_f95] 
 	    set summed_match_f85 [expr $match_f85+0 + $summed_match_f85] 
 	    set summed_match_f75 [expr $match_f75+0 + $summed_match_f75] 
-	    set summed_match_f50 [expr $match_f50+0 + $summed_match_f50] 
+	    set summed_match_f50 [expr $match_f50+0 + $summed_match_f50]
+
+	    set summed_locked [expr $locked+0 + $summed_locked]
 
 	    set summed_billable_units_interco [expr $billable_units_interco+0 + $summed_billable_units_interco]      
 
@@ -491,7 +496,8 @@ switch -glob $action {
 			match_f95 = :summed_match_f95,
 			match_f85 = :summed_match_f85,
 			match_f75 = :summed_match_f75, 
-			match_f50 = :summed_match_f50
+			match_f50 = :summed_match_f50,
+			locked = :summed_locked
 		WHERE 
 			task_id = :new_task_id
 	"  
