@@ -304,9 +304,6 @@ ns_log Notice "trados-import: common_filename_comps=$common_filename_comps"
 	set tagging_errors	[lindex $trados_fields 1]
 	set chars_per_word	[lindex $trados_fields 2]
 
-
-ad_return_complaint xx $trados_fields
-
 	if {[string equal $trados_version "3"]} {
 	    set px_segments	0
 	    set px_words	0
