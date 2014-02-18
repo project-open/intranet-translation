@@ -614,18 +614,6 @@ ad_proc -public im_trans_trados_matrix_calculate_helper {
 		    ($p50_words * $matrix(f50)) \
     ]
 
-    # Probably added by KH
-    # Until further clarification ignore fuzzy values 
-    set task_units [expr \
-                    ($px_words * $matrix(x)) + \
-                    ($prep_words * $matrix(rep)) + \
-                    ($p100_words * $matrix(100)) + \
-                    ($p95_words * $matrix(95)) + \
-                    ($p85_words * $matrix(85)) + \
-                    ($p75_words * $matrix(75)) + \
-                    ($p50_words * $matrix(50)) + \
-                    ($p0_words * $matrix(0))  \
-    ]
     ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: Found task_units: $task_units" 
     return $task_units
 }
