@@ -597,21 +597,21 @@ ad_proc -public im_trans_trados_matrix_calculate_helper {
     array set matrix [im_trans_trados_matrix $object_id]
 
     ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: Array found: [array get matrix]"
+
     set task_units [expr \
-		    ($px_words * $matrix(x)) + \
-		    ($prep_words * $matrix(rep)) + \
-		    ($prep_words * $matrix(perf)) + \
-		    ($prep_words * $matrix(cfr)) + \
-		    ($p100_words * $matrix(100)) + \
-		    ($p95_words * $matrix(95)) + \
-		    ($p85_words * $matrix(85)) + \
-		    ($p75_words * $matrix(75)) + \
-		    ($p50_words * $matrix(50)) + \
-		    ($p0_words * $matrix(0)) + \
-		    ($p95_words * $matrix(f95)) + \
-		    ($p85_words * $matrix(f85)) + \
-		    ($p75_words * $matrix(f75)) + \
-		    ($p50_words * $matrix(f50)) \
+                    ($px_words * $matrix(x)) + \
+                    ($prep_words * $matrix(rep)) + \
+                    ($pcfr_words * $matrix(cfr)) + \
+                    ($p100_words * $matrix(100)) + \
+                    ($p95_words * $matrix(95)) + \
+                    ($p85_words * $matrix(85)) + \
+                    ($p75_words * $matrix(75)) + \
+                    ($p50_words * $matrix(50)) + \
+                    ($p0_words * $matrix(0)) + \
+                    ($f95_words * $matrix(f95)) + \
+                    ($f85_words * $matrix(f85)) + \
+                    ($f75_words * $matrix(f75)) + \
+                    ($f50_words * $matrix(f50)) \
     ]
 
     ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: Found task_units: $task_units" 
