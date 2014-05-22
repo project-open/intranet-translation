@@ -45,7 +45,7 @@ ad_proc -public im_trans_tm_integration_type_none {} { return 4204 }
 
 ad_proc -public im_package_translation_id { } {
 } {
-    return [util_memoize "im_package_translation_id_helper"]
+    return [util_memoize im_package_translation_id_helper]
 }
 
 ad_proc -private im_package_translation_id_helper {} {
@@ -83,9 +83,7 @@ ad_proc -public im_trans_task_type_select {
     Task Type" category entries and the reverts to "Intranet Project
     Type".
 } {
-    set trans_type_exists_p [util_memoize [list db_string ttypee "
-	select count(*) from im_categories where category_type = 'Intranet Translation Task Type'
-    "]]
+    set trans_type_exists_p [util_memoize [list db_string ttypee "select count(*) from im_categories where category_type = 'Intranet Translation Task Type'"]]
     if {$trans_type_exists_p} {
 	return [im_category_select -translate_p $translate_p -package_key $package_key -locale $locale -include_empty_p $include_empty_p -include_empty_name $include_empty_name "Intranet Translation Task Type" $select_name $default]
     } else {
@@ -100,18 +98,13 @@ ad_proc -public im_trans_task_type_options {
 } {
     Return a list of options for translation task type.
 } {
-    set trans_type_exists_p [util_memoize [list db_string ttypee "
-	select count(*) from im_categories where category_type = 'Intranet Translation Task Type'
-    "]]
-
+    set trans_type_exists_p [util_memoize [list db_string ttypee "select count(*) from im_categories where category_type = 'Intranet Translation Task Type'"]]
     if {$trans_type_exists_p} {
 	return [db_list_of_lists type "select category, category_id from im_categories where category_type = 'Intranet Trans Task Type'"]
     } else {
 	return [db_list_of_lists type "select category, category_id from im_categories where category_type = 'Intranet Project Type'"]
     }
 }
-
-
 
 
 # -------------------------------------------------------------------
