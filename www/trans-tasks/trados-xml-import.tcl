@@ -398,7 +398,7 @@ for {set i 0} {$i < $trados_files_len} {incr i} {
     #
     
     set billable_units [im_trans_trados_matrix_calculate $customer_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words \
-		       $pperfect_words $pcrossfilerepeated_words $f95_words $f85_words $f75_words $f50_words]
+		       $pperfect_words $pcrossfilerepeated_words $f95_words $f85_words $f75_words $f50_words $locked_words]
     
     set billable_units_interco $billable_units
     if {$interco_p} {

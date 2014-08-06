@@ -538,6 +538,7 @@ ad_proc -public im_trans_trados_matrix_calculate {
     { f85_words 0 }
     { f75_words 0 }
     { f50_words 0 }
+    { locked_words 0 }
 } {
     Calculate the number of "effective" words based on
     a valuation of repetitions from the associated tradox
@@ -552,7 +553,7 @@ ad_proc -public im_trans_trados_matrix_calculate {
 } {
     ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate: -------- object_id: $object_id"
     return [im_trans_trados_matrix_calculate_helper $object_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words \
-		$pperfect_words $pcfr_words $f95_words $f85_words $f75_words $f50_words]
+		$pperfect_words $pcfr_words $f95_words $f85_words $f75_words $f50_words $locked_words]
 }
 
 
@@ -572,10 +573,27 @@ ad_proc -public im_trans_trados_matrix_calculate_helper {
     { f85_words 0 }
     { f75_words 0 }
     { f50_words 0 }
+    { locked_words 0 }
 } {
     See im_trans_trados_matrix_calculate for comments...
 } {
     ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: object_id: $object_id"
+    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: px_words: $px_words"
+    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: prep_words $prep_words"
+    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: p100_words $p100_words"
+    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: p95_words $p95_words"
+    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: p85_words $p85_words"
+    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: p75_words $p75_words"
+    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: p50_words $p50_words"
+    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: p0_words $p0_words"
+    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: pperfect_words $pperfect_words"
+    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: pcfr_words $pcfr_words"
+    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: f95_words $f95_words"
+    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: f85_words $f85_words"
+    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: f75_words $f75_words"
+    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: f50_words $f50_words"
+    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: locked_words $locked_words"
+
     if {"" == $px_words} { set px_words 0 }
     if {"" == $prep_words} { set prep_words 0 }
     if {"" == $p100_words} { set p100_words 0 }
@@ -585,11 +603,12 @@ ad_proc -public im_trans_trados_matrix_calculate_helper {
     if {"" == $p50_words} { set p50_words 0 }
     if {"" == $p0_words} { set p0_words 0 }
 
-
     ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: Getting matrix for object_id: $object_id"
     array set matrix [im_trans_trados_matrix $object_id]
 
     ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: Array found: [array get matrix]"
+    
+    # ad_return_complaint xx "pperfect_words: $pperfect_words, matrix(perf):  $matrix(perf)"
 
     set task_units [expr \
                     ($px_words * $matrix(x)) + \
@@ -604,7 +623,9 @@ ad_proc -public im_trans_trados_matrix_calculate_helper {
                     ($f95_words * $matrix(f95)) + \
                     ($f85_words * $matrix(f85)) + \
                     ($f75_words * $matrix(f75)) + \
-                    ($f50_words * $matrix(f50)) \
+                    ($f50_words * $matrix(f50)) + \
+                    ($locked_words * $matrix(locked)) + \
+                    ($pperfect_words * $matrix(perf))
     ]
 
     ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: Found task_units: $task_units" 
@@ -658,7 +679,7 @@ ad_proc -public im_trans_trados_matrix_project { project_id } {
 	select	m.*,
 		acs_object.name(o.object_id) as object_name
 	from	acs_objects o,
-im_trans_trados_matrix_project		im_trans_trados_matrix m
+		im_trans_trados_matrix m
 	where	o.object_id = :project_id
 		and o.object_id = m.object_id(+)
     "
