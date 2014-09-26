@@ -353,6 +353,7 @@ switch -glob $action {
 	set summed_match_f85 0
 	set summed_match_f75 0
 	set summed_match_f50 0
+	set locked 0
 	set summed_locked 0
 	set summed_billable_units_interco 0
 
@@ -505,6 +506,7 @@ switch -glob $action {
 	# Zip all batched files into a single new ZIP
 	set full_batch_filename "$server_path/$batch_filename"
 	set zip_command "zip -j $full_batch_filename $task_filenames"
+	ns_log Notice "task-action.tcl: zip_commend='$zip_command'"
 	exec /bin/bash -c "$zip_command"
     
 	# Delete the original tasks
