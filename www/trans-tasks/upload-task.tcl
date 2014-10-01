@@ -124,7 +124,7 @@ set page_content "
                         <td align=right>[_ intranet-translation.File] </td>
                         <td>
                           <input type=file name=upload_file size=30>
-                          [im_gif help "[_ intranet-translation.lt_Use_the_Browse_button]"]
+                          [im_gif -translate_p 0 help [_ intranet-translation.lt_Use_the_Browse_button]]
                         </td>
                       </tr>
                       <tr $bgcolor(0)> 

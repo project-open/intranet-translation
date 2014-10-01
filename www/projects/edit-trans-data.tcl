@@ -67,14 +67,14 @@ set page_body "
                       <td>[_ intranet-translation.Client_project_]</td>
                       <td> 
                         <input type=text size=40 name=company_project_nr value='$company_project_nr'>
-                         [im_gif help "An optional field specifying the project reference code of the client. Is used when printing the invoice. Example: 20030310A12478"]
+                         [im_gif -translate_p 1 help "An optional field specifying the project reference code of the client. Is used when printing the invoice. Example: 20030310A12478"]
                       </td>
                     </tr>
                     <tr> 
                       <td>[_ intranet-translation.Final_User] &nbsp;</td>
                       <td> 
                         <input type=text size=20 name=final_company value='$final_company'>
-                         [im_gif help "Who is the final consumer (when working for an agency)? Examples: \"Shell\", \"UBS\", ..."]
+                         [im_gif -translate_p 1 help "Who is the final consumer (when working for an agency)? Examples: \"Shell\", \"UBS\", ..."]
                       </td>
                     </tr>
 
@@ -90,7 +90,7 @@ set page_body "
                       <td>
 [im_trans_language_select -include_country_locale $include_source_language_country_locale source_language_id $source_language_id]
 [im_admin_category_gif "Intranet Translation Language"]
-[im_gif help "Translation source language"]
+[im_gif -translate_p 1 help "Translation source language"]
                       </td>
                     </tr>
 
@@ -99,7 +99,7 @@ set page_body "
                       <td>
 [im_category_select_multiple -translate_p 0 "Intranet Translation Language" target_language_ids $target_language_ids 12 multiple]
 [im_admin_category_gif "Intranet Translation Language"]
-[im_gif help "Translation target languages. Separate target folders will be created for every language that you select"]
+[im_gif -translate_p 1 help "Translation target languages. Separate target folders will be created for every language that you select"]
                       </td>
                     </tr>
 
@@ -108,7 +108,7 @@ set page_body "
                       <td>
 [im_category_select "Intranet Translation Subject Area" subject_area_id $subject_area_id]
 [im_admin_category_gif "Intranet Translation Subject Area"]
-[im_gif help "Add a new subject area"]
+[im_gif -translate_p 1 help "Add a new subject area"]
                       </td>
                     </tr>
 
@@ -125,9 +125,9 @@ set page_body "
                       <td>
 		 	<p> 
                           <input type=submit value='$submit_changes_l10n' name=submit_changes>
-                          [im_gif help "Create the new folder structure"] <br>
+                          [im_gif -translate_p 1 help "Create the new folder structure"] <br>
                           <input type=submit value='$create_language_subprojects_l10n' name=submit_subprojects>
-                          [im_gif help "Create folder structure and create a subproject for each language that you have chosen."] <br>
+                          [im_gif -translate_p 1 help "Create folder structure and create a subproject for each language that you have chosen."] <br>
                         </p>
                       </td>
                     </tr>

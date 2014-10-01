@@ -1836,7 +1836,7 @@ ad_proc im_task_status_component { user_id project_id return_url } {
 <tr>
   <td class=rowtitle align=center colspan=17>
     [_ intranet-translation.lt_Project_Workflow_Stat]
-[im_gif help "Shows the status of all tasks\nAss: Assigned Files\nDn: Downloaded Files\nUp: Uploaded Files"]
+[im_gif -translate_p 1 help "Shows the status of all tasks\nAss: Assigned Files\nDn: Downloaded Files\nUp: Uploaded Files"]
   </td>
 </tr>
 <tr>
@@ -2625,14 +2625,14 @@ ad_proc im_task_component {
 		    External {
 			# Standard - Download to start editing
 			set download_url "/intranet-translation/download-task/$task_id/$download_folder/$task_name"
-			set download_gif [im_gif save "Click right and choose \"Save target as\" to download the file"]
+			set download_gif [im_gif -translate_p 1 save "Click right and choose \"Save target as\" to download the file"]
 		    }
 		    Ophelia {
 			
 			# Ophelia - Redirect to Ophelia page
 			set download_url [export_vars -base "/intranet-ophelia/task-start" {task_id project_id return_url}]
 			set download_help [lang::message::lookup "" intranet-translation.Start_task "Start the task"]
-			set download_gif [im_gif control_play_blue $download_help]
+			set download_gif [im_gif -translate_p 0 control_play_blue $download_help]
 		    }
 		    default {
 
@@ -2655,13 +2655,13 @@ ad_proc im_task_component {
 			# Standard - Upload to stop editing
 			set upload_url "/intranet-translation/trans-tasks/upload-task?"
 			append upload_url [export_url_vars project_id task_id case_id transition_key return_url]
-			set upload_gif [im_gif open "Upload File"]
+			set upload_gif [im_gif -translate_p 1 open "Upload File"]
 		    }
 		    Ophelia {
 			# Ophelia - Redirect to Ophelia page
 			set upload_url [export_vars -base "/intranet-ophelia/task-end" {task_id project_id case_id transition_key return_url}]
 			set upload_help [lang::message::lookup "" intranet-translation.Mark_task_as_finished "Mark the task as finished"]
-			set upload_gif [im_gif control_stop_blue $upload_help]
+			set upload_gif [im_gif -translate_p 0 control_stop_blue $upload_help]
 		    }
 		    default {
 			set upload_url ""
@@ -2725,7 +2725,7 @@ ad_proc im_task_component {
 		"enabled" {
 		    set message "Press 'Start' to start '$transition_name'"
 		    set download_help $message
-		    set download_gif [im_gif control_play_blue $download_help]
+		    set download_gif [im_gif -translate_p 0 control_play_blue $download_help]
 		    set download_url [export_vars -base "/$workflow_url/task" {{task_id $transition_task_id} return_url}]
 		    set download_link "<A HREF='$download_url'>$download_gif</A>\n"
 		    set upload_link ""
@@ -2733,7 +2733,7 @@ ad_proc im_task_component {
 		"started" {
 		    set message "Press 'Stop' to finish '$transition_name'"
 		    set upload_help $message
-		    set upload_gif [im_gif control_stop_blue $upload_help]
+		    set upload_gif [im_gif -translate_p 0 control_stop_blue $upload_help]
 		    set upload_url [export_vars -base "/$workflow_url/task" {{task_id $transition_task_id} return_url}]
 		    set upload_link "<A HREF='$upload_url'>$upload_gif</A>\n"
 		    set download_link ""
@@ -2952,7 +2952,7 @@ ad_proc im_task_error_component { user_id project_id return_url } {
   <td align=right>$task_units $uom_name</td>
   <td align=center>
     <A HREF='/intranet-translation/trans-tasks/upload-task?[export_url_vars project_id task_id return_url]'>
-      [im_gif open "Upload file"]
+      [im_gif -translate_p 1 open "Upload file"]
     </A>
   </td>
 </tr>\n"
@@ -2983,7 +2983,7 @@ ad_proc im_task_error_component { user_id project_id return_url } {
 <tr> 
   <td class=rowtitle>[_ intranet-translation.Task_Name]</td>
   <td class=rowtitle>[_ intranet-translation.Units]</td>
-  <td class=rowtitle>[im_gif open "Upload files"]</td>
+  <td class=rowtitle>[im_gif -translate_p 1 open "Upload files"]</td>
 </tr>
 
 $task_table_rows
@@ -3162,7 +3162,7 @@ ad_proc im_new_task_component {
     </nobr>
   </td>
   <td>
-    [im_gif help "Use the 'Browse...' button to locate your file, then click 'Open'.\nThis file is used to define the tasks of the project, one task for each line of the wordcount file."]
+    [im_gif -translate_p 1 help "Use the 'Browse...' button to locate your file, then click 'Open'.\nThis file is used to define the tasks of the project, one task for each line of the wordcount file."]
   </td>
 </tr>
 "
@@ -3248,7 +3248,7 @@ ad_proc im_new_task_component {
 	    </td>
     $integration_type_html
     <td><input type=submit value=\"[_ intranet-translation.Add_File]\" name=submit_add_file></td>
-    <td>[im_gif help "Add a new file to the list of tasks. \n New files need to be located in the \"source_xx\" folder to appear in the drop-down box on the left."]</td>
+    <td>[im_gif -translate_p 1 help "Add a new file to the list of tasks. \n New files need to be located in the \"source_xx\" folder to appear in the drop-down box on the left."]</td>
   </tr>
 "
     }
@@ -3270,7 +3270,7 @@ ad_proc im_new_task_component {
 	    </td>
     $integration_type_html
     <td><input type=submit value=\"[_ intranet-translation.Add]\" name=submit_add_manual></td>
-    <td>[im_gif help "Add a \"manual\" task to the project. \n This task is not going to controled by the translation workflow."]</td>
+    <td>[im_gif -translate_p 1 help "Add a \"manual\" task to the project. \n This task is not going to controled by the translation workflow."]</td>
   </tr>"
 
     append task_table "
