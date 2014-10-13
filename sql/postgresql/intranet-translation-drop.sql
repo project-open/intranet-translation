@@ -168,3 +168,15 @@ delete from im_categories where category_type = 'Intranet TM Integration Type';
 delete from im_categories where category_type = 'Intranet Quality';
 delete from im_categories where category_type = 'Intranet LOC Tool';
 
+
+
+-- Delete SQL metadata and the object type itself
+delete from acs_object_type_tables
+where object_type = 'im_trans_task';
+
+delete from im_rest_object_types
+where object_type = 'im_trans_task';
+
+SELECT acs_object_type__drop_type ('im_trans_task', 't');
+
+
