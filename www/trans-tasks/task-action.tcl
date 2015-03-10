@@ -282,6 +282,7 @@ switch -glob $action {
 	#
 	foreach task_id $delete_task {
 	    ns_log Notice "delete task: $task_id"
+	    im_audit -object_type "im_trans_task" -object_id $task_id -action before_nuke
 
 	    if { [catch {
 
@@ -303,8 +304,6 @@ switch -glob $action {
 		# Successfully deleted translation task
 		# Call user_exit to let TM know about the event
 		im_user_exit_call trans_task_delete $task_id
-		im_audit -object_type "im_trans_task" -object_id $task_id -action after_delete
-
 	    }
        }
     }
@@ -511,6 +510,9 @@ switch -glob $action {
     
 	# Delete the original tasks
   	foreach task_id $delete_task {
+
+	    im_audit -object_type "im_trans_task" -object_id $task_id -action "before_nuke"
+
 	    if { [catch {
 		if {$trans_quality_exists_p} {
 		    db_dml del_q_report_entries "delete from im_trans_quality_entries where report_id in (select report_id from im_trans_quality_reports where task_id = :task_id)"
@@ -527,7 +529,6 @@ switch -glob $action {
 		# Successfully deleted translation task
 		# Call user_exit to let TM know about the event
 		im_user_exit_call trans_task_delete $task_id
-		im_audit -object_type "im_trans_task" -object_id $task_id -action "after_delete"
 	    }
        }
     }
