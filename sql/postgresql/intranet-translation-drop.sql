@@ -180,3 +180,107 @@ where object_type = 'im_trans_task';
 SELECT acs_object_type__drop_type ('im_trans_task', 't');
 
 
+
+------------------------------------------------------------------
+-- Cleanup other translation stuff
+-- 
+-- intranet-translation should be the last translation package
+-- to uninstall, so this is a reasonable place to clean up some
+-- stuff left by other packages.
+
+
+ALTER TABLE ONLY public.im_trans_rfqs DROP CONSTRAINT im_trans_rfq_uom_wf_key_fk;
+ALTER TABLE ONLY public.im_trans_rfqs DROP CONSTRAINT im_trans_rfq_uom_units_fk;
+ALTER TABLE ONLY public.im_trans_rfqs DROP CONSTRAINT im_trans_rfq_type_fk;
+ALTER TABLE ONLY public.im_trans_rfqs DROP CONSTRAINT im_trans_rfq_status_fk;
+ALTER TABLE ONLY public.im_trans_rfqs DROP CONSTRAINT im_trans_rfq_project_fk;
+ALTER TABLE ONLY public.im_trans_rfqs DROP CONSTRAINT im_trans_rfq_id_fk;
+ALTER TABLE ONLY public.im_trans_rfq_answers DROP CONSTRAINT im_trans_rfq_answer_user_fk;
+ALTER TABLE ONLY public.im_trans_rfq_answers DROP CONSTRAINT im_trans_rfq_answer_type_fk;
+ALTER TABLE ONLY public.im_trans_rfq_answers DROP CONSTRAINT im_trans_rfq_answer_status_fk;
+ALTER TABLE ONLY public.im_trans_rfq_answers DROP CONSTRAINT im_trans_rfq_answer_rfq_fk;
+ALTER TABLE ONLY public.im_trans_rfq_answers DROP CONSTRAINT im_trans_rfq_answer_project_fk;
+ALTER TABLE ONLY public.im_trans_rfq_answers DROP CONSTRAINT im_trans_rfq_answer_price_currency_fk;
+ALTER TABLE ONLY public.im_trans_rfq_answers DROP CONSTRAINT im_trans_rfq_answer_overall_fk;
+ALTER TABLE ONLY public.im_trans_rfq_answers DROP CONSTRAINT im_trans_rfq_answer_id_fk;
+DROP INDEX public.im_trans_rfq_answers_un;
+ALTER TABLE ONLY public.im_trans_rfqs DROP CONSTRAINT im_trans_rfq_id_pk;
+ALTER TABLE ONLY public.im_trans_rfq_answers DROP CONSTRAINT im_trans_rfq_answer_id_pk;
+DROP TABLE public.im_trans_rfqs;
+DROP VIEW public.im_trans_rfq_type;
+DROP VIEW public.im_trans_rfq_status;
+DROP VIEW public.im_trans_rfq_overall_status;
+DROP TABLE public.im_trans_rfq_answers;
+
+
+
+DROP FUNCTION public.im_transq_weighted_error_sum(integer, integer, integer, integer, integer);
+DROP FUNCTION public.im_trans_tasks_calendar_update_tr();
+DROP FUNCTION public.im_trans_task__project_clone(integer, integer);
+DROP FUNCTION public.im_trans_task__new(integer, character varying, timestamp with time zone, 
+integer, character varying, integer, integer, integer, integer, integer, integer, integer);
+DROP FUNCTION public.im_trans_task__name(integer);
+DROP FUNCTION public.im_trans_task__delete(integer);
+DROP FUNCTION public.im_trans_rfq_answer__new(integer, character varying, timestamp with time zone, 
+integer, character varying, integer, integer, integer, integer, integer, integer);
+DROP FUNCTION public.im_trans_rfq_answer__name(integer);
+DROP FUNCTION public.im_trans_rfq_answer__delete(integer);
+DROP FUNCTION public.im_trans_rfq__new(integer, character varying, timestamp with time zone, 
+integer, character varying, integer, character varying, integer, integer, integer);
+DROP FUNCTION public.im_trans_rfq__new(integer, character varying, timestamp with time zone, 
+integer, character varying, integer, character varying, integer, timestamp with time zone, 
+character, integer, integer, integer, integer, numeric, numeric, numeric, character varying, 
+character varying, character varying, character varying, integer, character, numeric, integer, integer, integer);
+DROP FUNCTION public.im_trans_rfq__name(integer);
+DROP FUNCTION public.im_trans_rfq__delete(integer);
+DROP FUNCTION public.im_trans_project_target_languages(integer);
+
+
+
+alter table im_materials drop column source_language_id;
+alter table im_materials drop column target_language_id;
+alter table im_materials drop column subject_area_id;
+alter table im_materials drop column file_type_id;
+alter table im_materials drop column trans_task_id;
+alter table im_materials drop column task_type_id;
+alter table im_materials drop column task_uom_id;
+
+
+-- Delete invoice lines with translation UoM units
+delete from im_invoice_items where item_uom_id in (323,324,325,326,327);
+
+
+delete from im_freelance_skills
+where skill_id in (select category_id from im_categories where category_type = 'Intranet Translation Language');
+delete from im_freelance_skills
+where skill_id in (select category_id from im_categories where category_type = 'Intranet TM Tool');
+delete from im_freelance_skills
+where skill_id in (select category_id from im_categories where category_type = 'Intranet Translation Subject Area');
+
+delete from im_object_freelance_skill_map
+where skill_id in (select category_id from im_categories where category_type = 'Intranet Translation Language');
+delete from im_object_freelance_skill_map
+where skill_id in (select category_id from im_categories where category_type = 'Intranet TM Tool');
+delete from im_object_freelance_skill_map
+where skill_id in (select category_id from im_categories where category_type = 'Intranet Translation Subject Area');
+
+
+
+delete from im_categories where category_type = 'Intranet Translation Language';
+delete from im_categories where category_type = 'Intranet Translation Subject Area';
+delete from im_categories where category_type = 'Intranet TM Tool';
+
+delete from im_categories where category_type = 'Intranet Freelance RFQ Answer Status';
+delete from im_categories where category_type = 'Intranet Freelance RFQ Answer Type';
+delete from im_categories where category_type = 'Intranet Freelance RFQ Status';
+delete from im_categories where category_type = 'Intranet Freelance RFQ Type';
+
+
+delete from im_materials where material_uom_id in (323,324,325,326,327);
+
+
+delete from im_categories where category_type = 'Intranet UoM' and category = 'Page';
+delete from im_categories where category_type = 'Intranet UoM' and category = 'S-Word';
+delete from im_categories where category_type = 'Intranet UoM' and category = 'T-Word';
+delete from im_categories where category_type = 'Intranet UoM' and category = 'S-Line';
+delete from im_categories where category_type = 'Intranet UoM' and category = 'T-Line';
