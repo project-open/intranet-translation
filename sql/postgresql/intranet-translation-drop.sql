@@ -375,3 +375,103 @@ select im_dynfield_attribute__del((
 			attribute_name = 'subject_area_id'
 	)
 ));
+
+
+
+
+
+select im_dynfield_attribute__del((
+	select	attribute_id
+	from	im_dynfield_attributes
+	where	acs_attribute_id in (
+		select	attribute_id
+		from	acs_attributes
+		where	object_type = 'im_material' and
+			attribute_name = 'source_language_id'
+	)
+));
+
+select im_dynfield_attribute__del((
+	select	attribute_id
+	from	im_dynfield_attributes
+	where	acs_attribute_id in (
+		select	attribute_id
+		from	acs_attributes
+		where	object_type = 'im_material' and
+			attribute_name = 'target_language_id'
+	)
+));
+
+select im_dynfield_attribute__del((
+	select	attribute_id
+	from	im_dynfield_attributes
+	where	acs_attribute_id in (
+		select	attribute_id
+		from	acs_attributes
+		where	object_type = 'im_material' and
+			attribute_name = 'subject_area_id'
+	)
+));
+
+select im_dynfield_attribute__del((
+	select	attribute_id
+	from	im_dynfield_attributes
+	where	acs_attribute_id in (
+		select	attribute_id
+		from	acs_attributes
+		where	object_type = 'im_material' and
+			attribute_name = 'file_type_id'
+	)
+));
+
+select im_dynfield_attribute__del((
+	select	attribute_id
+	from	im_dynfield_attributes
+	where	acs_attribute_id in (
+		select	attribute_id
+		from	acs_attributes
+		where	object_type = 'im_material' and
+			attribute_name = 'task_type_id'
+	)
+));
+
+select im_dynfield_attribute__del((
+	select	attribute_id
+	from	im_dynfield_attributes
+	where	acs_attribute_id in (
+		select	attribute_id
+		from	acs_attributes
+		where	object_type = 'im_material' and
+			attribute_name = 'task_uom_id'
+	)
+));
+
+select im_material__delete((
+	select	material_id
+	from	im_materials
+	where	material_nr = 'tr_task'
+));
+
+
+create or replace function inline_0 ()
+returns integer as $body$
+declare
+	v_count	integer;
+	row	record;
+begin
+	FOR row IN
+		select	*
+		from	im_materials
+		where	material_type_id = 9014		-- Translation
+	LOOP
+		PERFORM	im_material__delete((
+			select  material_id
+			from    im_materials
+			where   material_id = row.material_id
+		));
+	END LOOP;
+
+	return 0;
+end;$body$ language 'plpgsql';
+select inline_0 ();
+drop function inline_0 ();
