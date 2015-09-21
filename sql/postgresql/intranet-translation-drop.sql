@@ -189,6 +189,18 @@ SELECT acs_object_type__drop_type ('im_trans_task', 't');
 -- stuff left by other packages.
 
 
+select im_menu__del_module('intranet-reporting-translation');
+select im_component_plugin__del_module('intranet-reporting-translation');
+
+select im_menu__delete((select menu_id from im_menus where name = 'Translation Tasks AdHoc Report 01'));
+
+
+select acs_group__delete ((select group_id from groups where group_name = 'Translation Vertical'));
+-- select acs_group__delete ((select group_id from groups where group_name = 'Consulting Vertical'));
+-- select acs_group__delete ((select group_id from groups where group_name = 'ITSM Vertical'));
+-- select acs_group__delete ((select group_id from groups where group_name = 'TestGroup'));
+
+
 ALTER TABLE ONLY public.im_trans_rfqs DROP CONSTRAINT im_trans_rfq_uom_wf_key_fk;
 ALTER TABLE ONLY public.im_trans_rfqs DROP CONSTRAINT im_trans_rfq_uom_units_fk;
 ALTER TABLE ONLY public.im_trans_rfqs DROP CONSTRAINT im_trans_rfq_type_fk;
