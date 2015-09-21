@@ -296,3 +296,58 @@ delete from im_categories where category_type = 'Intranet UoM' and category = 'S
 delete from im_categories where category_type = 'Intranet UoM' and category = 'T-Word';
 delete from im_categories where category_type = 'Intranet UoM' and category = 'S-Line';
 delete from im_categories where category_type = 'Intranet UoM' and category = 'T-Line';
+
+
+
+delete from acs_function_args
+where lower(function) ~ 'im_trans_.*';
+
+
+
+
+-- select * from acs_function_args
+-- acs_function_args (function, arg_seq, arg_name, arg_default) FROM stdin;
+
+
+create or replace function im_rest_object_type__delete(integer)
+returns integer as '
+DECLARE
+        p_object_type_id        alias for $1;
+BEGIN
+        -- Delete any data related to the object
+        delete  from im_rest_object_types
+        where   object_type_id = p_object_type_id;
+
+        -- Finally delete the object iself
+        PERFORM acs_object__delete(p_object_type_id);
+
+        return 0;
+end;' language 'plpgsql';
+
+
+select im_rest_object_type__delete((
+	select object_type_id from im_rest_object_types where object_type = 'im_trans_invoice'
+));
+select im_rest_object_type__delete((
+	select object_type_id from im_rest_object_types where object_type = 'im_trans_task'
+));
+
+
+delete from acs_objects where object_type in ('im_trans_invoice', 'im_trans_task');
+delete from cal_items where cal_item_id in (select event_id from acs_events where related_object_type in ('im_trans_invoice', 'im_trans_task'));
+delete from acs_events where related_object_type in ('im_trans_invoice', 'im_trans_task');
+delete from acs_object_types where object_type in ('im_trans_invoice', 'im_trans_task');
+
+
+
+
+select site_node__delete((select node_id from site_nodes where name = 'intranet-freelance-invoices'));
+select site_node__delete((select node_id from site_nodes where name = 'intranet-freelance-rfqs'));
+select site_node__delete((select node_id from site_nodes where name = 'intranet-freelance-translation'));
+select site_node__delete((select node_id from site_nodes where name = 'intranet-reporting-translation'));
+select site_node__delete((select node_id from site_nodes where name = 'intranet-trans-invoices'));
+select site_node__delete((select node_id from site_nodes where name = 'intranet-translation'));
+select site_node__delete((select node_id from site_nodes where name = 'intranet-trans-project-wizard'));
+select site_node__delete((select node_id from site_nodes where name = 'intranet-trans-quality'));
+select site_node__delete((select node_id from site_nodes where name = 'intranet-trans-rfq'));
+
