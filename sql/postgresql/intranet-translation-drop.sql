@@ -25,6 +25,7 @@ alter table im_projects drop     expected_quality_id;
 -- An approximate value for the size (number of words) of the project
 alter table im_projects drop     trans_project_words;
 alter table im_projects drop     trans_project_hours;
+alter table im_projects drop     trans_size;
 
 
 -----------------------------------------------------------
@@ -351,3 +352,26 @@ select site_node__delete((select node_id from site_nodes where name = 'intranet-
 select site_node__delete((select node_id from site_nodes where name = 'intranet-trans-quality'));
 select site_node__delete((select node_id from site_nodes where name = 'intranet-trans-rfq'));
 
+
+select im_dynfield_attribute__del((
+	select	attribute_id
+	from	im_dynfield_attributes
+	where	acs_attribute_id in (
+		select	attribute_id
+		from	acs_attributes
+		where	object_type = 'im_project' and
+			attribute_name = 'source_language_id'
+	)
+));
+
+
+select im_dynfield_attribute__del((
+	select	attribute_id
+	from	im_dynfield_attributes
+	where	acs_attribute_id in (
+		select	attribute_id
+		from	acs_attributes
+		where	object_type = 'im_project' and
+			attribute_name = 'subject_area_id'
+	)
+));
