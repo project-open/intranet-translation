@@ -56,7 +56,7 @@ where
 	and p.project_id = :project_id"
 
 # ProjectURL
-set system_url [ad_parameter -package_id [ad_acs_kernel_id] SystemURL ""]
+set system_url [im_parameter -package_id [ad_acs_kernel_id] SystemURL ""]
 set project_rel_url [db_string p_url "select url from im_biz_object_urls where object_type = 'im_project' and url_type = 'display'" -default "/intranet/projects/view?project_id="]
 if {[regexp {^\/(.*)$} $project_rel_url match rest]} { set project_rel_url $rest }
 set project_url "$system_url$project_rel_url$project_id"
@@ -113,7 +113,7 @@ if {"" != $notify_project_manager_p} {
 
     db_foreach notify_project_managers $project_managers_sql {
         set auto_login [im_generate_auto_login -user_id $pm_id]
-        set msg_url "[ad_parameter -package_id [ad_acs_kernel_id] SystemURL "" ""][export_vars -base "intranet/auto-login" {{user_id $pm_id} {url $project_url} {auto_login $auto_login}}]"
+        set msg_url "[im_parameter -package_id [ad_acs_kernel_id] SystemURL "" ""][export_vars -base "intranet/auto-login" {{user_id $pm_id} {url $project_url} {auto_login $auto_login}}]"
 
         im_send_alert $pm_id "hourly" $subject "$msg_url\n$message"
     }
@@ -128,7 +128,7 @@ if {"" != $notify_next_wf_stage_p} {
     set project_url [export_vars -base "/intranet/projects/view" {project_id}]
 
     set auto_login [im_generate_auto_login -user_id $next_wf_stage_user_id]
-    set msg_url "[ad_parameter -package_id [ad_acs_kernel_id] SystemURL "" ""][export_vars -base "intranet/auto-login" {{user_id $next_wf_stage_user_id} {url $project_url} {auto_login $auto_login}}]"
+    set msg_url "[im_parameter -package_id [ad_acs_kernel_id] SystemURL "" ""][export_vars -base "intranet/auto-login" {{user_id $next_wf_stage_user_id} {url $project_url} {auto_login $auto_login}}]"
 
     im_send_alert $next_wf_stage_user_id "hourly" $subject "$msg_url\n$message"
 
@@ -140,7 +140,7 @@ if {"" != $notify_next_wf_stage_p} {
 # number_of_bytes is the upper-limit
 # -------------------------------------------------------------------
 
-set max_n_bytes [ad_parameter -package_id [im_package_filestorage_id] MaxNumberOfBytes "" 0]
+set max_n_bytes [im_parameter -package_id [im_package_filestorage_id] MaxNumberOfBytes "" 0]
 set tmp_filename [ns_queryget upload_file.tmpfile]
 im_security_alert_check_tmpnam -location "trados-task-2.tcl" -value $tmp_filename
 set filesize [file size $tmp_filename]
@@ -172,7 +172,7 @@ ns_log Notice "task_name_body=$task_name_body"
 
 # Check that filenames coincide to avoid translators errors
 #
-set check_filename_equal_p [ad_parameter -package_id [im_package_translation_id] CheckTaskUploadFilenamesEqualP "" 1]
+set check_filename_equal_p [im_parameter -package_id [im_package_translation_id] CheckTaskUploadFilenamesEqualP "" 1]
 if {$check_filename_equal_p} {
 
     # Filenames should be exactly equal
@@ -198,7 +198,7 @@ if {$check_filename_equal_p} {
     set task_ext [string tolower [lindex $task_parts [expr [llength $task_parts] - 1]]]
 
     # Check if extensions are equal
-    set check_extensions_equal_p [ad_parameter -package_id [im_package_translation_id] CheckTaskUploadFileExtensionsEqualP "" 0]
+    set check_extensions_equal_p [im_parameter -package_id [im_package_translation_id] CheckTaskUploadFileExtensionsEqualP "" 0]
 
     if {![string equal $upload_ext $task_ext] && $check_extensions_equal_p} {
 	set error "<li>
@@ -323,7 +323,7 @@ if {"" != $comment_body} {
     } on_error {
 	ad_return_error "Error adding a new topic" "
         <LI>There was an error adding your ticket to our system.<br>
-        Please send an email to <A href=\"mailto:[ad_parameter "SystemOwner" "" ""]\">
+        Please send an email to <A href=\"mailto:[im_parameter "SystemOwner" "" ""]\">
         our webmaster</a>, thanks."
     }
 

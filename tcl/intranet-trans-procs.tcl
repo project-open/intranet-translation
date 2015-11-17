@@ -275,7 +275,7 @@ ad_proc im_task_insert {
 } {
     # Check for accents and other non-ascii characters
     set filename $task_filename
-    set charset [ad_parameter -package_id [im_package_filestorage_id] FilenameCharactersSupported "" "alphanum"]
+    set charset [im_parameter -package_id [im_package_filestorage_id] FilenameCharactersSupported "" "alphanum"]
     if {![im_filestorage_check_filename $charset $filename]} {
 	ad_return_complaint 1 [lang::message::lookup "" intranet-filestorage.Invalid_Character_Set "
                 <b>Invalid Character(s) found</b>:<br>
@@ -893,7 +893,7 @@ ad_proc im_task_user_select {
     }
 
     # Check if the filtering option is enabled or not.
-    set source_target_select_p [ad_parameter -package_id [im_package_translation_id] EnableTaskAssignmentBasedOnSourceTargetLanguageP "" 0]
+    set source_target_select_p [im_parameter -package_id [im_package_translation_id] EnableTaskAssignmentBasedOnSourceTargetLanguageP "" 0]
     if {!$source_target_select_p} {
        set source_language_id 0
        set target_language_id 0
@@ -1729,7 +1729,7 @@ ad_proc im_task_component_upload {
 ad_proc im_trans_task_project_advance { project_id } {
     Calculate the percentage of advance of the project.
 } {
-    set automatic_advance_p [ad_parameter -package_id [im_package_translation_id] AutomaticProjectAdvanceP "" 1]
+    set automatic_advance_p [im_parameter -package_id [im_package_translation_id] AutomaticProjectAdvanceP "" 1]
     if {!$automatic_advance_p} {
 	return ""
     }
@@ -2155,7 +2155,7 @@ ad_proc im_task_component {
     set current_user_id $user_id
     set date_format [parameter::get_from_package_key -package_key intranet-translation -parameter "TaskListEndDateFormat" -default "YYYY-MM-DD"]
     set date_format_len [string length $date_format]
-    set default_currency [ad_parameter -package_id [im_package_cost_id] "DefaultCurrency" "" "EUR"]
+    set default_currency [im_parameter -package_id [im_package_cost_id] "DefaultCurrency" "" "EUR"]
 
     # Get the permissions for the current _project_
     im_project_permissions $user_id $project_id project_view project_read project_write project_admin
@@ -3110,7 +3110,7 @@ ad_proc im_new_task_component {
     "]
     set target_language_options [join $target_language_option_list "\n"]
 
-    if {[ad_parameter -package_id [im_package_translation_id] EnableAspTradosImport "" 0]} {
+    if {[im_parameter -package_id [im_package_translation_id] EnableAspTradosImport "" 0]} {
 
 	# Prepare the list of importers. 
 	# Start with the hard-coded importers coming with ]po[
@@ -3126,7 +3126,7 @@ ad_proc im_new_task_component {
 		where	category_type = 'Intranet Translation Task CSV Importer'
 			and (enabled_p is null OR enabled_p = 't')
 	"
-	set default_wordcount_app [ad_parameter -package_id [im_package_translation_id] "DefaultWordCountingApplication" "" "trados"]
+	set default_wordcount_app [im_parameter -package_id [im_package_translation_id] "DefaultWordCountingApplication" "" "trados"]
 	db_foreach importers $importer_sql {
 	    lappend importer_option_list [list $category [lang::message::lookup "" intranet-translation.Importer_$category $category]]
 	}

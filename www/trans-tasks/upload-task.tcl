@@ -31,7 +31,7 @@ set filename [db_string get_filename "select task_name from im_trans_tasks where
 # Notify the PM?
 # ---------------------------------------------------------------
 
-set default_notify_pm [ad_parameter -package_id [im_package_translation_id] DefaultNotifyPMAboutUploadP "" 0]
+set default_notify_pm [im_parameter -package_id [im_package_translation_id] DefaultNotifyPMAboutUploadP "" 0]
 set notify_pm_checked ""
 if {$default_notify_pm} { set notify_pm_checked " checked" }
 
@@ -41,7 +41,7 @@ if {$default_notify_pm} { set notify_pm_checked " checked" }
 # ---------------------------------------------------------------
 
 # Shoud the translator notifiy the editor when he uploads a file?
-set notify_next_wf_stage_p [ad_parameter -package_id [im_package_translation_id] NotifyNextWfStageP "" 0]
+set notify_next_wf_stage_p [im_parameter -package_id [im_package_translation_id] NotifyNextWfStageP "" 0]
 set notify_next_wf_stage_checked " checked"
 
 set next_role_l10n [im_task_next_workflow_role $task_id]
@@ -71,7 +71,7 @@ if {$survey_exists_p && $previous_user_id != 0 && $survey_no != 0} {
     # Check if there is a survey associated with the specific stage
     set previous_role [im_task_previous_workflow_role $task_id]
     set previous_wf_stage_user_id [im_task_previous_workflow_stage_user $task_id]
-    set survey_base_name [ad_parameter -package_id [im_package_translation_id] TranslationWorkflowSurveyBaseName "" "Translation Workflow Rating:"]
+    set survey_base_name [im_parameter -package_id [im_package_translation_id] TranslationWorkflowSurveyBaseName "" "Translation Workflow Rating:"]
     set survey_name "$survey_base_name $previous_role"
     
     set survey_ids [db_list trans_survey "

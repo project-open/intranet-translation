@@ -52,7 +52,7 @@ im_security_alert_check_tmpnam -location "trados-xml-import.tcl" -value $wordcou
 
 
 # Check for accents and other non-ascii characters
-set charset [ad_parameter -package_id [im_package_filestorage_id] FilenameCharactersSupported "" "alphanum"]
+set charset [im_parameter -package_id [im_package_filestorage_id] FilenameCharactersSupported "" "alphanum"]
 
 # Inter-Company invoicing enabled?
 set interco_p [parameter::get_from_package_key -package_key "intranet-translation" -parameter "EnableInterCompanyInvoicingP" -default 0]

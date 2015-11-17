@@ -21,7 +21,7 @@ set user_id [ad_maybe_redirect_for_registration]
 # set required_field "<font color=red size=+1><B>*</B></font>"
 set required_field ""
 
-set include_source_language_country_locale [ad_parameter -package_id [im_package_translation_id] SourceLanguageWithCountryLocaleP "" 0]
+set include_source_language_country_locale [im_parameter -package_id [im_package_translation_id] SourceLanguageWithCountryLocaleP "" 0]
 
 im_project_permissions $user_id $project_id view read write admin
 if {!$write} {

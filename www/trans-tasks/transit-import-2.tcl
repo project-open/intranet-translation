@@ -44,7 +44,7 @@ if {!$write} {
 }
 
 # Check for accents and other non-ascii characters
-set charset [ad_parameter -package_id [im_package_filestorage_id] FilenameCharactersSupported "" "alphanum"]
+set charset [im_parameter -package_id [im_package_filestorage_id] FilenameCharactersSupported "" "alphanum"]
 
 set page_title [lang::message::lookup "" intranet-translation.Transit_Upload_Wizard "Transit Upload Wizard"]
 set context_bar [im_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] $page_title]
