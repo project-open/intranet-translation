@@ -283,7 +283,7 @@ ad_proc im_task_insert {
                 in your character set '%charset%'."]
     }
 
-    set user_id [ad_get_user_id]
+    set user_id [ad_conn user_id]
     set ip_address [ad_conn peeraddr]
 
     # Is the dynamic WorkFlow module installed?
@@ -1806,7 +1806,7 @@ ad_proc im_task_status_component { user_id project_id return_url } {
     in the filesystem) are not reflected by this component (yet).
 } {
     ns_log Notice "im_trans_status_component($user_id, $project_id)"
-    set current_user_id [ad_get_user_id]
+    set current_user_id [ad_conn user_id]
     set current_user_is_employee_p [expr [im_user_is_employee_p $current_user_id] | [im_is_user_site_wide_or_intranet_admin $current_user_id]]
 
     # Is this a translation project?

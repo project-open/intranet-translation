@@ -27,7 +27,7 @@ ad_proc im_trans_tandem_partner_component {
 } {
     if {![im_project_has_type $project_id "Translation Project"]} { return "" }
 
-    im_project_permissions [ad_get_user_id] $project_id view read write admin
+    im_project_permissions [ad_conn user_id] $project_id view read write admin
     if {!$write} { return "" }
 
     set params [list \
@@ -61,7 +61,7 @@ ad_proc im_trans_task_action_list_component {
     set return_url [im_url_with_query]
 
     # Security...
-    im_project_permissions [ad_get_user_id] $project_id view read write admin
+    im_project_permissions [ad_conn user_id] $project_id view read write admin
     if {!$read} { return "" }
 
     set params [list \
