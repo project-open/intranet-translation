@@ -22,7 +22,7 @@ if {!$read} {
     return
 }
 
-set export_vars [export_form_vars object_id return_url]
+set export_vars [export_vars -form {object_id return_url}]
 
 # Get match100, match95, ...
 db_1row matrix_select "

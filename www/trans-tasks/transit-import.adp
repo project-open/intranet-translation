@@ -32,7 +32,7 @@
 
 <!-- -------------------------------------------------------------------- -->
 <form action=transit-import-2 method=POST>
-<%= [export_form_vars return_url project_id task_type_id target_language_id import_method] %>
+<%= [export_vars -form {return_url project_id task_type_id target_language_id import_method}] %>
 <h3>Import as Multiple Lines</h3>
 <p>
 <table width="600">
@@ -57,7 +57,7 @@
 
 <!-- -------------------------------------------------------------------- -->
 <form action=transit-import-2 method=POST>
-<%= [export_form_vars return_url project_id task_type_id target_language_id import_method] %>
+<%= [export_vars -form {return_url project_id task_type_id target_language_id import_method}] %>
 %>
 
 

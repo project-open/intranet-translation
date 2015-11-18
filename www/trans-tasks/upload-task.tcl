@@ -110,7 +110,7 @@ if {$survey_exists_p && $previous_user_id != 0 && $survey_no != 0} {
 
 set page_content "
 <form enctype=multipart/form-data method=POST action=upload-task-2.tcl>
-[export_form_vars project_id task_id return_url]
+[export_vars -form {project_id task_id return_url}]
 
                     <table border=0>
                       <tr> 

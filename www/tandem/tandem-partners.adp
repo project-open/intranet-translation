@@ -1,7 +1,7 @@
 <if @rowcount@ ne 0>
     <table>
 	<form method=POST action=/intranet/member-add-2>
-	<%= [export_form_vars object_id return_url] %>
+	<%= [export_vars -form {object_id return_url}] %>
 	<input type=hidden name=target value=<%= [im_url_stub]/member-add-2 %>>
 	<input type=hidden name=passthrough value='object_id role return_url also_add_to_group_id'>
 

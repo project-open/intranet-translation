@@ -497,7 +497,7 @@ ad_proc -public im_trans_trados_matrix_component {
 
     set html "
 <form action=\"/intranet-translation/matrix/new\" method=POST>
-[export_form_vars object_id return_url]
+[export_vars -form {object_id return_url}]
 <table border=0>
 <tr class=rowtitle><td class=rowtitle colspan=8 align=center>[_ intranet-translation.Trados_Matrix] ($matrix(type))</td></tr>
 <tr class=rowtitle>$header_html</tr>
@@ -1115,7 +1115,7 @@ ad_proc -public im_trans_project_details_component { user_id project_id return_u
 	    <td></td>
 	    <td>
 	<form action=/intranet-translation/projects/edit-trans-data method=POST>
-	[export_form_vars project_id return_url]
+	[export_vars -form {project_id return_url}]
 	<input type=submit name=edit value=\"[lang::message::lookup "" intranet-translation.Edit_Button "Edit"]\">
 	</form>
 	    </td>
@@ -1830,7 +1830,7 @@ ad_proc im_task_status_component { user_id project_id return_url } {
 
     set task_status_html "
 <form action=/intranet-translation/trans-tasks/task-action method=POST>
-[export_form_vars project_id return_url]
+[export_vars -form {project_id return_url}]
 
 <table cellpadding=0 cellspacing=2 border=0>
 <tr>
@@ -2206,7 +2206,7 @@ ad_proc im_task_component {
     # -------------------- Header ---------------------------------
     set task_table "
 	<form action=/intranet-translation/trans-tasks/task-action method=POST>
-	[export_form_vars project_id return_url]
+	[export_vars -form {project_id return_url}]
 	<table border=0>
 	<tr>
     "
@@ -2972,7 +2972,7 @@ ad_proc im_task_error_component { user_id project_id return_url } {
     # ----------------- Put everything together -------------------------
     set task_table "
 <form action=/intranet-translation/trans-tasks/task-action method=POST>
-[export_form_vars project_id return_url]
+[export_vars -form {project_id return_url}]
 
 <table border=0>
 <tr>
@@ -3088,7 +3088,7 @@ ad_proc im_new_task_component {
     # -------------------- Add subheader for New Task  --------------------------
     set task_table "
 	    <form enctype=multipart/form-data method=POST action=/intranet-translation/trans-tasks/trados-upload>
-	    [export_form_vars project_id return_url]
+	    [export_vars -form {project_id return_url}]
 <table border=0>
 <tr>
   <td colspan=1 class=rowtitle align=center>
@@ -3187,7 +3187,7 @@ ad_proc im_new_task_component {
 	</form>
 
 	<form action=/intranet-translation/trans-tasks/task-action method=POST>
-	[export_form_vars project_id return_url]
+	[export_vars -form {project_id return_url}]
 
 	<table border=0>
 	<tr><td colspan=$colspan></td></br>

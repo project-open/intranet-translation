@@ -55,7 +55,7 @@ set create_language_subprojects_l10n [lang::message::lookup "" intranet-translat
 
 set page_body "
                 <form action=edit-trans-data-2 method=post name=edit-trans-data>
-[export_form_vars return_url project_id dp_ug.user_groups.creation_ip_address dp_ug.user_groups.creation_user]
+                  [export_vars -form {return_url project_id dp_ug.user_groups.creation_ip_address dp_ug.user_groups.creation_user}]
                   <table border=0>
                     <tr> 
                       <td colspan=2 class=rowtitle align=middle>

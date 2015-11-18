@@ -181,7 +181,7 @@ order by
 set task_colspan 9
 set task_html "
 <form method=POST action=task-assignments-2>
-[export_form_vars project_id return_url]
+[export_vars -form {project_id return_url}]
 	<table border=0>
 	  <tr>
 	    <td colspan=$task_colspan class=rowtitle align=center>
@@ -463,7 +463,7 @@ set wf_assignments_render_sql "
 
 set ass_html "
 <form method=POST action=task-assignments-wf-2>
-[export_form_vars project_id return_url]
+[export_vars -form {project_id return_url}]
 <table border=0>
 "
 
@@ -566,7 +566,7 @@ if { $n_other > 0 } {
 
 set auto_assignment_html "
 <form action=\"task-assignments\" method=POST>
-[export_form_vars project_id return_url orderby]
+[export_vars -form {project_id return_url orderby}]
 <table>
 <tr>
   <td colspan=5 class=rowtitle align=center>[_ intranet-translation.Auto_Assignment]</td>
