@@ -106,19 +106,19 @@ switch -glob $action {
     }
 
     "Trados Import" {
-	ad_returnredirect "task-trados?[export_url_vars project_id return_url]"
+	ad_returnredirect "task-trados?[export_vars -url { project_id return_url}]"
     }
 
     "Assign" {
-	ad_returnredirect "task-assignments?[export_url_vars project_id return_url]"
+	ad_returnredirect "task-assignments?[export_vars -url { project_id return_url}]"
     }
 
     "Assign Tasks" {
-	ad_returnredirect "task-assignments?[export_url_vars project_id return_url]"
+	ad_returnredirect "task-assignments?[export_vars -url { project_id return_url}]"
     }
 
     "View Tasks" {
-	ad_returnredirect "task-list?[export_url_vars project_id return_url]"
+	ad_returnredirect "task-list?[export_vars -url { project_id return_url}]"
     }
 
     "save" {

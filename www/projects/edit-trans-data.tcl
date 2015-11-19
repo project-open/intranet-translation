@@ -42,7 +42,7 @@ where
 }
 
 set page_title "$project_nr - $project_name"
-set context_bar [im_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] [list "/intranet/projects/view?[export_url_vars project_id]" "[_ intranet-translation.One_project]"] $page_title]
+set context_bar [im_context_bar [list /intranet/projects/ "[_ intranet-translation.Projects]"] [list "/intranet/projects/view?[export_vars -url {project_id}]" "[_ intranet-translation.One_project]"] $page_title]
 
 
 if {![db_0or1row "get company info" "select  c.company_name from im_companies c where c.company_id = :company_id"]} {

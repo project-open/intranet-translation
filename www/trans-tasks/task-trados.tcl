@@ -31,7 +31,7 @@ if {!$write} {
 set target_language_ids [im_target_language_ids $project_id im_projects]
 
 if { ![exists_and_not_null return_url] } {
-    set return_url "[im_url_stub]/projects/view?[export_url_vars project_id]"
+    set return_url "[im_url_stub]/projects/view?[export_vars -url {project_id}]"
 }
 
 
@@ -98,5 +98,5 @@ if {![file readable $trados_wordcount_file]} {
 
 set import_method "Asp"
 
-ad_returnredirect trados-import?[export_url_vars project_id return_url trados_wordcount_file import_method]
+ad_returnredirect trados-import?[export_vars -url {project_id return_url trados_wordcount_file import_method}]
 

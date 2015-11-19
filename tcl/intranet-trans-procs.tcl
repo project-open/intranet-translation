@@ -510,7 +510,7 @@ ad_proc -public im_trans_trados_matrix_component {
 <tr class=rowplain>
   <td colspan=9 align=right>
     <input type=submit value=\"Edit\">
-<!--  <A href=/intranet-translation/matrix/new?[export_url_vars object_id return_url]>edit</a> -->
+<!--  <A href=/intranet-translation/matrix/new?[export_vars -url {object_id return_url}]>edit</a> -->
   </td>
 </tr>
 "
@@ -2654,7 +2654,7 @@ ad_proc im_task_component {
 		    External {
 			# Standard - Upload to stop editing
 			set upload_url "/intranet-translation/trans-tasks/upload-task?"
-			append upload_url [export_url_vars project_id task_id case_id transition_key return_url]
+			append upload_url [export_vars -url {project_id task_id case_id transition_key return_url}]
 			set upload_gif [im_gif -translate_p 1 open "Upload File"]
 		    }
 		    Ophelia {
@@ -2951,7 +2951,7 @@ ad_proc im_task_error_component { user_id project_id return_url } {
   <td align=left><font color=red>$task_name_splitted</font></td>
   <td align=right>$task_units $uom_name</td>
   <td align=center>
-    <A HREF='/intranet-translation/trans-tasks/upload-task?[export_url_vars project_id task_id return_url]'>
+    <A HREF='/intranet-translation/trans-tasks/upload-task?[export_vars -url {project_id task_id return_url}]'>
       [im_gif -translate_p 1 open "Upload file"]
     </A>
   </td>

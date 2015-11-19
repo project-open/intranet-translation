@@ -84,7 +84,7 @@ db_transaction {
 }
 
 if { ![exists_and_not_null return_url] } {
-    set return_url "[im_url_stub]/projects/view?[export_url_vars project_id]"
+    set return_url "[im_url_stub]/projects/view?[export_vars -url {project_id}]"
 }
 
 # Write audit trail
