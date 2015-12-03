@@ -376,10 +376,6 @@ select im_dynfield_attribute__del((
 	)
 ));
 
-
-
-
-
 select im_dynfield_attribute__del((
 	select	attribute_id
 	from	im_dynfield_attributes
