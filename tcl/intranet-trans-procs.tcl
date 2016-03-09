@@ -2077,34 +2077,6 @@ ad_proc im_task_status_component { user_id project_id return_url } {
 	incr ctr
     }
 
-
-    append xxx_task_status_html "
-	<tr $bgcolor([expr $ctr % 2])>
-	  <td>unassigned tasks</td>
-	
-	  <td>$unassigned_trans</td>
-	  <td></td>
-	  <td></td>
-	
-	  <td>$unassigned_edit</td>
-	  <td></td>
-	  <td></td>
-	
-	  <td>$unassigned_proof</td>
-	  <td></td>
-	  <td></td>
-	
-	  <td>$unassigned_other</td>
-	  <td></td>
-	  <td></td>
-	
-	  <td>[expr round($unassigned_trans_wc)]</td>
-	  <td>[expr round($unassigned_edit_wc)]</td>
-	  <td>[expr round($unassigned_proof_wc)]</td>
-	
-	</tr>
-    "
-
     append task_status_html "
 	<tr>
 	  <td colspan=12 align=left>

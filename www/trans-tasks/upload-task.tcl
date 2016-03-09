@@ -171,7 +171,7 @@ if {0 && $survey_id} {
                       <tr $bgcolor([expr $ctr%2])> 
                         <td align=right>[lang::message::lookup "" intranet-translation.Rate_your_$previous_wf_role_mangled "Rate the<br>$previous_wf_role"]</td>
                         <td> 
-			    <a href=\"$survey_url\" xxxtarget=\"survey\">$survey_name</a>
+			    <a href=\"$survey_url\" target=\"survey\">$survey_name</a>
                         </td>
                       </tr>
     "

@@ -67,7 +67,7 @@ ns_log notice "file=$file"
 if [file readable $file] {
 
     # Update the task to advance to the next status
-    # Take advantage that from a "for Xxxx" to "Xxxxx-ing" status
+    # Take advantage that from a "for <bla>" to "<bla>-ing" status
     # there is a difference of 2 in the task_status_id. Ugly but fast!
     db_dml upate_task "
 	update im_trans_tasks 
