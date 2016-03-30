@@ -118,6 +118,7 @@ ad_proc -public im_trans_task_type_options {
 ad_register_proc GET /intranet-translation/download-task/* intranet_task_download
 
 proc intranet_task_download {} {
+
     set user_id [ad_maybe_redirect_for_registration]
 
     set url "[ns_conn url]"
@@ -227,9 +228,9 @@ where
 
     set guessed_file_type [ns_guesstype $file]
 
-    ns_log notice "intranet_task_download: file_name=$file_name"
-    ns_log notice "intranet_task_download: file=$file"
-    ns_log notice "intranet_task_download: file_type=$guessed_file_type"
+    ns_log Notice "intranet_task_download: file_name=$file_name"
+    ns_log Notice "intranet_task_download: file=$file"
+    ns_log Notice "intranet_task_download: file_type=$guessed_file_type"
 
     if [file readable $file] {
 
@@ -246,7 +247,7 @@ where
         rp_serve_concrete_file $file
 
     } else {
-	ns_log notice "intranet_task_download: file '$file' not readable"
+	ns_log Notice "intranet_task_download: file '$file' not readable"
 
 	set subject "[_ intranet-translation.lt_File_is_missing_in_pr]"
 	set subject [ad_urlencode $subject]
@@ -551,7 +552,7 @@ ad_proc -public im_trans_trados_matrix_calculate {
     If the "Internal" company doesn't have a matrix fall
     back to some default values.
 } {
-    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate: -------- object_id: $object_id"
+    ns_log Notice "intranet-trans-procs::im_trans_trados_matrix_calculate: -------- object_id: $object_id"
     return [im_trans_trados_matrix_calculate_helper $object_id $px_words $prep_words $p100_words $p95_words $p85_words $p75_words $p50_words $p0_words \
 		$pperfect_words $pcfr_words $f95_words $f85_words $f75_words $f50_words $locked_words]
 }
@@ -577,22 +578,22 @@ ad_proc -public im_trans_trados_matrix_calculate_helper {
 } {
     See im_trans_trados_matrix_calculate for comments...
 } {
-    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: object_id: $object_id"
-    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: px_words: $px_words"
-    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: prep_words $prep_words"
-    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: p100_words $p100_words"
-    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: p95_words $p95_words"
-    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: p85_words $p85_words"
-    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: p75_words $p75_words"
-    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: p50_words $p50_words"
-    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: p0_words $p0_words"
-    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: pperfect_words $pperfect_words"
-    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: pcfr_words $pcfr_words"
-    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: f95_words $f95_words"
-    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: f85_words $f85_words"
-    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: f75_words $f75_words"
-    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: f50_words $f50_words"
-    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: locked_words $locked_words"
+    ns_log Notice "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: object_id: $object_id"
+    ns_log Notice "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: px_words: $px_words"
+    ns_log Notice "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: prep_words $prep_words"
+    ns_log Notice "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: p100_words $p100_words"
+    ns_log Notice "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: p95_words $p95_words"
+    ns_log Notice "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: p85_words $p85_words"
+    ns_log Notice "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: p75_words $p75_words"
+    ns_log Notice "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: p50_words $p50_words"
+    ns_log Notice "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: p0_words $p0_words"
+    ns_log Notice "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: pperfect_words $pperfect_words"
+    ns_log Notice "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: pcfr_words $pcfr_words"
+    ns_log Notice "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: f95_words $f95_words"
+    ns_log Notice "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: f85_words $f85_words"
+    ns_log Notice "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: f75_words $f75_words"
+    ns_log Notice "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: f50_words $f50_words"
+    ns_log Notice "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: locked_words $locked_words"
 
     if {"" == $px_words} { set px_words 0 }
     if {"" == $prep_words} { set prep_words 0 }
@@ -603,10 +604,10 @@ ad_proc -public im_trans_trados_matrix_calculate_helper {
     if {"" == $p50_words} { set p50_words 0 }
     if {"" == $p0_words} { set p0_words 0 }
 
-    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: Getting matrix for object_id: $object_id"
+    ns_log Notice "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: Getting matrix for object_id: $object_id"
     array set matrix [im_trans_trados_matrix $object_id]
 
-    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: Array found: [array get matrix]"
+    ns_log Notice "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: Array found: [array get matrix]"
     
     # ad_return_complaint xx "pperfect_words: $pperfect_words, matrix(perf):  $matrix(perf)"
 
@@ -628,7 +629,7 @@ ad_proc -public im_trans_trados_matrix_calculate_helper {
                     ($pperfect_words * $matrix(perf))
     ]
 
-    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: Found task_units: $task_units" 
+    ns_log Notice "intranet-trans-procs::im_trans_trados_matrix_calculate_helper: Found task_units: $task_units" 
     return $task_units
 }
 
@@ -637,7 +638,7 @@ ad_proc -public im_trans_trados_matrix { object_id } {
     Returns an array with the trados matrix values for an object.
 } {
     set object_type [db_string get_object_type "select object_type from acs_objects where object_id=:object_id" -default none]
-    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix: Object_id: $object_id -> object_type: $object_type"
+    ns_log Notice "intranet-trans-procs::im_trans_trados_matrix: Object_id: $object_id -> object_type: $object_type"
 
     switch $object_type {
 	im_project {
@@ -666,11 +667,11 @@ ad_proc -public im_trans_trados_matrix { object_id } {
 ad_proc -public im_trans_trados_matrix_project { project_id } {
     Returns an array with the trados matrix values for a project.
 } {
-    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_project: Entering ..."    
+    ns_log Notice "intranet-trans-procs::im_trans_trados_matrix_project: Entering ..."    
     set count [db_string matrix_count "select count(*) from im_trans_trados_matrix where object_id=:project_id"]
     if {!$count} { 
 	set company_id [db_string project_company "select company_id from im_projects project_id=:project_id"]
-	ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_project: Found company_id $company_id, calling: im_trans_trados_matrix_company" 
+	ns_log Notice "intranet-trans-procs::im_trans_trados_matrix_project: Found company_id $company_id, calling: im_trans_trados_matrix_company" 
 	return [im_trans_trados_matrix_company $company_id] 
     }
 
@@ -712,10 +713,10 @@ ad_proc -public im_trans_trados_matrix_project { project_id } {
 ad_proc -public im_trans_trados_matrix_company { company_id } {
     Returns an array with the trados matrix values for a company.
 } {
-    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_company: Entering ..."
+    ns_log Notice "intranet-trans-procs::im_trans_trados_matrix_company: Entering ..."
     set count [db_string matrix_count "select count(*) from im_trans_trados_matrix where object_id=:company_id"]
     if {!$count} { 
-	ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_company: No entries found in table im_trans_trados_matrix, now calling im_trans_trados_matrix_internal" 
+	ns_log Notice "intranet-trans-procs::im_trans_trados_matrix_company: No entries found in table im_trans_trados_matrix, now calling im_trans_trados_matrix_internal" 
 	return [im_trans_trados_matrix_internal] 
     }
 
@@ -757,13 +758,13 @@ ad_proc -public im_trans_trados_matrix_internal { } {
     Returns an array with the trados matrix values for the "Internal" company.
 } {
 
-    ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_internal: Entering im_trans_trados_matrix_internal"
+    ns_log Notice "intranet-trans-procs::im_trans_trados_matrix_internal: Entering im_trans_trados_matrix_internal"
 
     set company_id [im_company_internal]
     
     set count [db_string matrix_count "select count(*) from im_trans_trados_matrix where object_id=:company_id"]
     if {!$count} { 
-	ns_log NOTICE "intranet-trans-procs::im_trans_trados_matrix_internal: No entries in table im_trans_trados_matrix found for company_id: company_id, calling im_trans_trados_matrix_default"
+	ns_log Notice "intranet-trans-procs::im_trans_trados_matrix_internal: No entries in table im_trans_trados_matrix found for company_id: company_id, calling im_trans_trados_matrix_default"
 	return [im_trans_trados_matrix_default] 
     }
 
@@ -801,7 +802,7 @@ ad_proc -public im_trans_trados_matrix_internal { } {
 ad_proc -public im_trans_trados_matrix_default { } {
     Returns an array with the trados matrix values for the "Internal" company.
 } {
-    ns_log NOTICE "intranet-trans-procs.tcl::im_trans_trados_matrix_default: Returning default matrix"
+    ns_log Notice "intranet-trans-procs.tcl::im_trans_trados_matrix_default: Returning default matrix"
     set matrix(x) 0.25
     set matrix(rep) 0.25
     set matrix(perf) 0.25
