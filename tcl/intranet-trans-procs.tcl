@@ -1780,7 +1780,7 @@ ad_proc im_trans_task_project_advance { project_id } {
 	"
 
 	# Write audit trail
-	im_project_audit -project_id $project_id
+	im_audit -object_id $project_id
 
     }
 

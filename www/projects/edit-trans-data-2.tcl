@@ -88,7 +88,7 @@ if { ![exists_and_not_null return_url] } {
 }
 
 # Write audit trail
-im_project_audit -project_id $project_id
+im_audit -object_id $project_id
 
 
 # Write the source + target language and subject area to freelance skills
@@ -216,7 +216,7 @@ if {[exists_and_not_null submit_subprojects]} {
 	db_dml project_update $project_update_sql
 
 	# Write audit trail
-	catch { im_project_audit $sub_project_id} err_msg
+	catch { im_audit -object_id $sub_project_id} err_msg
 
 	# Write the source + target language and subject area to freelance skills
 	if {[im_table_exists im_freelancers]} {
