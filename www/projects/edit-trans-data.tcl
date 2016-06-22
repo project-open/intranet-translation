@@ -32,13 +32,9 @@ if {!$write} {
 set target_language_ids [im_target_language_ids $project_id]
 
 db_1row projects_info_query { 
-select 
-        p.*,
-        p.company_project_nr
-from
-	im_projects p
-where 
-	p.project_id = :project_id 
+select	p.*
+from	im_projects p
+where	p.project_id = :project_id 
 }
 
 set page_title "$project_nr - $project_name"
