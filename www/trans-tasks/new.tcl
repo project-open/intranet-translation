@@ -67,8 +67,8 @@ if {"delete" == $button_pressed} {
 	set price_names [db_list_of_lists prices "select acs_object__name(company_id), im_category_from_id(task_type_id), * from im_timesheet_prices where task_id = :task_id"]
 	ad_return_complaint 1 "<b>Error deleting Task</b>:<p>
 	This error is probably due to the fact there there are still 
-	'Timesheet Tasks' referencing this task:<p>
-	Timesheet Tasks:<br>
+	'Gantt Tasks' referencing this task:<p>
+	Gantt Tasks:<br>
 	<pre>[join $task_names "\n>"]</pre><p>
 	Timesheet Prices:<br>
 	<pre>[join $price_names "\n>"]</pre><p>
