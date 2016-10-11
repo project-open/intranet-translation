@@ -161,9 +161,9 @@ switch -glob $action {
 		set p_match75 $match75($task_id)
 		set p_match50 $match50($task_id)
 		set p_match0 $match0($task_id)
-		ns_log NOTICE "task-action:: Calling im_trans_trados_matrix_calculate (task_id: $task_id): [im_company_freelance] $p_match_x, $p_match_rep, $p_match100, $p_match95, $p_match85, $p_match75, $p_match50, $p_match0"
+		ns_log Notice "task-action:: Calling im_trans_trados_matrix_calculate (task_id: $task_id): [im_company_freelance] $p_match_x, $p_match_rep, $p_match100, $p_match95, $p_match85, $p_match75, $p_match50, $p_match0"
 		set task_units [im_trans_trados_matrix_calculate [im_company_freelance] $p_match_x $p_match_rep $p_match100 $p_match95 $p_match85 $p_match75 $p_match50 $p_match0]
-		ns_log NOTICE "task-action:: im_trans_trados_matrix_calculate returns task_units: $im_trans_trados_matrix_calculate"
+		ns_log Notice "task-action:: im_trans_trados_matrix_calculate returns task_units: $im_trans_trados_matrix_calculate"
 		set trados_reuse_update ",
 			match_x = :p_match_x,
 			match_rep = :p_match_rep,
