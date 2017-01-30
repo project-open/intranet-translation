@@ -797,7 +797,7 @@ on im_trans_task_progress (task_type_id, task_status_id);
 -- 88 	Edit Only 	Translation Project 	
 -- 89 	Trans + Edit + Proof 	Translation Project 	
 -- 90 	Linguistic Validation 	Translation Project 	
--- 91 	Localization 	Consulting Project 
+-- 91 	Localization 	Gantt Project 
 -- 92 	Technology 	Translation Project 	
 -- 93 	Trans Only 	Translation Project 	
 -- 94 	Trans + Int. Spotcheck 	Translation Project 	
