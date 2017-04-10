@@ -3274,9 +3274,6 @@ ad_proc im_task_missing_file_list {
            in order not to disturb a users's page with missing pathes etc.
 
 } {
-    set find_cmd [im_filestorage_find_cmd]
-
-
     # Localize the workflow stage directories
     set locale "en_US"
     set source [lang::message::lookup $locale intranet-translation.Workflow_source_directory "source"]
@@ -3321,12 +3318,9 @@ where
     ns_log Notice "im_task_missing_file_list: org_paths_len=$org_paths_len"
     
     if { [catch {
-	set find_cmd [im_filestorage_find_cmd]
-	set file_list [exec $find_cmd $source_folder -type f]
+	set file_list [im_exec find $source_folder -type f]
     } err_msg] } {
-	# The directory probably doesn't exist yet, so don't generate
-	# an error !!!
-
+	# The directory probably doesn't exist yet, so don't generate an error !!!
         if {$no_complain} { return "" }
 	ad_return_complaint 1 "im_task_missing_file_list: directory $source_folder<br>
 		       probably does not exist:<br>$err_msg"
