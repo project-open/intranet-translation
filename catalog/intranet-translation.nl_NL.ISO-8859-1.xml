@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="intranet-translation" package_version="3.4.0.7.0" locale="nl_NL" charset="ISO-8859-1">
+<message_catalog package_key="intranet-translation" locale="nl_NL" charset="ISO-8859-1">
 
   <msg key="--_Please_Select_--">-- Kies --</msg>
   <msg key="0_">0%</msg>
@@ -53,20 +53,20 @@
   <msg key="Help">Help</msg>
   <msg key="Input_Error">Invoerfout</msg>
   <msg key="Internal_error">Interne fout</msg>
-  <msg key="lt_Add_a_manual_task_to_">Voeg een \&quot;manual\&quot; taak aan het project.</msg>
+  <msg key="lt_Add_a_manual_task_to_">Voeg een \&#34;manual\&#34; taak aan het project.</msg>
   <msg key="lt_Add_a_new_file_to_the">Voeg een nieuw bestand toe aan de takenlijst.</msg>
   <msg key="lt_Add_a_new_subject_are">Voeg een nieuw onderwerpveld toe</msg>
-  <msg key="lt_Add_the_content_of_a_">Voeg de inhoud van een lokaal Trados 'wordcounnt.csv'bestand toe aan de lijst van taken.\nHet bestand moet 'wordcount.csv' (kleine letters) worden genoemd en het moet worden opgeslagen in de projectenmap, en er mag een ander bestand met deze naam zijn.</msg>
+  <msg key="lt_Add_the_content_of_a_">Voeg de inhoud van een lokaal Trados &#39;wordcounnt.csv&#39;bestand toe aan de lijst van taken.\nHet bestand moet &#39;wordcount.csv&#39; (kleine letters) worden genoemd en het moet worden opgeslagen in de projectenmap, en er mag een ander bestand met deze naam zijn.</msg>
   <msg key="lt_An_optional_field_spe">Een optioneel veld dat de project referentiecode van de klant specificeert. Dit wordt gebruik bij het afdrukken van de factuur. Voorbeeld: 2000310A12478</msg>
   <msg key="lt_Cant_find_the_project">Kan het project met group id of %project_id% niet vinden</msg>
-  <msg key="lt_Cant_find_the_project_1">Kan het project met ID '%project_id%' niet vinden</msg>
-  <msg key="lt_Classical_Trados_impo">(\&quot;Classical\&quot; Trados importeren van een lokale 'wordcount.csv' bestand)</msg>
-  <msg key="lt_Click_right_and_choos">Klik rechts en kies \&quot;Bewaard doel als\&quot; om het bestand te downloaden</msg>
+  <msg key="lt_Cant_find_the_project_1">Kan het project met ID &#39;%project_id%&#39; niet vinden</msg>
+  <msg key="lt_Classical_Trados_impo">(\&#34;Classical\&#34; Trados importeren van een lokale &#39;wordcount.csv&#39; bestand)</msg>
+  <msg key="lt_Click_right_and_choos">Klik rechts en kies \&#34;Bewaard doel als\&#34; om het bestand te downloaden</msg>
   <msg key="lt_Couldnt_find_the_spec">Kan de opgegeven taak #%task_id% niet vinden</msg>
   <msg key="lt_Create_folder_structu">Maak een map structuur en maak een subproject voor iedere taal die u heeft gekozen.</msg>
   <msg key="lt_Create_the_new_folder">Maak nieuwe mappen structuur</msg>
   <msg key="lt_Did_you_enter_the_sam">Heeft u de zelfde taaknaam dubbel ingevoerd?</msg>
-  <msg key="lt_Edit_Trados_Matrix_of">Bewerk Trados matrix van '%object_name%'</msg>
+  <msg key="lt_Edit_Trados_Matrix_of">Bewerk Trados matrix van &#39;%object_name%&#39;</msg>
   <msg key="lt_Edit_Translation_Deta">Bewerk vertaaldetails</msg>
   <msg key="lt_Error_creating_subfol">Fout bij het maken van de submap %path%</msg>
   <msg key="lt_Error_deleting_the_te">Fout bij het verwijderden van het tijdelijke wordcount bestand %trados_wordcount_file%</msg>
@@ -75,8 +75,8 @@
   <msg key="lt_File_is_missing_in_pr">Bestand ontbreekt in project #%project_nr%: %file_name%</msg>
   <msg key="lt_img_srcintranetimages">_</msg>
   <msg key="lt_Missing_Translation_F">Ontbrekende vertaal bestanden</msg>
-  <msg key="lt_New_files_need_to_be_">Nieuwe bestanden moet in de map \&quot;source_xx\&quot; geplaatst worden om zichtbaar te worden in de drop-down box links.</msg>
-  <msg key="lt_New_Trados_Matrix_of_">Nieuwe Trados matrix van '%object_name%'</msg>
+  <msg key="lt_New_files_need_to_be_">Nieuwe bestanden moet in de map \&#34;source_xx\&#34; geplaatst worden om zichtbaar te worden in de drop-down box links.</msg>
+  <msg key="lt_New_Trados_Matrix_of_">Nieuwe Trados matrix van &#39;%object_name%&#39;</msg>
   <msg key="lt_No_missing_files_foun">Geen ontbrekende bestanden gevonden</msg>
   <msg key="lt_Please_check_the_file">Controleer de toegangsrechten tot het bestand of neem contact op met uw systeembeheerder.</msg>
   <msg key="lt_Please_check_your_inp">Controleer uw invoer of neem contact op met uw project manager.</msg>
@@ -85,7 +85,7 @@
   <msg key="lt_Please_edit_your_proj">Bewerk uw project en voeg een brontaal toe.</msg>
   <msg key="lt_Please_start_Trados_a">Start Trados en genereer een bestand voor deze map.</msg>
   <msg key="lt_Please_try_to_repeat_">Probeer om uw Trados analyse te herhalen of neem contact op met uw systeembeheerder.</msg>
-  <msg key="lt_Please_upload_a_file_">Upload een bestand me de extensie \&quot;.CSV\&quot;.</msg>
+  <msg key="lt_Please_upload_a_file_">Upload een bestand me de extensie \&#34;.CSV\&#34;.</msg>
   <msg key="lt_Project_Workflow_Stat">Project werkproces status</msg>
   <msg key="lt_Return_to_previous_pa">Terug naar de vorige pagina</msg>
   <msg key="lt_Return_to_Project_Pag">Terug naar de project pagina</msg>
@@ -103,16 +103,16 @@
   <msg key="lt_Translation_Assignmen">Vertaal toewijzingen</msg>
   <msg key="lt_Translation_source_la">Vertaal bron taal</msg>
   <msg key="lt_Translation_target_la">Vertaal doel talen. Er zullen aparte mappen worden gemaakt voor iedere geselecteerde taal.</msg>
-  <msg key="lt_Unable_to_read_the_fi">Het is niet mogelijk om het bestand '%trados_wordcount_file%' te lezen.</msg>
-  <msg key="lt_Unknown_Input_method_">Onbekende invoer methode '%import_method%'.</msg>
+  <msg key="lt_Unable_to_read_the_fi">Het is niet mogelijk om het bestand &#39;%trados_wordcount_file%&#39; te lezen.</msg>
+  <msg key="lt_Unknown_Input_method_">Onbekende invoer methode &#39;%import_method%&#39;.</msg>
   <msg key="lt_Unknown_submit_comman">Onbekend vrijgeef commando</msg>
   <msg key="lt_Unknown_Trados_Versio">Onbekende Trados versie</msg>
-  <msg key="lt_Use_the_Browse_button">Gebruik de 'Browse...' knop om uw bestand te vinden en klik dan op 'Open'.</msg>
-  <msg key="lt_Use_the_Browse_button_1">Gebruik de 'Browse...' knop om uw bestand te vinden en klik dan op \&quot;Toevoegen\&quot; om een Trados wordcount (.CSV) bestand te uploaden.</msg>
-  <msg key="lt_We_have_found_more_th">We hebben meerdere 'wordcount.csv' bestanden gevonden in het projectpad '%project_path%'.</msg>
-  <msg key="lt_We_have_not_found_a_w">We hebben geen 'wordcount.csv' bestand in het projectpad '%project_path%' gevonden.</msg>
-  <msg key="lt_Who_is_the_final_cons">Wie is de uiteindelijke gebruiker (indien er voor een bureau wordt gewerkt)? Bijvoorbeeld: \&quot;Shell\&quot;, \&quot;UBS\&quot;, ...</msg>
-  <msg key="lt_You_are_not_allowed_t">Het is u niet toegestaan (nog) een bestand te uploaden terwijl de taak de status '%task_status%' heeft.</msg>
+  <msg key="lt_Use_the_Browse_button">Gebruik de &#39;Browse...&#39; knop om uw bestand te vinden en klik dan op &#39;Open&#39;.</msg>
+  <msg key="lt_Use_the_Browse_button_1">Gebruik de &#39;Browse...&#39; knop om uw bestand te vinden en klik dan op \&#34;Toevoegen\&#34; om een Trados wordcount (.CSV) bestand te uploaden.</msg>
+  <msg key="lt_We_have_found_more_th">We hebben meerdere &#39;wordcount.csv&#39; bestanden gevonden in het projectpad &#39;%project_path%&#39;.</msg>
+  <msg key="lt_We_have_not_found_a_w">We hebben geen &#39;wordcount.csv&#39; bestand in het projectpad &#39;%project_path%&#39; gevonden.</msg>
+  <msg key="lt_Who_is_the_final_cons">Wie is de uiteindelijke gebruiker (indien er voor een bureau wordt gewerkt)? Bijvoorbeeld: \&#34;Shell\&#34;, \&#34;UBS\&#34;, ...</msg>
+  <msg key="lt_You_are_not_allowed_t">Het is u niet toegestaan (nog) een bestand te uploaden terwijl de taak de status &#39;%task_status%&#39; heeft.</msg>
   <msg key="lt_You_are_not_allowed_t_1">U bent niet geautoriseerd om dit bestand te zien</msg>
   <msg key="lt_You_have_insufficient">U heeft onvoldoende rechten om deze pagina te zien</msg>
   <msg key="lt_You_have_insufficient_1">U heeft onvoldoende rechten om dit bestand te downloaden.</msg>
@@ -122,14 +122,14 @@
   <msg key="lt_You_have_no_rights_to_1">U heeft geen rechten om dit object te zien.</msg>
   <msg key="lt_You_havent_defined_th">U heeft geen bron taal voor uw project opgegeven.</msg>
   <msg key="lt_You_havent_selected_a">U heeft geen gebruiker geselecteerd voor de automatische toewijzing.</msg>
-  <msg key="lt_Your_are_trying_to_do">U probeert het bestand &quot;&lt;b&gt;%file_name%&lt;/b&gt;&quot; in de map &quot;&lt;b&gt;%download_folder%&lt;/b&gt;&quot; te downloaden, maar het bestand is niet leesbaar of bestaat niet in het systeem.</msg>
+  <msg key="lt_Your_are_trying_to_do">U probeert het bestand &#34;&lt;b&gt;%file_name%&lt;/b&gt;&#34; in de map &#34;&lt;b&gt;%download_folder%&lt;/b&gt;&#34; te downloaden, maar het bestand is niet leesbaar of bestaat niet in het systeem.</msg>
   <msg key="lt_Your_file_doesnt_coin">U bestand komt niet overeen met het verwachte bestand:</msg>
   <msg key="lt_Your_file_is_larger_t">U bestand is groter dan de maximale toegestane upload omvang</msg>
   <msg key="lt_Your_file_is_larger_t_1">U bestand is groter dan de maximaal toegestane upload omvang: %util_commify_number_max_n_bytes% bytes </msg>
   <msg key="lt_Your_file_is_not_a_tr">Uw bestand is geen Trados wordcount bestand.</msg>
-  <msg key="lt_Your_file_trados_word">U bestand '%trados_wordcount_file%' is niet gemaakt met een van de ondersteunde Trados versies (3.x, 5.0, 5.5, 6.0 and 6.5).</msg>
+  <msg key="lt_Your_file_trados_word">U bestand &#39;%trados_wordcount_file%&#39; is niet gemaakt met een van de ondersteunde Trados versies (3.x, 5.0, 5.5, 6.0 and 6.5).</msg>
   <msg key="lt_Your_file_upload_file">Uw bestand: %upload_file%</msg>
-  <msg key="lt_Your_have_successfull">U heeft %filesize% bytes van bestand '%task_name%' succesvol geuploaded.</msg>
+  <msg key="lt_Your_have_successfull">U heeft %filesize% bytes van bestand &#39;%task_name%&#39; succesvol geuploaded.</msg>
   <msg key="Message">Bericht</msg>
   <msg key="Name">Naam</msg>
   <msg key="No_Match">Geen overeenkomsten</msg>
@@ -207,6 +207,6 @@
   <msg key="Workflow_trans_directory">1_vertaal</msg>
   <msg key="X_Trans">X Trans</msg>
   <msg key="XTr">XTr</msg>
-  <msg key="Your_file_freebudget_word">Uw bestand '%freebudget_wordcount_file%'is net met een ondersteunde versie van Freebudget (4.0, 5.0) gemaakt.</msg>
-  <msg key="Your_file_webbudget_word">Uw bestand '%webbudget_wordcount_file%' is niet gemaakt met een ondersteunde versie van Webbudget (3.9).</msg>
+  <msg key="Your_file_freebudget_word">Uw bestand &#39;%freebudget_wordcount_file%&#39;is net met een ondersteunde versie van Freebudget (4.0, 5.0) gemaakt.</msg>
+  <msg key="Your_file_webbudget_word">Uw bestand &#39;%webbudget_wordcount_file%&#39; is niet gemaakt met een ondersteunde versie van Webbudget (3.9).</msg>
 </message_catalog>

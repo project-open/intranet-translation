@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="intranet-translation" package_version="3.4.0.7.0" locale="de_DE" charset="ISO-8859-1">
+<message_catalog package_key="intranet-translation" locale="de_DE" charset="ISO-8859-1">
 
   <msg key="--_Please_Select_--">-- Bitte wählen --</msg>
   <msg key="0_">0%</msg>
@@ -53,20 +53,20 @@
   <msg key="Help">Hilfe</msg>
   <msg key="Input_Error">Eingabefehler</msg>
   <msg key="Internal_error">Interner Fehler</msg>
-  <msg key="lt_Add_a_manual_task_to_">Neue \&quot;manualle\&quot; Aufgabe für dieses Projekt</msg>
+  <msg key="lt_Add_a_manual_task_to_">Neue \&#34;manualle\&#34; Aufgabe für dieses Projekt</msg>
   <msg key="lt_Add_a_new_file_to_the">Neue Datei zur Aufgabenliste hinzufügen</msg>
   <msg key="lt_Add_a_new_subject_are">Neuer Fachbereich</msg>
-  <msg key="lt_Add_the_content_of_a_">Inhalt einer lokalen Trados 'wordcount.csv'-Datei der Aufgabenliste hinzufügen. \nDie Datei muss den Namen 'wordcount.csv' (Kleinbuchstaben) haben und im Projektordner abgespeichert sein. Es darf nur eine Datei mit diesem Namen geben.</msg>
+  <msg key="lt_Add_the_content_of_a_">Inhalt einer lokalen Trados &#39;wordcount.csv&#39;-Datei der Aufgabenliste hinzufügen. \nDie Datei muss den Namen &#39;wordcount.csv&#39; (Kleinbuchstaben) haben und im Projektordner abgespeichert sein. Es darf nur eine Datei mit diesem Namen geben.</msg>
   <msg key="lt_An_optional_field_spe">Optionales Feld für die Kundenreferenznrummer. Erscheint auf der Rechung. Beispiel: 20030310A12478</msg>
   <msg key="lt_Cant_find_the_project">Kann das Projekt mit der Gruppen-ID %project_id% nicht finden</msg>
-  <msg key="lt_Cant_find_the_project_1">Projekt mit ID '%project_id%' ist  nicht zu finden</msg>
-  <msg key="lt_Classical_Trados_impo">(\&quot;Klassischer\&quot; Import einer lokalen Trados 'wordcount.csv'-Datei)</msg>
-  <msg key="lt_Click_right_and_choos">Rechter Mausklick und \&quot;Save target as\&quot; auswählen, um die Datei runterzuladen</msg>
+  <msg key="lt_Cant_find_the_project_1">Projekt mit ID &#39;%project_id%&#39; ist  nicht zu finden</msg>
+  <msg key="lt_Classical_Trados_impo">(\&#34;Klassischer\&#34; Import einer lokalen Trados &#39;wordcount.csv&#39;-Datei)</msg>
+  <msg key="lt_Click_right_and_choos">Rechter Mausklick und \&#34;Save target as\&#34; auswählen, um die Datei runterzuladen</msg>
   <msg key="lt_Couldnt_find_the_spec">Kann spezifizierte Aufgabennr. %task_id% nicht finden.</msg>
   <msg key="lt_Create_folder_structu">Erstellt Ordnerstruktur und Unterprojekt für jede ausgewählte Sprache.</msg>
   <msg key="lt_Create_the_new_folder">Neue Ordnerstruktur</msg>
   <msg key="lt_Did_you_enter_the_sam">Haben Sie die gleiche Aufgabe doppelt eingegeben?</msg>
-  <msg key="lt_Edit_Trados_Matrix_of">Trados Matrix der '%object_name%' bearbeiten</msg>
+  <msg key="lt_Edit_Trados_Matrix_of">Trados Matrix der &#39;%object_name%&#39; bearbeiten</msg>
   <msg key="lt_Edit_Translation_Deta">Übersetzungsdetails ändern</msg>
   <msg key="lt_Error_creating_subfol">Fehler beim Erstellen des Unterordners %path%</msg>
   <msg key="lt_Error_deleting_the_te">Fehler beim Löschen der temporären wordcount Datei %trados_wordcount_file%</msg>
@@ -75,8 +75,8 @@
   <msg key="lt_File_is_missing_in_pr">Datei fehlt im Projekt #%project_nr%: %file_name%</msg>
   <msg key="lt_img_srcintranetimages">_</msg>
   <msg key="lt_Missing_Translation_F">Fehlende Übersetzungsdateien</msg>
-  <msg key="lt_New_files_need_to_be_">Die neuen Dateien müssen sich im \&quot;source_xx\&quot; Ordner befinden, um im Dropdown-Menü auf der linken Seite zu erscheinen.</msg>
-  <msg key="lt_New_Trados_Matrix_of_">Neu Trados Matrix der '%object_name%'</msg>
+  <msg key="lt_New_files_need_to_be_">Die neuen Dateien müssen sich im \&#34;source_xx\&#34; Ordner befinden, um im Dropdown-Menü auf der linken Seite zu erscheinen.</msg>
+  <msg key="lt_New_Trados_Matrix_of_">Neu Trados Matrix der &#39;%object_name%&#39;</msg>
   <msg key="lt_No_missing_files_foun">Keine fehlenden Dateien gefunden</msg>
   <msg key="lt_Please_check_the_file">Bitte prüfen Sie die Dateiberechtigungen oder kontaktieren Sie Ihr Systemverwalter.</msg>
   <msg key="lt_Please_check_your_inp">Bitte überprüfen Sie Ihre Eingabe oder fragen Sie den Projektleiter.</msg>
@@ -85,7 +85,7 @@
   <msg key="lt_Please_edit_your_proj">Bitte bearbeiten Sie Ihr Projekt und fügen Sie eine neue Ausgangssprache hinzu.</msg>
   <msg key="lt_Please_start_Trados_a">Bitte starten Sie Trados und legen eine neue Datei für diesen Ordner an.</msg>
   <msg key="lt_Please_try_to_repeat_">Bitte versuchen Sie Ihre Tradosanalyse zu wiederholen oder informieren Sie Ihr Systemverwalter</msg>
-  <msg key="lt_Please_upload_a_file_">Bitte laden Sie eine Datei mit der Extension \&quot;.CSV\&quot; hoch.</msg>
+  <msg key="lt_Please_upload_a_file_">Bitte laden Sie eine Datei mit der Extension \&#34;.CSV\&#34; hoch.</msg>
   <msg key="lt_Project_Workflow_Stat">Workflow Projektstatus</msg>
   <msg key="lt_Return_to_previous_pa">Zur vorherigen Seite zurückkehren</msg>
   <msg key="lt_Return_to_Project_Pag">Zur Projektseite zurückkehren</msg>
@@ -103,16 +103,16 @@
   <msg key="lt_Translation_Assignmen">Zuweisungen Übersetzung</msg>
   <msg key="lt_Translation_source_la">Ausgangssprache der Übersetzung</msg>
   <msg key="lt_Translation_target_la">Zielsprachen der Übersetzung. Für jede ausgewählte Sprache werden separate Zielordner erstellt.</msg>
-  <msg key="lt_Unable_to_read_the_fi">Die Datei '%trados_wordcount_file%' kann nicht gelesen werden.</msg>
-  <msg key="lt_Unknown_Input_method_">Unbekannte Eingabemethode '%import_method%'.</msg>
+  <msg key="lt_Unable_to_read_the_fi">Die Datei &#39;%trados_wordcount_file%&#39; kann nicht gelesen werden.</msg>
+  <msg key="lt_Unknown_Input_method_">Unbekannte Eingabemethode &#39;%import_method%&#39;.</msg>
   <msg key="lt_Unknown_submit_comman">Unbekannter Sendebefehl</msg>
   <msg key="lt_Unknown_Trados_Versio">Unbekannte Tradosversion</msg>
-  <msg key="lt_Use_the_Browse_button">Benutzen Sie die Schaltfläche &quot;durchsuchen&quot; um Ihre Datei zu finden, dann klicken Sie auf &quot;öffnen&quot;.</msg>
-  <msg key="lt_Use_the_Browse_button_1">Benutzen Sie die Schaltfläche &quot;Durchsuchen&quot; um Ihre Datei zu finden, dann klicken Sie auf \&quot;Hinzufügen ...\&quot;, um eine Trados wordcount (.CSV)-Datei hochzuladen.</msg>
-  <msg key="lt_We_have_found_more_th">Es wurden mehr als eine 'wordcount.csv' Datei in dem Projektpfad '%project_path%' gefunden.</msg>
-  <msg key="lt_We_have_not_found_a_w">Es wurde keine 'wordcount.csv' Datei in dem Projektpfad '%project_path%' gefunden.</msg>
-  <msg key="lt_Who_is_the_final_cons">Wer ist der Endkunde (wenn Sie mit ein Unternehmen/eine Agentur) arbeiten? Beispiele: \&quot;Shell&quot;, \&quot;UBS&quot;, ...</msg>
-  <msg key="lt_You_are_not_allowed_t">Es ist Ihnen (nicht mehr) gestattet die Datei hochzuladen, solange die Aufgabe den Status '%task_status%' hat.</msg>
+  <msg key="lt_Use_the_Browse_button">Benutzen Sie die Schaltfläche &#34;durchsuchen&#34; um Ihre Datei zu finden, dann klicken Sie auf &#34;öffnen&#34;.</msg>
+  <msg key="lt_Use_the_Browse_button_1">Benutzen Sie die Schaltfläche &#34;Durchsuchen&#34; um Ihre Datei zu finden, dann klicken Sie auf \&#34;Hinzufügen ...\&#34;, um eine Trados wordcount (.CSV)-Datei hochzuladen.</msg>
+  <msg key="lt_We_have_found_more_th">Es wurden mehr als eine &#39;wordcount.csv&#39; Datei in dem Projektpfad &#39;%project_path%&#39; gefunden.</msg>
+  <msg key="lt_We_have_not_found_a_w">Es wurde keine &#39;wordcount.csv&#39; Datei in dem Projektpfad &#39;%project_path%&#39; gefunden.</msg>
+  <msg key="lt_Who_is_the_final_cons">Wer ist der Endkunde (wenn Sie mit ein Unternehmen/eine Agentur) arbeiten? Beispiele: \&#34;Shell&#34;, \&#34;UBS&#34;, ...</msg>
+  <msg key="lt_You_are_not_allowed_t">Es ist Ihnen (nicht mehr) gestattet die Datei hochzuladen, solange die Aufgabe den Status &#39;%task_status%&#39; hat.</msg>
   <msg key="lt_You_are_not_allowed_t_1">Sie sind nicht berechtigt diese Datei zu sehen</msg>
   <msg key="lt_You_have_insufficient">Sie sind nicht berechtigt diese Seite zu sehen</msg>
   <msg key="lt_You_have_insufficient_1">Sie sind nicht berechtigt diese Datei herunterzuladen</msg>
@@ -127,9 +127,9 @@
   <msg key="lt_Your_file_is_larger_t">Ihre Datei ist größer als die maximal zulässigen Uploadgröße</msg>
   <msg key="lt_Your_file_is_larger_t_1">Ihre Datei ist größer als die maximal zulässigen Uploadgröße: %util_commify_number_max_n_bytes% bytes</msg>
   <msg key="lt_Your_file_is_not_a_tr">Ihre Datei ist keine trados wordcount Datei.</msg>
-  <msg key="lt_Your_file_trados_word">Ihre Datei '%trados_wordcount_file%' wurde nicht mit einer der unterstützten Tradosversionen (3.x, 5.0, 5.5, 6.0 und 6.5) erstellt.</msg>
+  <msg key="lt_Your_file_trados_word">Ihre Datei &#39;%trados_wordcount_file%&#39; wurde nicht mit einer der unterstützten Tradosversionen (3.x, 5.0, 5.5, 6.0 und 6.5) erstellt.</msg>
   <msg key="lt_Your_file_upload_file">Ihre Datei: %upload_file%</msg>
-  <msg key="lt_Your_have_successfull">Sie haben erfolgreich %filesize% Bytes der Datei '%task_name%' hochgeladen.</msg>
+  <msg key="lt_Your_have_successfull">Sie haben erfolgreich %filesize% Bytes der Datei &#39;%task_name%&#39; hochgeladen.</msg>
   <msg key="Message">Nachricht</msg>
   <msg key="Name">Name</msg>
   <msg key="No_Match">Keine Übereinstimmung</msg>
@@ -211,6 +211,6 @@ Projekt: %project_name%
   <msg key="Workflow_trans_directory">1_trans</msg>
   <msg key="X_Trans">X Trans</msg>
   <msg key="XTr">XTr</msg>
-  <msg key="Your_file_freebudget_word">Die Datei '%freebudget_wordcount_file%' wurde nicht mit einer der unterstützen Freebudget-Versionen erstellt (4.0, 5.0).</msg>
-  <msg key="Your_file_webbudget_word">Die Datei '%webbudget_wordcount_file%' wurde nicht mit einer der unterstützten Webbudget-Versionen erstellt (3.9).</msg>
+  <msg key="Your_file_freebudget_word">Die Datei &#39;%freebudget_wordcount_file%&#39; wurde nicht mit einer der unterstützen Freebudget-Versionen erstellt (4.0, 5.0).</msg>
+  <msg key="Your_file_webbudget_word">Die Datei &#39;%webbudget_wordcount_file%&#39; wurde nicht mit einer der unterstützten Webbudget-Versionen erstellt (3.9).</msg>
 </message_catalog>

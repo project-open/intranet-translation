@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<message_catalog package_key="intranet-translation" package_version="3.4.0.6.0" locale="ru_RU" charset="utf-8">
+<message_catalog package_key="intranet-translation" locale="ru_RU" charset="utf-8">
 
   <msg key="--_Please_Select_--">-- Выберите --</msg>
   <msg key="0_">0%</msg>
@@ -56,27 +56,27 @@
   <msg key="lt_Add_a_manual_task_to_">Добавить вручную задачу в проект.</msg>
   <msg key="lt_Add_a_new_file_to_the">Добавить новый файл в список задач.</msg>
   <msg key="lt_Add_a_new_subject_are">Добавить новую предметную область</msg>
-  <msg key="lt_Add_the_content_of_a_">Добавить содержимое локального CSV-файла статистики Trados в список задач. \nФайл должен называться &quot;wordcount.csv&quot; (строчными буквами), располагаться в папке проекта и быть единственным файлом с таким именем.</msg>
+  <msg key="lt_Add_the_content_of_a_">Добавить содержимое локального CSV-файла статистики Trados в список задач. \nФайл должен называться &#34;wordcount.csv&#34; (строчными буквами), располагаться в папке проекта и быть единственным файлом с таким именем.</msg>
   <msg key="lt_An_optional_field_spe">Необязательное поле, в котором указан код проекта клиента. Используется при печати счета. Пример: 20030310A12478</msg>
-  <msg key="lt_Cant_find_the_project">Не удается найти проект с кодом группы &quot;%project_id%&quot;</msg>
-  <msg key="lt_Cant_find_the_project_1">Не удается найти проект с идентификатором &quot;%project_id%&quot;</msg>
-  <msg key="lt_Classical_Trados_impo">(&quot;Классический&quot; импорт файла статистики Trados &quot;wordcount.csv&quot;)</msg>
-  <msg key="lt_Click_right_and_choos">Чтобы загрузить этот файл, щелкните его правой кнопкой мыши и выберите команду &quot;Сохранить объект как&quot;</msg>
+  <msg key="lt_Cant_find_the_project">Не удается найти проект с кодом группы &#34;%project_id%&#34;</msg>
+  <msg key="lt_Cant_find_the_project_1">Не удается найти проект с идентификатором &#34;%project_id%&#34;</msg>
+  <msg key="lt_Classical_Trados_impo">(&#34;Классический&#34; импорт файла статистики Trados &#34;wordcount.csv&#34;)</msg>
+  <msg key="lt_Click_right_and_choos">Чтобы загрузить этот файл, щелкните его правой кнопкой мыши и выберите команду &#34;Сохранить объект как&#34;</msg>
   <msg key="lt_Couldnt_find_the_spec">Не удается найти указанную задачу № %task_id%</msg>
   <msg key="lt_Create_folder_structu">Создание структуры папок и дочернего проекта для каждого выбранного языка.</msg>
   <msg key="lt_Create_the_new_folder">Создать новую структуру папок</msg>
   <msg key="lt_Did_you_enter_the_sam">Похоже, задача с таким именем уже существует</msg>
-  <msg key="lt_Edit_Trados_Matrix_of">Изменить матрицу Trados для &quot;%object_name%&quot;</msg>
+  <msg key="lt_Edit_Trados_Matrix_of">Изменить матрицу Trados для &#34;%object_name%&#34;</msg>
   <msg key="lt_Edit_Translation_Deta">Изменить сведения о переводе</msg>
   <msg key="lt_Error_creating_subfol">Ошибка при создании папки %path%</msg>
-  <msg key="lt_Error_deleting_the_te">Ошибка при удаленнии временного файла статистики &quot;%trados_wordcount_file%&quot;</msg>
+  <msg key="lt_Error_deleting_the_te">Ошибка при удаленнии временного файла статистики &#34;%trados_wordcount_file%&#34;</msg>
   <msg key="lt_Error_writing_upload_">Ошибка при записи передаваемого файла</msg>
   <msg key="lt_Expected_file_task_na">Ожидаемый файл: %task_name%</msg>
   <msg key="lt_File_is_missing_in_pr">В проекте № %project_nr% отсутствует файл: %file_name%</msg>
   <msg key="lt_img_srcintranetimages">_</msg>
   <msg key="lt_Missing_Translation_F">Отсутствуют файлы для перевода</msg>
-  <msg key="lt_New_files_need_to_be_">Чтобы новые файлы отображались в раскрывающемся списке слева, необходимо скопировать их в папку &quot;source_xx&quot;.</msg>
-  <msg key="lt_New_Trados_Matrix_of_">Создать матрицу Trados для &quot;%object_name%&quot;</msg>
+  <msg key="lt_New_files_need_to_be_">Чтобы новые файлы отображались в раскрывающемся списке слева, необходимо скопировать их в папку &#34;source_xx&#34;.</msg>
+  <msg key="lt_New_Trados_Matrix_of_">Создать матрицу Trados для &#34;%object_name%&#34;</msg>
   <msg key="lt_No_missing_files_foun">Отсутствующие файлы не найдены</msg>
   <msg key="lt_Please_check_the_file">Проверьте разрешения на доступ к этим файлам или обратитесь к системному администратору</msg>
   <msg key="lt_Please_check_your_inp">Проверьте введенные вами данные или обратитесь к руководителю проекта.</msg>
@@ -85,7 +85,7 @@
   <msg key="lt_Please_edit_your_proj">Измените проект, добавив исходный язык.</msg>
   <msg key="lt_Please_start_Trados_a">Запустите Trados и создайте файл статистики для этой папки.</msg>
   <msg key="lt_Please_try_to_repeat_">Попробуйте заново создать статистику Trados или обратитесь к системному администратору.</msg>
-  <msg key="lt_Please_upload_a_file_">Передайте файл с расширением &quot;CSV&quot;.</msg>
+  <msg key="lt_Please_upload_a_file_">Передайте файл с расширением &#34;CSV&#34;.</msg>
   <msg key="lt_Project_Workflow_Stat">Состояние рабочего процесса проекта</msg>
   <msg key="lt_Return_to_previous_pa">Вернуться на предыдущую страницу</msg>
   <msg key="lt_Return_to_Project_Pag">Вернуться на страницу проекта</msg>
@@ -95,7 +95,7 @@
   <msg key="lt_The_project_has_no_ta">Для этого проекта еще не определен конечный язык, поэтому в него нельзя добавить задачи по переводу.</msg>
   <msg key="lt_The_project_id_specif">Указан номер проекта, не являющийся целым числом.</msg>
   <msg key="lt_The_specified_file_do">Указанный файл не существует.</msg>
-  <msg key="lt_The_specified_file_fi">Указанный файл &quot;%file%&quot; недоступен.</msg>
+  <msg key="lt_The_specified_file_fi">Указанный файл &#34;%file%&#34; недоступен.</msg>
   <msg key="lt_The_task_id_specified">Указан номер задачи, не являющийся целым числом.</msg>
   <msg key="lt_This_file_is_used_to_">Этот файл используется для определения задач проекта, по одной задаче на каждую строку файла статистики.</msg>
   <msg key="lt_This_page_may_take_se">(На отправку файла с этой страницы требуется время, зависящее от размера файла и скорости используемого подключения к Интернету. Не прерывайте загрузку страницы.)</msg>
@@ -103,16 +103,16 @@
   <msg key="lt_Translation_Assignmen">Назначения по переводу</msg>
   <msg key="lt_Translation_source_la">Исходный язык перевода</msg>
   <msg key="lt_Translation_target_la">Конечные языки перевода. Для каждого выбранного конечного языка будет создана отдельная папка</msg>
-  <msg key="lt_Unable_to_read_the_fi">Не удается прочитать файл &quot;%trados_wordcount_file%&quot;.</msg>
-  <msg key="lt_Unknown_Input_method_">Неизвестный метод ввода &quot;%import_method%&quot;.</msg>
+  <msg key="lt_Unable_to_read_the_fi">Не удается прочитать файл &#34;%trados_wordcount_file%&#34;.</msg>
+  <msg key="lt_Unknown_Input_method_">Неизвестный метод ввода &#34;%import_method%&#34;.</msg>
   <msg key="lt_Unknown_submit_comman">Неизвестная команда отправки</msg>
   <msg key="lt_Unknown_Trados_Versio">Неизвестная версия Trados</msg>
-  <msg key="lt_Use_the_Browse_button">Нажмите кнопку &quot;Обзор&quot;, найдите нужный файл и нажмите кнопку &quot;Открыть&quot;.</msg>
-  <msg key="lt_Use_the_Browse_button_1">Нажмите кнопку &quot;Обзор&quot;, найдите нужный файл и нажмите кнопку &quot;Добавить&quot;, чтобы отправить на сервер статистику Trados (CSV-файл).</msg>
-  <msg key="lt_We_have_found_more_th">В папке проекта &quot;%project_path%&quot; найдено несколько файлов &quot;wordcount.csv&quot;.</msg>
-  <msg key="lt_We_have_not_found_a_w">В папке проекта &quot;%project_path%&quot; нет файла &quot;wordcount.csv&quot;.</msg>
-  <msg key="lt_Who_is_the_final_cons">Кто является конечным клиентом (при работе на агентство)? Примеры: &quot;Shell&quot;, &quot;UBS&quot;, ...</msg>
-  <msg key="lt_You_are_not_allowed_t">После того как состояние задачи сменилось на &quot;%task_status%&quot;, отправка файла больше невозможна.</msg>
+  <msg key="lt_Use_the_Browse_button">Нажмите кнопку &#34;Обзор&#34;, найдите нужный файл и нажмите кнопку &#34;Открыть&#34;.</msg>
+  <msg key="lt_Use_the_Browse_button_1">Нажмите кнопку &#34;Обзор&#34;, найдите нужный файл и нажмите кнопку &#34;Добавить&#34;, чтобы отправить на сервер статистику Trados (CSV-файл).</msg>
+  <msg key="lt_We_have_found_more_th">В папке проекта &#34;%project_path%&#34; найдено несколько файлов &#34;wordcount.csv&#34;.</msg>
+  <msg key="lt_We_have_not_found_a_w">В папке проекта &#34;%project_path%&#34; нет файла &#34;wordcount.csv&#34;.</msg>
+  <msg key="lt_Who_is_the_final_cons">Кто является конечным клиентом (при работе на агентство)? Примеры: &#34;Shell&#34;, &#34;UBS&#34;, ...</msg>
+  <msg key="lt_You_are_not_allowed_t">После того как состояние задачи сменилось на &#34;%task_status%&#34;, отправка файла больше невозможна.</msg>
   <msg key="lt_You_are_not_allowed_t_1">У вас нет прав на просмотр этого файла</msg>
   <msg key="lt_You_have_insufficient">У вас недостаточно разрешений для просмотра этой страницы</msg>
   <msg key="lt_You_have_insufficient_1">У вас недостаточно прав для загрузки этого файла.</msg>
@@ -122,14 +122,14 @@
   <msg key="lt_You_have_no_rights_to_1">У вас нет прав для просмотра этого объекта.</msg>
   <msg key="lt_You_havent_defined_th">Не задан исходный язык проекта.</msg>
   <msg key="lt_You_havent_selected_a">Не выбран пользователь для автоматического назначения.</msg>
-  <msg key="lt_Your_are_trying_to_do">Вы пытаетесь загрузить файл &quot;&lt;b&gt;%file_name%&lt;/b&gt;&quot; из папки &quot;&lt;b&gt;%download_folder%&lt;/b&gt;&quot;, но он недоступен для чтения или не существует.</msg>
+  <msg key="lt_Your_are_trying_to_do">Вы пытаетесь загрузить файл &#34;&lt;b&gt;%file_name%&lt;/b&gt;&#34; из папки &#34;&lt;b&gt;%download_folder%&lt;/b&gt;&#34;, но он недоступен для чтения или не существует.</msg>
   <msg key="lt_Your_file_doesnt_coin">Файл не соответствует ожидаемому файлу:</msg>
   <msg key="lt_Your_file_is_larger_t">Размер файла превышает максимально допустимый для отправки</msg>
   <msg key="lt_Your_file_is_larger_t_1">Размер файла превышает максимально допустимый для отправки:  %util_commify_number_max_n_bytes% байт</msg>
   <msg key="lt_Your_file_is_not_a_tr">Этот файл не является файлом статистики Trados.</msg>
-  <msg key="lt_Your_file_trados_word">Файл &quot;%trados_wordcount_file%&quot; создан не в поддерживаемой версии Trados (3.x, 5.0, 5.5, 6.0 и 6.5).</msg>
+  <msg key="lt_Your_file_trados_word">Файл &#34;%trados_wordcount_file%&#34; создан не в поддерживаемой версии Trados (3.x, 5.0, 5.5, 6.0 и 6.5).</msg>
   <msg key="lt_Your_file_upload_file">Файл: %upload_file%</msg>
-  <msg key="lt_Your_have_successfull">Файл &quot;%task_name%&quot; размером %filesize% байт успешно отправлен.</msg>
+  <msg key="lt_Your_have_successfull">Файл &#34;%task_name%&#34; размером %filesize% байт успешно отправлен.</msg>
   <msg key="Message">Сообщение</msg>
   <msg key="Name">Имя</msg>
   <msg key="No_Match">Нет соответствия</msg>
@@ -137,7 +137,7 @@
   <msg key="No_translator_comments_in_this_project">В этом проекте нет комментариев переводчика</msg>
   <msg key="Notify_PM_About_Task_Upload_Message">Отправлен новый файл. Папка: %upload_folder%, задача: %task_name%, проект: %project_name%
 </msg>
-  <msg key="Notify_PM_About_Task_Upload_Subject">Отправка задачи &quot;%task_name%&quot; в папку &quot;%upload_folder%&quot; для проекта &quot;%project_name%&quot;</msg>
+  <msg key="Notify_PM_About_Task_Upload_Subject">Отправка задачи &#34;%task_name%&#34; в папку &#34;%upload_folder%&#34; для проекта &#34;%project_name%&#34;</msg>
   <msg key="Num_Words">Кол-во слов</msg>
   <msg key="One_Project">Один проект</msg>
   <msg key="One_project">Один проект</msg>
@@ -207,6 +207,6 @@
   <msg key="Workflow_trans_directory">1_trans</msg>
   <msg key="X_Trans">X Trans</msg>
   <msg key="XTr">XTr</msg>
-  <msg key="Your_file_freebudget_word">Файл &quot;%freebudget_wordcount_file%&quot; создан не в поддерживаемой версии Freebudget (4.0, 5.0).</msg>
-  <msg key="Your_file_webbudget_word">Файл &quot;%webbudget_wordcount_file%&quot; создан не в поддерживаемой версии Webbudget (3.9).</msg>
+  <msg key="Your_file_freebudget_word">Файл &#34;%freebudget_wordcount_file%&#34; создан не в поддерживаемой версии Freebudget (4.0, 5.0).</msg>
+  <msg key="Your_file_webbudget_word">Файл &#34;%webbudget_wordcount_file%&#34; создан не в поддерживаемой версии Webbudget (3.9).</msg>
 </message_catalog>

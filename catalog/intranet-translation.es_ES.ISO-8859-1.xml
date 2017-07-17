@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="intranet-translation" package_version="3.4.0.7.0" locale="es_ES" charset="ISO-8859-1">
+<message_catalog package_key="intranet-translation" locale="es_ES" charset="ISO-8859-1">
 
   <msg key="--_Please_Select_--">-- Por favor seleccione --</msg>
   <msg key="0_">0%</msg>
@@ -53,20 +53,20 @@
   <msg key="Help">Ayuda</msg>
   <msg key="Input_Error">Error de entrada de datos</msg>
   <msg key="Internal_error">Error interno</msg>
-  <msg key="lt_Add_a_manual_task_to_">Añadir una tarea \&quot;manual\&quot; al proyecto.</msg>
+  <msg key="lt_Add_a_manual_task_to_">Añadir una tarea \&#34;manual\&#34; al proyecto.</msg>
   <msg key="lt_Add_a_new_file_to_the">Añadir un nuevo archivo a la lista de tareas.</msg>
   <msg key="lt_Add_a_new_subject_are">Añadir una nueva área temática</msg>
-  <msg key="lt_Add_the_content_of_a_">Añada el contenido de un archivo Trados 'wordcount.csv' local a la lista de tareas. \nEste archivo debe llamarse 'wordcount.csv' (en minúsculas), debe residir en la carpeta del proyecto y no puede haber más de un archivo con este nombre.</msg>
+  <msg key="lt_Add_the_content_of_a_">Añada el contenido de un archivo Trados &#39;wordcount.csv&#39; local a la lista de tareas. \nEste archivo debe llamarse &#39;wordcount.csv&#39; (en minúsculas), debe residir en la carpeta del proyecto y no puede haber más de un archivo con este nombre.</msg>
   <msg key="lt_An_optional_field_spe">Un campo opcional que indica el código de referencia del proyecto del cliente. Se utiliza al imprimir la factura. Ejemplo: 20030310A12478</msg>
   <msg key="lt_Cant_find_the_project">No puedo encontrar el proyecto con la id de producto %project_id%</msg>
-  <msg key="lt_Cant_find_the_project_1">No puedo encontrar el proyecto con la ID '%project_id%'</msg>
-  <msg key="lt_Classical_Trados_impo">(Importación de Trados \&quot;clásica\&quot; de un archivo 'wordcount.csv' local)</msg>
-  <msg key="lt_Click_right_and_choos">Para descargar el archivo haga clic con la tecla derecha del ratón y escoja \&quot;Guardar destino como\&quot; .</msg>
+  <msg key="lt_Cant_find_the_project_1">No puedo encontrar el proyecto con la ID &#39;%project_id%&#39;</msg>
+  <msg key="lt_Classical_Trados_impo">(Importación de Trados \&#34;clásica\&#34; de un archivo &#39;wordcount.csv&#39; local)</msg>
+  <msg key="lt_Click_right_and_choos">Para descargar el archivo haga clic con la tecla derecha del ratón y escoja \&#34;Guardar destino como\&#34; .</msg>
   <msg key="lt_Couldnt_find_the_spec">No he podido encontrar la tarea especificada no. %task_id%.</msg>
   <msg key="lt_Create_folder_structu">Cree la estructura de carpetas y un subproyecto para cada idioma que haya elegido.</msg>
   <msg key="lt_Create_the_new_folder">Cree la nueva estructura de carpetas.</msg>
   <msg key="lt_Did_you_enter_the_sam">¿Ha entrado el mismo nombre de tarea dos veces?</msg>
-  <msg key="lt_Edit_Trados_Matrix_of">Editar la matriz Trados de '%object_name%'.</msg>
+  <msg key="lt_Edit_Trados_Matrix_of">Editar la matriz Trados de &#39;%object_name%&#39;.</msg>
   <msg key="lt_Edit_Translation_Deta">Editar los detalles de la traducción</msg>
   <msg key="lt_Error_creating_subfol">Error al crear la subcarpeta %path%.</msg>
   <msg key="lt_Error_deleting_the_te">Error al borrar el archivo de contaje de palabras temporal %trados_wordcount_file%.</msg>
@@ -75,8 +75,8 @@
   <msg key="lt_File_is_missing_in_pr">Falta un archivo en el proyecto no. %project_nr%: %file_name%</msg>
   <msg key="lt_img_srcintranetimages">_</msg>
   <msg key="lt_Missing_Translation_F">Archivos a traducir</msg>
-  <msg key="lt_New_files_need_to_be_">Para que aparezcan en el cuadro de lista desplegable de la izquierda, los nuevos archivos deben estar alojados en la carpeta \&quot;source_xx\&quot;.</msg>
-  <msg key="lt_New_Trados_Matrix_of_">Nueva matriz Trados de '%object_name%'</msg>
+  <msg key="lt_New_files_need_to_be_">Para que aparezcan en el cuadro de lista desplegable de la izquierda, los nuevos archivos deben estar alojados en la carpeta \&#34;source_xx\&#34;.</msg>
+  <msg key="lt_New_Trados_Matrix_of_">Nueva matriz Trados de &#39;%object_name%&#39;</msg>
   <msg key="lt_No_missing_files_foun">No se han encontrado archivos faltantes</msg>
   <msg key="lt_Please_check_the_file">Compruebe por favor los permisos de archivo o póngase en contacto con el administrador de su sistema.</msg>
   <msg key="lt_Please_check_your_inp">Compruebe por favor los datos entrados o consulte a su coordinador de proyecto.</msg>
@@ -85,7 +85,7 @@
   <msg key="lt_Please_edit_your_proj">Por favor edite su proyecto y añada un idioma de partida.</msg>
   <msg key="lt_Please_start_Trados_a">Por favor inicie Trados y genere un archivo para esta carpeta.</msg>
   <msg key="lt_Please_try_to_repeat_">Intente repetir su análisis Trados o informe al administrador de su sistema.</msg>
-  <msg key="lt_Please_upload_a_file_">Cargue por favor un archivo con la extensión \&quot;.CSV\&quot;.</msg>
+  <msg key="lt_Please_upload_a_file_">Cargue por favor un archivo con la extensión \&#34;.CSV\&#34;.</msg>
   <msg key="lt_Project_Workflow_Stat">Status de flujo de trabajo del proyecto</msg>
   <msg key="lt_Return_to_previous_pa">Volver a la página anterior</msg>
   <msg key="lt_Return_to_Project_Pag">Volver a la portada del proyecto</msg>
@@ -103,16 +103,16 @@
   <msg key="lt_Translation_Assignmen">Tareas de traducción asignadas</msg>
   <msg key="lt_Translation_source_la">Idioma de partida de la traducción</msg>
   <msg key="lt_Translation_target_la">Idiomas de destino de la traducción. Se crearán carpetas independientes para cada idioma seleccionado.</msg>
-  <msg key="lt_Unable_to_read_the_fi">No puedo leer el archivo '%trados_wordcount_file%'.</msg>
-  <msg key="lt_Unknown_Input_method_">Método de entrada '%import_method%' desconocido.</msg>
+  <msg key="lt_Unable_to_read_the_fi">No puedo leer el archivo &#39;%trados_wordcount_file%&#39;.</msg>
+  <msg key="lt_Unknown_Input_method_">Método de entrada &#39;%import_method%&#39; desconocido.</msg>
   <msg key="lt_Unknown_submit_comman">Comando de envío desconocido</msg>
   <msg key="lt_Unknown_Trados_Versio">Versión de Trados desconocida</msg>
-  <msg key="lt_Use_the_Browse_button">Utilice el botón 'Examinar...' para localizar su archivo y, a continuación, haga clic sobre 'Abrir'.</msg>
-  <msg key="lt_Use_the_Browse_button_1">Utilice el botón 'Examinar...' para localizar su archivo y haga clic sobre \&quot;Añadir ...\&quot; para cargar el contaje de palabras Trados (.CSV).</msg>
-  <msg key="lt_We_have_found_more_th">Hemos encontrado más de un archivo 'wordcount.csv' en la ruta de proyecto '%project_path%'.</msg>
-  <msg key="lt_We_have_not_found_a_w">No hemos encontrado ningún archivo 'wordcount.csv' en la ruta de proyecto '%project_path%'.</msg>
-  <msg key="lt_Who_is_the_final_cons">¿Quién es el cliente final (cuando se trabaja para una agencia)? Ejemlos: \&quot;Repsol\&quot;, \&quot;La Caixa\&quot;, ...</msg>
-  <msg key="lt_You_are_not_allowed_t">Mientras la tarea tenga el status '%task_status%' carece de permisos para cargar el archivo.</msg>
+  <msg key="lt_Use_the_Browse_button">Utilice el botón &#39;Examinar...&#39; para localizar su archivo y, a continuación, haga clic sobre &#39;Abrir&#39;.</msg>
+  <msg key="lt_Use_the_Browse_button_1">Utilice el botón &#39;Examinar...&#39; para localizar su archivo y haga clic sobre \&#34;Añadir ...\&#34; para cargar el contaje de palabras Trados (.CSV).</msg>
+  <msg key="lt_We_have_found_more_th">Hemos encontrado más de un archivo &#39;wordcount.csv&#39; en la ruta de proyecto &#39;%project_path%&#39;.</msg>
+  <msg key="lt_We_have_not_found_a_w">No hemos encontrado ningún archivo &#39;wordcount.csv&#39; en la ruta de proyecto &#39;%project_path%&#39;.</msg>
+  <msg key="lt_Who_is_the_final_cons">¿Quién es el cliente final (cuando se trabaja para una agencia)? Ejemlos: \&#34;Repsol\&#34;, \&#34;La Caixa\&#34;, ...</msg>
+  <msg key="lt_You_are_not_allowed_t">Mientras la tarea tenga el status &#39;%task_status%&#39; carece de permisos para cargar el archivo.</msg>
   <msg key="lt_You_are_not_allowed_t_1">Carece de permisos para revisar el archivo.</msg>
   <msg key="lt_You_have_insufficient">Carece de privilegios suficientes para ver esta página.</msg>
   <msg key="lt_You_have_insufficient_1">Carece de privilegios suficientes para descargar este archivo.</msg>
@@ -122,14 +122,14 @@
   <msg key="lt_You_have_no_rights_to_1">Carece de privilegios para revisar este objeto.</msg>
   <msg key="lt_You_havent_defined_th">No ha definido el idioma de partida de su proyecto.</msg>
   <msg key="lt_You_havent_selected_a">No ha seleccionado ningún usuario para la autoasignación.</msg>
-  <msg key="lt_Your_are_trying_to_do">Está intentando descargar el archivo &quot;&lt;b&gt;%file_name%&lt;/b&gt;&quot; en la carpeta &quot;&lt;b&gt;%download_folder%&lt;/b&gt;&quot;, pero este archivo no se puede leer o no existe en el sistema.</msg>
+  <msg key="lt_Your_are_trying_to_do">Está intentando descargar el archivo &#34;&lt;b&gt;%file_name%&lt;/b&gt;&#34; en la carpeta &#34;&lt;b&gt;%download_folder%&lt;/b&gt;&#34;, pero este archivo no se puede leer o no existe en el sistema.</msg>
   <msg key="lt_Your_file_doesnt_coin">Su archivo no coincide con el archivo esperado:</msg>
   <msg key="lt_Your_file_is_larger_t">Su archivo supera el tamaño máximo admisible para la carga.</msg>
   <msg key="lt_Your_file_is_larger_t_1">Su archivo supera el tamaño máximo admisible para la carga: %util_commify_number_max_n_bytes% bytes</msg>
   <msg key="lt_Your_file_is_not_a_tr">Su archivo no es un archivo de contaje de palabras Trados.</msg>
-  <msg key="lt_Your_file_trados_word">Su archivo '%trados_wordcount_file%' no ha sido creado con una de las versiones de Trados soportadas (3.0 y 5.5).</msg>
+  <msg key="lt_Your_file_trados_word">Su archivo &#39;%trados_wordcount_file%&#39; no ha sido creado con una de las versiones de Trados soportadas (3.0 y 5.5).</msg>
   <msg key="lt_Your_file_upload_file">Su archivo: %upload_file%</msg>
-  <msg key="lt_Your_have_successfull">%filesize% bytes del archivo '%task_name%' subidos.</msg>
+  <msg key="lt_Your_have_successfull">%filesize% bytes del archivo &#39;%task_name%&#39; subidos.</msg>
   <msg key="Message">Mensaje</msg>
   <msg key="Name">Nombre</msg>
   <msg key="No_Match">No hay coincidencias</msg>
@@ -207,6 +207,6 @@
   <msg key="Workflow_trans_directory">1_trans</msg>
   <msg key="X_Trans">X Trans</msg>
   <msg key="XTr">XTr</msg>
-  <msg key="Your_file_freebudget_word">El archivo '%freebudget_wordcount_file%' no fue creado con una de las versiones soportadas de Freebudget (4.0, 5.0).</msg>
-  <msg key="Your_file_webbudget_word">El archivo '%webbudget_wordcount_file%' no fue creado con una de las versiones soportadas de Webbudget (3.9).</msg>
+  <msg key="Your_file_freebudget_word">El archivo &#39;%freebudget_wordcount_file%&#39; no fue creado con una de las versiones soportadas de Freebudget (4.0, 5.0).</msg>
+  <msg key="Your_file_webbudget_word">El archivo &#39;%webbudget_wordcount_file%&#39; no fue creado con una de las versiones soportadas de Webbudget (3.9).</msg>
 </message_catalog>
