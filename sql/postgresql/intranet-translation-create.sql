@@ -1367,3 +1367,560 @@ SELECT im_dynfield_attribute_new (
 	't'
 );
 
+--  upgrade-3.4.0.8.3-3.4.0.8.4.sql
+
+SELECT acs_log__debug('/packages/intranet-translation/sql/postgresql/upgrade/upgrade-3.4.0.8.3-3.4.0.8.4.sql','');
+
+
+-- Replace the hardcoded workflows stages by information
+-- in the aux_string1 field of translation tasks.
+
+update im_categories set aux_string1 = 'trans edit'	where category_id = 87;
+update im_categories set aux_string1 = 'edit'		where category_id = 88;
+update im_categories set aux_string1 = 'trans edit proof' where category_id = 89;
+update im_categories set aux_string1 = 'other'		where category_id = 90;
+update im_categories set aux_string1 = 'other'		where category_id = 91;
+update im_categories set aux_string1 = 'other'		where category_id = 92;
+update im_categories set aux_string1 = 'trans'		where category_id = 93;
+update im_categories set aux_string1 = 'trans edit'	where category_id = 94;
+update im_categories set aux_string1 = 'proof'		where category_id = 95;
+update im_categories set aux_string1 = 'other'		where category_id = 96;
+
+
+
+-----------------------------------------------------------
+-- DynField Widgets
+-----------------------------------------------------------
+
+SELECT im_dynfield_widget__new (
+	null, 'im_dynfield_widget', now(), 0, '0.0.0.0', null,
+	'trans_task_types', 'Translation Task Types', 'Translation Task Types',
+	10007, 'integer', 'im_category_tree', 'integer',
+	'{custom {category_type "Intranet Translation Task Type"}}'
+);
+
+SELECT im_dynfield_widget__new (
+	null, 'im_dynfield_widget', now(), 0, '0.0.0.0', null,
+	'trans_file_types', 'Translation File Types', 'Translation File Types',
+	10007, 'integer', 'im_category_tree', 'integer',
+	'{custom {category_type "Intranet Translation File Type"}}'
+);
+
+-----------------------------------------------------------
+-- DynFields for im_material
+-----------------------------------------------------------
+
+create or replace function im_insert_acs_object_type_tables (varchar, varchar, varchar)
+returns integer as $body$
+DECLARE
+        p_object_type           alias for $1;
+        p_table_name            alias for $2;
+        p_id_column             alias for $3;
+
+        v_count                 integer;
+BEGIN
+        -- Check for duplicates
+        select  count(*) into v_count
+        from    acs_object_type_tables
+        where   object_type = p_object_type and
+                table_name = p_table_name;
+        IF v_count > 0 THEN return 1; END IF;
+
+        -- Make sure the object_type exists
+        select  count(*) into v_count
+        from    acs_object_types
+        where   object_type = p_object_type;
+        IF v_count = 0 THEN return 2; END IF;
+
+        insert into acs_object_type_tables (object_type, table_name, id_column)
+        values (p_object_type, p_table_name, p_id_column);
+
+        return 0;
+end;$body$ language 'plpgsql';
+
+
+-- make sure the acs_object_type_tables entry is there.
+SELECT im_insert_acs_object_type_tables('im_material','im_materials','material_id');
+
+
+
+
+create or replace function inline_0 ()
+returns integer as $body$
+declare
+	v_count		integer;
+begin
+	select count(*) into v_count from user_tab_columns
+	where lower(table_name) = 'im_materials' and lower(column_name) = 'source_language_id';
+	IF v_count = 0 THEN 
+		alter table im_materials add column source_language_id integer 
+		constraint im_materials_source_language_fk references im_categories;
+	END IF;
+
+	select count(*) into v_count from user_tab_columns
+	where lower(table_name) = 'im_materials' and lower(column_name) = 'target_language_id';
+	IF v_count = 0 THEN 
+		alter table im_materials add column target_language_id integer 
+		constraint im_materials_target_language_fk references im_categories;
+	END IF;
+
+	select count(*) into v_count from user_tab_columns
+	where lower(table_name) = 'im_materials' and lower(column_name) = 'subject_area_id';
+	IF v_count = 0 THEN 
+		alter table im_materials add column subject_area_id integer 
+		constraint im_materials_subject_area_fk references im_categories;
+	END IF;
+
+	select count(*) into v_count from user_tab_columns
+	where lower(table_name) = 'im_materials' and lower(column_name) = 'task_type_id';
+	IF v_count = 0 THEN 
+		alter table im_materials add column task_type_id integer 
+		constraint im_materials_task_type_fk references im_categories;
+	END IF;
+
+	select count(*) into v_count from user_tab_columns
+	where lower(table_name) = 'im_materials' and lower(column_name) = 'file_type_id';
+	IF v_count = 0 THEN 
+		alter table im_materials add column file_type_id integer 
+		constraint im_materials_file_type_fk references im_categories;
+	END IF;
+
+	RETURN 0;
+end; $body$ language 'plpgsql';
+select inline_0 ();
+drop function inline_0 ();
+
+
+SELECT im_dynfield_attribute_new ('im_material', 'source_language_id', 'Source Language', 'translation_languages', 'integer', 'f');
+SELECT im_dynfield_attribute_new ('im_material', 'target_language_id', 'Target Language', 'translation_languages', 'integer', 'f');
+SELECT im_dynfield_attribute_new ('im_material', 'subject_area_id', 'Subject Area', 'subject_area', 'integer', 'f');
+SELECT im_dynfield_attribute_new ('im_material', 'task_type_id', 'Task Type', 'translation_languages', 'integer', 'f');
+SELECT im_dynfield_attribute_new ('im_material', 'file_type_id', 'File Type', 'trans_file_types', 'integer', 'f');
+
+-- upgrade-3.5.9.9.9-4.0.0.0.0.sql
+
+SELECT acs_log__debug('/packages/intranet-translation/sql/postgresql/upgrade/upgrade-3.5.9.9.9-4.0.0.0.0.sql','');
+
+-- Delete previous columns.
+delete from im_view_columns where view_id = 90;
+
+
+
+-- Allow translation tasks to be checked/unchecked all together
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl, extra_select, extra_where, sort_order, visible_for)
+values (9000,90,NULL,'<input type=checkbox name=_dummy onclick="acs_ListCheckAll(''task'',this.checked)">','$del_checkbox','','', 0,'expr $project_write');
+
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9010,90,NULL,'Task Name','$task_name_splitted','','',100,'');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9012,90,NULL,'Target Lang','$target_language','','',120,'');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9014,90,NULL,'XTr','$match_x','','',140,'im_permission $user_id view_trans_task_matrix');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9016,90,NULL,'Rep','$match_rep','','',150,'im_permission $user_id view_trans_task_matrix');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9018,90,NULL,'100 %','$match100','','',180,'im_permission $user_id view_trans_task_matrix');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9020,90,NULL,'95 %','$match95','','',200,'im_permission $user_id view_trans_task_matrix');
+-- 9021 blocked, this was the old checkbox column
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9022,90,NULL,'85 %','$match85','','',220,'im_permission $user_id view_trans_task_matrix');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9024,90,NULL,'75 %','$match75','','',240,'im_permission $user_id view_trans_task_matrix');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9026,90,NULL,'50 %','$match50','','',260,'im_permission $user_id view_trans_task_matrix');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9028,90,NULL,'0 %','$match0','','',280,'im_permission $user_id view_trans_task_matrix');
+
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9040,90,NULL,'Units','$task_units $uom_name','','',400,'');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9042,90,NULL,'Bill. Units','$billable_items_input','','',420,'expr $project_write');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9044,90,NULL,'Bill. Units Interco','$billable_items_input_interco','','',440,'expr $project_write && $interco_p');
+
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9050,90,NULL,'Quoted Price','$quoted_price','','',500,'im_permission $user_id view_finance');
+
+-- Show cost and margin only to WhP
+-- insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+-- values (9052,90,NULL,'Ordered Cost','$po_cost','','',520,'im_permission $user_id view_finance');
+-- insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+-- values (9054,90,NULL,'Gross Margin','$gross_margin','','',540,'im_permission $user_id view_finance');
+
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9060,90,NULL,'End Date','$end_date_formatted','','',600,'expr !$project_write');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9062,90,NULL,'End Date','$end_date_input','','',620,'expr $project_write');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9064,90,NULL,'Task Type','$type_select','','',640,'expr $project_write');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9066,90,NULL,'Task Status','$status_select','','',660,'expr $project_write');
+
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9080,90,NULL,'Assigned','$assignments','','',800,'expr $project_write');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9082,90,NULL,'Message','$message','','',820,'');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9084,90,NULL,'[im_gif save "Download files"]','$download_link','','',840,'');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9086,90,NULL,'[im_gif open "Upload files"]','$upload_link','','',860,'');
+
+
+-- Add DynFields with default values for the new surcharge/discount/pm_fee fields of FinDocs
+
+create or replace function inline_0 ()
+returns integer as '
+declare
+        v_count         integer;
+begin
+
+        select count(*) into v_count from information_schema.columns where 
+              table_name = ''im_companies'' 
+              and column_name = ''default_pm_fee_perc'';
+        IF v_count > 0 THEN return 1; END IF;
+	alter table im_companies add default_pm_fee_perc numeric(12,2);
+        RETURN 0;
+
+end;' language 'plpgsql';
+select inline_0 ();
+drop function inline_0 ();
+
+
+create or replace function inline_0 ()
+returns integer as '
+declare
+        v_count         integer;
+begin
+
+        select count(*) into v_count from information_schema.columns where
+              table_name = ''im_companies''
+              and column_name = ''default_surcharge_perc'';
+        IF v_count > 0 THEN return 1; END IF;
+        alter table im_companies add default_surcharge_perc numeric(12,2);
+        RETURN 0;
+
+end;' language 'plpgsql';
+select inline_0 ();
+drop function inline_0 ();
+
+create or replace function inline_0 ()
+returns integer as '
+declare
+        v_count         integer;
+begin
+
+        select count(*) into v_count from information_schema.columns where
+              table_name = ''im_companies''
+              and column_name = ''default_discount_perc'';
+        IF v_count > 0 THEN return 1; END IF;
+        alter table im_companies add default_discount_perc numeric(12,2);
+        RETURN 0;
+
+end;' language 'plpgsql';
+select inline_0 ();
+drop function inline_0 ();
+
+
+SELECT im_dynfield_attribute_new ('im_company', 'default_pm_fee_perc', 'Default PM Fee Percentage', 'numeric', 'float', 'f');
+SELECT im_dynfield_attribute_new ('im_company', 'default_surcharge_perc', 'Default Surcharge Percentage', 'numeric', 'float', 'f');
+SELECT im_dynfield_attribute_new ('im_company', 'default_discount_perc', 'Default Discount Percentage', 'numeric', 'float', 'f');
+
+SELECT im_dynfield_attribute_new ('im_company', 'default_tax', 'Default TAX', 'numeric', 'float', 'f');
+
+
+-- upgrade-4.0.0.0.0-4.0.0.0.1.sql
+
+SELECT acs_log__debug('/packages/intranet-translation/sql/postgresql/upgrade/upgrade-4.0.0.0.0-4.0.0.0.1.sql','');
+
+-- Delete previous columns.
+delete from im_view_columns where view_id = 90 and column_id = 9000; 
+
+
+-- Allow translation tasks to be checked/unchecked all together
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl, extra_select, extra_where, sort_order, visible_for)
+values (9000,90,NULL,'<input type=checkbox name=_dummy onclick=\"acs_ListCheckAll(''task'',this.checked)\">','$del_checkbox','','', 0,'expr $project_write');
+-- upgrade-4.0.3.5.0-4.0.3.5.1.sql
+
+SELECT acs_log__debug('/packages/intranet-translation/sql/postgresql/upgrade/upgrade-4.0.3.5.0-4.0.3.5.1.sql','');
+
+
+create or replace function inline_0 ()
+returns integer as $body$
+declare
+	v_count	integer;
+begin
+	-- perfect matches
+	select count(*) into v_count from user_tab_columns
+	where lower(table_name) = 'im_trans_tasks' and lower(column_name) = 'match_perf';
+	IF v_count = 0 THEN
+		alter table im_trans_tasks add column match_perf numeric(12,0) default 0;
+	END IF;
+
+	-- crossfilerepeated
+	select count(*) into v_count from user_tab_columns
+	where lower(table_name) = 'im_trans_tasks' and lower(column_name) = 'match_cfr';
+	IF v_count = 0 THEN
+		alter table im_trans_tasks add column match_cfr numeric(12,0) default 0;
+	END IF;
+
+	-- fuzzy 95
+	select count(*) into v_count from user_tab_columns
+	where lower(table_name) = 'im_trans_tasks' and lower(column_name) = 'match_f95';
+	IF v_count = 0 THEN
+		alter table im_trans_tasks add column match_f95 numeric(12,0) default 0;
+	END IF;
+
+	-- fuzzy 85
+	select count(*) into v_count from user_tab_columns
+	where lower(table_name) = 'im_trans_tasks' and lower(column_name) = 'match_f85';
+	IF v_count = 0 THEN
+		alter table im_trans_tasks add column match_f85 numeric(12,0) default 0;
+	END IF;
+
+	-- fuzzy 75
+	select count(*) into v_count from user_tab_columns
+	where lower(table_name) = 'im_trans_tasks' and lower(column_name) = 'match_f75';
+	IF v_count = 0 THEN
+		alter table im_trans_tasks add column match_f75 numeric(12,0) default 0;
+	END IF;
+
+	-- fuzzy 50
+	select count(*) into v_count from user_tab_columns
+	where lower(table_name) = 'im_trans_tasks' and lower(column_name) = 'match_f50';
+	IF v_count = 0 THEN
+		alter table im_trans_tasks add column match_f50 numeric(12,0) default 0;
+	END IF;
+
+	return 0;
+end;$body$ language 'plpgsql';
+select inline_0 ();
+drop function inline_0 ();
+
+
+
+
+create or replace function inline_0 ()
+returns integer as $body$
+declare
+	v_count	integer;
+begin
+	-- perfect matches
+	select count(*) into v_count from user_tab_columns
+	where lower(table_name) = 'im_trans_trados_matrix' and lower(column_name) = 'match_perf';
+	IF v_count = 0 THEN
+		alter table im_trans_trados_matrix add column match_perf numeric(12,4) default 0;
+	END IF;
+
+	-- crossfilerepeated
+	select count(*) into v_count from user_tab_columns
+	where lower(table_name) = 'im_trans_trados_matrix' and lower(column_name) = 'match_cfr';
+	IF v_count = 0 THEN
+		alter table im_trans_trados_matrix add column match_cfr numeric(12,4) default 1;
+	END IF;
+
+	-- fuzzy 95
+	select count(*) into v_count from user_tab_columns
+	where lower(table_name) = 'im_trans_trados_matrix' and lower(column_name) = 'match_f95';
+	IF v_count = 0 THEN
+		alter table im_trans_trados_matrix add column match_f95 numeric(12,4) default 1;
+	END IF;
+
+	-- fuzzy 85
+	select count(*) into v_count from user_tab_columns
+	where lower(table_name) = 'im_trans_trados_matrix' and lower(column_name) = 'match_f85';
+	IF v_count = 0 THEN
+		alter table im_trans_trados_matrix add column match_f85 numeric(12,4) default 1;
+	END IF;
+
+	-- fuzzy 75
+	select count(*) into v_count from user_tab_columns
+	where lower(table_name) = 'im_trans_trados_matrix' and lower(column_name) = 'match_f75';
+	IF v_count = 0 THEN
+		alter table im_trans_trados_matrix add column match_f75 numeric(12,4) default 1;
+	END IF;
+
+	-- fuzzy 50
+	select count(*) into v_count from user_tab_columns
+	where lower(table_name) = 'im_trans_trados_matrix' and lower(column_name) = 'match_f50';
+	IF v_count = 0 THEN
+		alter table im_trans_trados_matrix add column match_f50 numeric(12,4) default 1;
+	END IF;
+
+	return 0;
+end;$body$ language 'plpgsql';
+select inline_0 ();
+drop function inline_0 ();
+
+
+
+
+
+
+-- 9068-9079 reserved
+
+delete from im_view_columns where column_id in (9068, 9069, 9070, 9071, 9072, 9073);
+
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9068,90,NULL,'Perf','$match_perf','','',290,'im_permission $user_id view_trans_task_matrix');
+
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9069,90,NULL,'Cfr','$match_cfr','','',291,'im_permission $user_id view_trans_task_matrix');
+
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9070,90,NULL,'f95 %','$match_f95','','',292,'im_permission $user_id view_trans_task_matrix');
+
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9071,90,NULL,'f85 %','$match_f85','','',293,'im_permission $user_id view_trans_task_matrix');
+
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9072,90,NULL,'f75 %','$match_f75','','',294,'im_permission $user_id view_trans_task_matrix');
+
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+values (9073,90,NULL,'f50 %','$match_f50','','',295,'im_permission $user_id view_trans_task_matrix');
+
+-- upgrade-4.0.3.5.1-4.0.3.5.2.sql
+
+SELECT acs_log__debug('/packages/intranet-translation/sql/postgresql/upgrade/upgrade-4.0.3.5.1-4.0.3.5.2.sql','');
+
+create or replace function inline_0 ()
+returns integer as $body$
+declare
+        v_count integer;
+begin
+        -- Locked
+        select count(*) into v_count from user_tab_columns
+        where lower(table_name) = 'im_trans_trados_matrix' and lower(column_name) = 'locked';
+        IF v_count = 0 THEN
+	   alter table im_trans_trados_matrix add column locked numeric(12,4);
+        END IF;
+
+        -- crossfilerepeated
+        select count(*) into v_count from user_tab_columns
+        where lower(table_name) = 'im_trans_tasks' and lower(column_name) = 'locked';
+        IF v_count = 0 THEN
+	   alter table im_trans_tasks add column locked numeric(12,0);
+        END IF;
+
+        return 0;
+
+end;$body$ language 'plpgsql';
+select inline_0 ();
+drop function inline_0 ();
+
+
+create or replace function inline_0 ()
+returns integer as $body$
+declare
+        v_count integer;
+begin
+        -- Locked
+        select count(*) into v_count from im_view_columns where column_id = 9088;
+
+        IF v_count = 0 THEN
+	   insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,extra_select, extra_where, sort_order, visible_for)
+	   values (9088,90,NULL,'Lck','$locked','','',160,'im_permission $user_id view_trans_task_matrix');
+	ELSE 
+	     RAISE NOTICE '/intranet-translation/sql/postgresql/upgrade/upgrade-4.0.3.5.1-4.0.3.5.2.sql: Not able to create column "Locked"';
+	END IF;
+	
+        return 0;
+
+end;$body$ language 'plpgsql';
+select inline_0 ();
+drop function inline_0 ();
+
+
+
+
+-- set default for locked for "Default Freelancer Provider 
+create or replace function inline_0 ()
+returns integer as $body$
+declare
+        v_company_id integer;
+begin
+	select company_id into v_company_id from im_companies where company_type_id = 53 and company_path = 'default_freelance' LIMIT 1; 
+	update im_trans_trados_matrix set locked = 0 where object_id = v_company_id;
+
+        return 0;
+
+end;$body$ language 'plpgsql';
+select inline_0 ();
+drop function inline_0 ();
+
+-- set default for locked for "Internal Company"
+create or replace function inline_0 ()
+returns integer as $body$
+declare
+        v_company_id integer;
+begin
+        select company_id into v_company_id from im_companies where company_type_id = 53 and company_status_id = 46 LIMIT 1;
+        update im_trans_trados_matrix set locked = 1 where object_id = v_company_id;
+        return 0;
+
+end;$body$ language 'plpgsql';
+select inline_0 ();
+drop function inline_0 ();
+
+-- set default values for "Freelance Provider" 
+update im_trans_trados_matrix set locked = 0 where object_id in (select company_id from im_companies where company_type_id = 58);
+
+-- set set default for all other Customer Companies 
+update im_trans_trados_matrix set locked = 1 where object_id not in (select company_id from im_companies where company_type_id = 58);
+
+
+
+
+
+-- upgrade-5.0.0.0.0-5.0.0.0.1.sql
+
+SELECT acs_log__debug('/packages/intranet-translation/sql/postgresql/upgrade/upgrade-5.0.0.0.0-5.0.0.0.1.sql','');
+
+create or replace function inline_0 ()
+returns integer as $BODY$
+declare
+        v_count                 integer;
+begin
+
+        -- milestone_p had been made a Dynfield of object im_timesheet_tasks
+        -- add it manually as it's been used not only PM specific (e.g. clone project, etc.)
+
+        select count(*) into v_count from user_tab_columns
+        where lower(table_name) = 'im_projects' and lower(column_name) = 'milestone_p';
+
+        IF      0 = v_count
+        THEN
+                alter table im_projects add column milestone_p character(1);
+                comment on column public.im_projects.milestone_p is 'Field has been added for compatibility reasons only.';
+                return 0;
+        END IF;
+        return 1;
+
+end;$BODY$ language 'plpgsql';
+select inline_0 ();
+drop function inline_0 ();
+-- upgrade-5.0.0.0.1-5.0.0.0.2.sql
+
+SELECT acs_log__debug('/packages/intranet-translation/sql/postgresql/upgrade/upgrade-5.0.0.0.1-5.0.0.0.2.sql','');
+
+create or replace function inline_0 ()
+returns integer as $BODY$
+declare
+        v_count                 integer;
+begin
+
+        -- final_company had been removed from core project
+        select count(*) into v_count from user_tab_columns
+        where lower(table_name) = 'im_projects' and lower(column_name) = 'final_company';
+
+        IF      0 = v_count
+        THEN
+                alter table im_projects add column final_company character(50);
+                comment on column public.im_projects.milestone_p is 'Field has been added for compatibility reasons only.';
+                return 0;
+        END IF;
+        return 1;
+
+end;$BODY$ language 'plpgsql';
+select inline_0 ();
+drop function inline_0 ();
