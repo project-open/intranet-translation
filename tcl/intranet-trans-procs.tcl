@@ -2187,7 +2187,11 @@ ad_proc im_task_component {
     foreach col $column_headers {
         set header ""
 	set header_cmd "set header \"$col\""
-	eval $header_cmd
+	if {[catch {
+	    eval $header_cmd
+	} err_msg]} {
+	    set header $err_msg
+	}
 	if { [regexp "im_gif" $col] } {
 	    set header_tr $header
 	} else {
