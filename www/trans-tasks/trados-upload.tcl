@@ -88,6 +88,9 @@ switch $wordcount_application {
     trados {
 	ad_returnredirect trados-import?[export_vars -url { project_id task_type_id target_language_id return_url wordcount_file upload_file import_method}]
     }
+    practicount {
+	ad_returnredirect practicount-import?[export_vars -url { project_id task_type_id target_language_id return_url wordcount_file upload_file import_method}]
+    }
     trados-xml {
 	ad_returnredirect trados-xml-import?[export_vars -url { project_id task_type_id target_language_id return_url wordcount_file upload_file import_method}]
     }

@@ -3093,6 +3093,7 @@ ad_proc im_new_task_component {
 	# Start with the hard-coded importers coming with ]po[
 	set importer_option_list [list \
 				  [list trados "Trados (3.0 - 9.0)"] \
+				  [list practicount "Practicount"] \
 				  [list transit "Transit (all)"] \
 				  [list freebudget "FreeBudget (4.0 - 5.0)"] \
 				  [list webbudget "WebBudget (4.0 - 5.0"] \
