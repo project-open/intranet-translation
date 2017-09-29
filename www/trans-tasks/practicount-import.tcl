@@ -314,15 +314,23 @@ foreach line_fields $values_list_of_lists {
     set task_name_comps [lrange $filename_comps $common_filename_comps $len]
     set task_name [join $task_name_comps "/"]
 
-    set task_units $custom_lines
-    set billable_units $custom_lines
+    if {"" ne $custom_lines && $custom_lines > 0} {
+	# source_language_id defined by im_project
+	# 326=S-Line
+	set task_uom_id 326
+	set task_units $custom_lines
+	set billable_units $custom_lines
+    } else {
+	# source_language_id defined by im_project
+	# 324=Source words
+	set task_uom_id 324
+	set task_units $words
+	set billable_units $words
+    }
 
     set task_type_id $project_type_id
     set task_status_id 340
     set task_description ""
-    # source_language_id defined by im_project
-    # 324=Source words, 326=S-Line
-    set task_uom_id 326
     set invoice_id ""
 
 
