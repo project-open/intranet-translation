@@ -88,7 +88,7 @@ switch $encoding_hex {
 set target_language_ids [im_target_language_ids $project_id]
 if {0 == [llength $target_language_ids]} {
     ad_return_complaint 1 "<li>[_ intranet-translation.lt_The_project_has_no_ta]<BR>
-        Please back up to the project page and add at least one target language to the project.#>"
+	Please back up to the project page and add at least one target language to the project.#>"
     return
 }
 
@@ -317,6 +317,12 @@ for {set i 0} {$i < $trados_files_len} {incr i} {
 		"total" {
 		    # ignore
 		}
+		"newbaseline" {
+		    # ignore
+		}
+		"newlearnings" {
+		    # ignore
+		}
 		"internalfuzzy" {
 		    #going through all "fuzzy" elements
 		    set fuzzy_min_attribute [$analyseChildElement getAttribute $attr_min]
@@ -478,7 +484,7 @@ for {set i 0} {$i < $trados_files_len} {incr i} {
 			:source_language_id,	-- source_language_id
 			:target_language_id,	-- target_language_id
 			:task_uom_id		-- task_uom_id
-	        )"]
+		)"]
 
 		db_dml update_task "
 		    UPDATE im_trans_tasks SET
@@ -506,27 +512,21 @@ for {set i 0} {$i < $trados_files_len} {incr i} {
 			locked = :locked_words
 		    WHERE 
 			task_id = :new_task_id
-	        "
+		"
 	    }
-
 	} err_msg] } {
-
 	    # Failed to create translation task
 	    incr err_count
 	    append page_body "
 		<tr><td colspan=10>$insert_sql</td></tr>
 		<tr><td colspan=10><font color=red>$err_msg</font></td></tr>
 	     "
-
 	} else {
-	    
 	    # Successfully created translation task
 	    # Call user_exit to let TM know about the event
 	    im_user_exit_call trans_task_create $new_task_id
 	    im_audit -object_type "im_trans_task" -action after_create -object_id $new_task_id -status_id $task_status_id -type_id $task_type_id
-	    
 	}
-	
     } 
     # end of foreach
 }
