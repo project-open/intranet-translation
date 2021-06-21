@@ -9,7 +9,7 @@
     <singleton-p>t</singleton-p>
     <auto-mount>intranet-translation</auto-mount>
 
-    <version name="5.0.4.0.0" url="https://www.project-open.net/download/apm/intranet-translation-5.0.4.0.0.apm">
+    <version name="5.1.0.0.0" url="https://www.project-open.net/download/apm/intranet-translation-5.1.0.0.0.apm">
         <owner url="mailto:frank.bergmann@project-open.com">Frank Bergmann</owner>
         <vendor url="https://www.project-open.com/">]project-open[</vendor>
         <release-date>2016-11-15</release-date>
